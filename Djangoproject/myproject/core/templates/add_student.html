@@ -8,8 +8,8 @@
 <body>
     <h1>Add Student</h1>
     <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
+        {% csrf_token %}  <!-- Include CSRF token for security -->
+        {{ form.as_p }}  <!-- Render the form fields as paragraphs -->
         <button type="submit">Add Student</button>
     </form>
 </body>

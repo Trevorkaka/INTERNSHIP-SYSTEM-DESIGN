@@ -7,10 +7,18 @@
 </head>
 <body>
     <h1>Students</h1>
-    <ul>
+    
+    <a href="/add/">Add Student</a>
+    
+    {% if students %}  
         {% for student in students %}
-            <li>{{ student.name }} - {{ student.email }} - {{ student.course }}</li>
+            <li>
+                <strong>{{ student.name }}</strong> - {{ student.email }} - {{ student.course }}
+             </li>
         {% endfor %}
+    {% else %}
+            <p>No students found.</p>
+        {% endif %}
     </ul>
 </body>
 </html>
