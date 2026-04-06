@@ -15,12 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from core import views
+from core.views import home
+from django.http import HttpResponse
 
+#def home(request):
+    #return HttpResponse("Welcome to ILES System")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('students/', views.student_list),
     path('add/', views.add_student),
+    path('', home ),
+    path('internship/', include('internship.urls')), #connect app urls to the main project urls
 ]
