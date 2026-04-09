@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from core import views
 from core.views import home
-from django.http import HttpResponse
+#from django.http import HttpResponse
 
 #def home(request):
     #return HttpResponse("Welcome to ILES System")
@@ -28,5 +28,6 @@ urlpatterns = [
     path('students/', views.student_list),
     path('add/', views.add_student),
     path('', home ),
-    path('internship/', include('internship.urls')), #connect app urls to the main project urls
-]
+    path('', include('internship.urls')),  #this line includes the urls from the internship app, so any url patterns defined in internship/urls.py will be included in the main url configuration
+
+] ***this means /register/ and /login/ work directly instead of /internship/register/ and /internship/login/ because we included the internship urls in the main url configuration***
