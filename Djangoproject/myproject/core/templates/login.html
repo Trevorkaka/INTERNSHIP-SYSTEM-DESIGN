@@ -17,8 +17,11 @@
     {% endif %} #end of messages loop
 
 
-    <form method="POST">
+    <form method="POST">  #create a form that submits data using POST method to the same url (login/)
         {% csrf_token %}
+        {{ form.as_p }} #display the form fields as paragraphs
+        <button type="submit">Login</button>
     </form>
-
+    <p>Don't have an account? <a href="/register/">Register here</a></p>
+    </body> 
 </html>
