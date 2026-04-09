@@ -19,9 +19,9 @@ def register_view(request): #to handle user registration
             user.save() #save the user to the DB
             messages.success(request, 'registration successful! you can now login.')
             return redirect('/login/') #redirect to login page after successful registration
-        else:
-            form = RegistrationForm()
-        return render(request, 'register.html', {'form': form})
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
     
 def login_view(request): #to handle user login
     if request.method == 'POST':

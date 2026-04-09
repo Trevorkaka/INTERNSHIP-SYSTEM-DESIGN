@@ -25,9 +25,8 @@ from core.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('internship.urls')), #include the urls from the internship app, this means any url that starts with / will be handled by the internship app
     path('students/', views.student_list),
     path('add/', views.add_student),
     path('', home ),
-    path('', include('internship.urls')),  #this line includes the urls from the internship app, so any url patterns defined in internship/urls.py will be included in the main url configuration
-
-] ***this means /register/ and /login/ work directly instead of /internship/register/ and /internship/login/ because we included the internship urls in the main url configuration***
+] #this means /register/ and /login/ work directly instead of /internship/register/ and /internship/login/ because we included the internship urls in the main url configuration
