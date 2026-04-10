@@ -21,3 +21,6 @@ class User(AbstractUser):
         related_name='custom_user_permissions_set',
         blank=True,
     )
+
+    class student(models.Model):
+        pass
