@@ -25,3 +25,4 @@ class User(AbstractUser):
     class student(models.Model):
         user = models.OneToOneField(User, on_delete= models.CASCADE)
         registration_number = models.CharField(max_length=100)
+        course = models.CharField(max_length=100)
