@@ -26,3 +26,5 @@ class User(AbstractUser):
         user = models.OneToOneField(User, on_delete= models.CASCADE)
         registration_number = models.CharField(max_length=100)
         course = models.CharField(max_length=100)
+        year_of_study = models.IntegerField()
+        
