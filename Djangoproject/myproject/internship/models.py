@@ -34,6 +34,10 @@ class User(AbstractUser):
         
         def __str__(self):
             return self.user.username
+        
+
+class work_place_supervisor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     
         
         
