@@ -29,4 +29,8 @@ class User(AbstractUser):
         year_of_study = models.IntegerField()
         academic_supervisor = models.ForeignKey (User, on_delete = models.SET_NULL, null = True, 
                                             related_name= 'academic_students')
+        work_place_supervisor= models.ForeignKey (User, on_delete= models.SET_NULL, null=True,
+                                             related_name= 'work_place_students')
+    
+        
         
