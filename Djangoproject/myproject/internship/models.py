@@ -31,6 +31,9 @@ class User(AbstractUser):
                                             related_name= 'academic_students')
         work_place_supervisor= models.ForeignKey (User, on_delete= models.SET_NULL, null=True,
                                              related_name= 'work_place_students')
+        
+        def __str__(self):
+            return self.user.username
     
         
         
