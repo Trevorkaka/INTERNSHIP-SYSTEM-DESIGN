@@ -23,6 +23,17 @@ class User(AbstractUser):
     )
 
     class student(models.Model):
-        user = models.OneToOneField(User, on_delete= models.CASCADE)
+        User = models.OneToOneField(User, on_delete= models.CASCADE)
         registration_number = models.CharField(max_length=100)
         course = models.CharField(max_length=100)
+        year_of_study = models.IntegerField()
+        academic_supervisor = models.ForeignKey (User, on_delete = models.SET_NULL, null = True, 
+                                            related_name= 'academic_students')
+        work_place_supervisor= models.ForeignKey (User, on_delete= models.SET_NULL, null=True,
+                                             related_name= 'work_place_students')
+        
+        def __str__(self):
+            return self.user.username
+    
+        
+        
