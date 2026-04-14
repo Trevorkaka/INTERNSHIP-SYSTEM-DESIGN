@@ -75,3 +75,4 @@ class weeklylog(models.Model):
         return f"week {self.week_number} -{self.status}"
      
 class Assessment(models.Model):
+    log = models.ForeignKey(weeklylog, on_delete=models.CASCADE)
