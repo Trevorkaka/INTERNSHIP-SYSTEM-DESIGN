@@ -60,4 +60,4 @@ class weeklylog(models.Model):
         )
      student = models.ForeignKey(Student, on_delete= models.CASCADE)
      week_number = models.IntegerField()
-     
+     activities= models.TextField()
