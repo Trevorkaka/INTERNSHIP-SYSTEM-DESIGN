@@ -111,3 +111,15 @@ class EvaluationCriteria(models.Model):
 
      def __str__(self):
         return self.name
+     
+class Evaluation(models.Model):
+    log = models.ForeignKey(weeklylog, on_delete= models.CASCADE)
+    evaluator = models.ForeignKey(User, on_delete=models.CASCADE)
+    criteria = models.ForeignKey(EvaluationCriteria, on_delete= models.CASCADE)
+    score = models.IntegerField()
+    feedback = models.TextField()
+    created_at = models.DateTimeField(auto_now_add = True)
+
+
+    def __str__(self):
+        return f"{self.Evaluator.username} - {self.criteria.name}"
