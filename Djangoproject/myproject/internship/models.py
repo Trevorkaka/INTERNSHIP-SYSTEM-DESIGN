@@ -119,3 +119,7 @@ class Evaluation(models.Model):
     score = models.IntegerField()
     feedback = models.TextField()
     created_at = models.DateTimeField(auto_now_add = True)
+
+
+    def __str__(self):
+        return f"{self.Evaluator.username} - {self.criteria.name}"
