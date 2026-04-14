@@ -103,3 +103,11 @@ class internshipPlacement(models.Model):
 
      def __str__(self):
         return f"{self.student.user.username} - {self.company_name}"
+     
+
+class EvaluationCriteria(models.Model):
+     name = models.CharField(max_length=100)
+     max_score = models.IntegerField()
+
+     def __str__(self):
+        return self.name
