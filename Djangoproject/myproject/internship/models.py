@@ -73,3 +73,5 @@ class weeklylog(models.Model):
 
      def __str__(self):
         return f"week {self.week_number} -{self.status}"
+     
+class Assessment(models.Model):
