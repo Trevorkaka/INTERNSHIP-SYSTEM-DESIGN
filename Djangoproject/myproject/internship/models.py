@@ -69,3 +69,7 @@ class weeklylog(models.Model):
      def submit(self):
         self.status = "submitted"
         self.save()
+
+
+     def __str__(self):
+        return f"week {self.week_number} -{self.status}"
