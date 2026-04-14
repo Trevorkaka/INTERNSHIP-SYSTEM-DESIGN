@@ -63,3 +63,4 @@ class weeklylog(models.Model):
      activities= models.TextField()
      challenges= models.TextField()
      solutions= models.TextField()
+     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
