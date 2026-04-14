@@ -4,6 +4,8 @@
 __pycache__/    
 *.pyc
 *.pyo
+*.py[cod]
+*pyd
 
 #Django
 db.sqlite3
