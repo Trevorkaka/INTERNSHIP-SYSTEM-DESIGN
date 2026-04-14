@@ -86,3 +86,4 @@ class Assessment(models.Model):
     assessor = models.ForeignKey(User, on_delete=models.CASCADE)
     marks= models.IntegerField()
     feedback= models.TextField()
+    assessed_at = models.DateTimeField(auto_now_add = True)
