@@ -88,6 +88,18 @@ class Assessment(models.Model):
     feedback= models.TextField()
     assessed_at = models.DateTimeField(auto_now_add = True)
 
-    
+
     def __str__(self):
         return f"{self.assessor.username}-week{self.log.week_number}"
+    
+
+class internshipPlacement(models.Model):
+     student = models.OneToOneField(Student, on_delete= models.CASCADE)
+     company_name = models.CharField(max_length= 100)
+     position = models.CharField(max_length= 100)
+     start_date= models.DateField()
+     end_date = models.DateField()
+
+
+     def __str__(self):
+        return f"{self.student.user.username} - {self.company_name}"
