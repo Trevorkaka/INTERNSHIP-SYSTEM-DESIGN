@@ -62,3 +62,4 @@ class weeklylog(models.Model):
      week_number = models.IntegerField()
      activities= models.TextField()
      challenges= models.TextField()
+     solutions= models.TextField()
