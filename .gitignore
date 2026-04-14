@@ -1,0 +1,25 @@
+#Backend 
+
+#python
+__pycache__/    
+*.pyc
+*.pyo
+
+#Django
+db.sqlite3
+media/
+staticfiles/
+
+#virtual Env
+venv/
+env/
+
+#vs code
+.vscode/
+
+#Node React
+node_modules/
+build/
+
+#Environment Variables
+.env
