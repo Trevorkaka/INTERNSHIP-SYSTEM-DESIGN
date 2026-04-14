@@ -103,3 +103,6 @@ class internshipPlacement(models.Model):
 
      def __str__(self):
         return f"{self.student.user.username} - {self.company_name}"
+     
+
+class EvaluationCriteria(models.Model):
