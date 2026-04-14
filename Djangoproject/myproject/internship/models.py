@@ -113,4 +113,4 @@ class EvaluationCriteria(models.Model):
         return self.name
      
 class Evaluation(models.Model):
-    
+    log = models.ForeignKey(weeklylog, on_delete= models.CASCADE)
