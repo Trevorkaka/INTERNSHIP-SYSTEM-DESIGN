@@ -94,3 +94,5 @@ class Assessment(models.Model):
     
 
 class internshipPlacement(models.Model):
+     student = models.OneToOneField(Student, on_delete= models.CASCADE)
+     company_name = models.CharField(max_length= 100)
