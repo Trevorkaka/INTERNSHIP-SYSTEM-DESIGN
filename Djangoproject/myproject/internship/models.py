@@ -52,3 +52,9 @@ class Academic_supervisor(models.Model):
         return self.user.username
       
 class weeklylog(models.Model):
+     STATUS_CHOICES = (
+        ('draft', 'Draft'),
+        ('submitted', 'Submitted'),
+        ('reviewed', 'Reviewed'),
+        ('approved', 'Approved')
+        )
