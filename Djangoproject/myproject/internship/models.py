@@ -87,3 +87,7 @@ class Assessment(models.Model):
     marks= models.IntegerField()
     feedback= models.TextField()
     assessed_at = models.DateTimeField(auto_now_add = True)
+
+    
+    def __str__(self):
+        return f"{self.assessor.username}-week{self.log.week_number}"
