@@ -107,3 +107,4 @@ class internshipPlacement(models.Model):
 
 class EvaluationCriteria(models.Model):
      name = models.CharField(max_length=100)
+     max_score = models.IntegerField()
