@@ -50,3 +50,5 @@ class Academic_supervisor(models.Model):
 
       def __str__(self):
         return self.user.username
+      
+class weeklylog(models.Model):
