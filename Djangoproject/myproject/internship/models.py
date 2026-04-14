@@ -65,3 +65,7 @@ class weeklylog(models.Model):
      solutions= models.TextField()
      status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
      submitted_at= models.DateTimeField(null=True, blank=True)
+
+     def submit(self):
+        self.status = "submitted"
+        self.save()
