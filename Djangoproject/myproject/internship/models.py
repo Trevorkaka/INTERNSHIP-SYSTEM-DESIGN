@@ -22,7 +22,7 @@ class User(AbstractUser):
         blank=True,
     )
 
-    class student(models.Model):
+    class Student(models.Model):
         User = models.OneToOneField(User, on_delete= models.CASCADE)
         registration_number = models.CharField(max_length=100)
         course = models.CharField(max_length=100)
@@ -50,3 +50,26 @@ class Academic_supervisor(models.Model):
 
       def __str__(self):
         return self.user.username
+      
+class weeklylog(models.Model):
+     STATUS_CHOICES = (
+        ('draft', 'Draft'),
+        ('submitted', 'Submitted'),
+        ('reviewed', 'Reviewed'),
+        ('approved', 'Approved')
+        )
+     student = models.ForeignKey(Student, on_delete= models.CASCADE)
+     week_number = models.IntegerField()
+     activities= models.TextField()
+     challenges= models.TextField()
+     solutions= models.TextField()
+     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+     submitted_at= models.DateTimeField(null=True, blank=True)
+
+     def submit(self):
+        self.status = "submitted"
+        self.save()
+
+
+     def __str__(self):
+        return f"week {self.week_number} -{self.status}"
