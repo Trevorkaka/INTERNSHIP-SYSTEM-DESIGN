@@ -22,7 +22,7 @@ class User(AbstractUser):
         blank=True,
     )
 
-    class student(models.Model):
+    class Student(models.Model):
         User = models.OneToOneField(User, on_delete= models.CASCADE)
         registration_number = models.CharField(max_length=100)
         course = models.CharField(max_length=100)
@@ -58,3 +58,5 @@ class weeklylog(models.Model):
         ('reviewed', 'Reviewed'),
         ('approved', 'Approved')
         )
+     student = models.ForeignKey(Student, on_delete= models.CASCADE)
+     
