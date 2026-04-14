@@ -44,3 +44,4 @@ class work_place_supervisor(models.Model):
         return self.user.username
         
         
+class Academic_supervisor(models.Model):
