@@ -84,3 +84,4 @@ class weeklylog(models.Model):
 class Assessment(models.Model):
     log = models.ForeignKey(weeklylog, on_delete=models.CASCADE)
     assessor = models.ForeignKey(User, on_delete=models.CASCADE)
+    marks= models.IntegerField()
