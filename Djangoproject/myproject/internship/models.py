@@ -118,3 +118,4 @@ class Evaluation(models.Model):
     criteria = models.ForeignKey(EvaluationCriteria, on_delete= models.CASCADE)
     score = models.IntegerField()
     feedback = models.TextField()
+    created_at = models.DateTimeField(auto_now_add = True)
