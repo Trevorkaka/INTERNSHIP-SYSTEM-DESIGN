@@ -115,3 +115,4 @@ class EvaluationCriteria(models.Model):
 class Evaluation(models.Model):
     log = models.ForeignKey(weeklylog, on_delete= models.CASCADE)
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE)
+    criteria = models.ForeignKey(EvaluationCriteria, on_delete= models.CASCADE)
