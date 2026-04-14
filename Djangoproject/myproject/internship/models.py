@@ -59,4 +59,5 @@ class weeklylog(models.Model):
         ('approved', 'Approved')
         )
      student = models.ForeignKey(Student, on_delete= models.CASCADE)
+     week_number = models.IntegerField()
      
