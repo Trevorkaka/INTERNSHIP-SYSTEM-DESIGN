@@ -117,3 +117,4 @@ class Evaluation(models.Model):
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE)
     criteria = models.ForeignKey(EvaluationCriteria, on_delete= models.CASCADE)
     score = models.IntegerField()
+    feedback = models.TextField()
