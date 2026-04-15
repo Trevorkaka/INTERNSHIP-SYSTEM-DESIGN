@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'internship',
 ]
 
 MIDDLEWARE = [
@@ -117,3 +118,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
+
+AUTH_USER_MODEL = 'internship.User'

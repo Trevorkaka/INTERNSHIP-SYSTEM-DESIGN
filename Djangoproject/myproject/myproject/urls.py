@@ -19,9 +19,16 @@ from django.urls import path, include
 from core import views
 from core.views import home
 
+#from django.http import HttpResponse
+
+
+#def home(request):
+    #return HttpResponse("Welcome to ILES System")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('internship.urls')), #include the urls from the internship app, this means any url that starts with / will be handled by the internship app
     path('students/', views.student_list),
     path('add/', views.add_student),
-]
+    path('', home ),
+] #this means /register/ and /login/ work directly instead of /internship/register/ and /internship/login/ because we included the internship urls in the main url configuration
