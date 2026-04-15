@@ -29,4 +29,7 @@ urlpatterns = [
     path('students/', views.student_list),
     path('add/', views.add_student),
     path('', home ),
+
+     # 👇 ADD THIS
+    path('', include('core.urls')), 
 ] #this means /register/ and /login/ work directly instead of /internship/register/ and /internship/login/ because we included the internship urls in the main url configuration
