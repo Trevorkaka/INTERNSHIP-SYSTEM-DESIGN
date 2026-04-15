@@ -1,8 +1,12 @@
 from django.shortcuts import render, redirect
 from .models import Student
 from .forms import StudentForm
+from django.http import HttpResponse
 
 # Create your views here.
+
+def home(request):
+    return HttpResponse("Welcome to ILES System")
 
 def student_list(request):
     students = Student.objects.all()
