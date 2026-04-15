@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.conf import settings
+
 
 # Create your models here.
 class User(AbstractUser):
@@ -29,18 +31,18 @@ class User(AbstractUser):
     #    blank=True,
     #)
 
-    class Student(models.Model):
-        User = models.OneToOneField(User, on_delete= models.CASCADE)
-        registration_number = models.CharField(max_length=100)
-        course = models.CharField(max_length=100)
-        year_of_study = models.IntegerField()
-        academic_supervisor = models.ForeignKey (User, on_delete = models.SET_NULL, null = True, 
+class Student(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete= models.CASCADE)
+    registration_number = models.CharField(max_length=100)
+    course = models.CharField(max_length=100)
+    year_of_study = models.IntegerField()
+    academic_supervisor = models.ForeignKey (settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, null = True, 
                                             related_name= 'academic_students')
-        work_place_supervisor= models.ForeignKey (User, on_delete= models.SET_NULL, null=True,
+    work_place_supervisor= models.ForeignKey (User, on_delete= models.SET_NULL, null=True,
                                              related_name= 'work_place_students')
         
-        def __str__(self):
-            return self.user.username
+    def __str__(self):
+        return self.user.username
         
 
 class work_place_supervisor(models.Model):
@@ -52,7 +54,7 @@ class work_place_supervisor(models.Model):
         
         
 class Academic_supervisor(models.Model):
-      user = models. OneToOneField(User, on_delete= models.CASCADE)
+      user = models. OneToOneField(settings.AUTH_USER_MODEL, on_delete= models.CASCADE)
       department = models.CharField(max_length=100)
 
       def __str__(self):
