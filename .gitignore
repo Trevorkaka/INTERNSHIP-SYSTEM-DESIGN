@@ -25,3 +25,45 @@ build/
 
 #Environment Variables
 .env
+
+
+# ----------------------
+# Django / Python
+# ----------------------
+__pycache__/
+*.py[cod]
+*.sqlite3
+db.sqlite3
+.env
+venv/
+.env.*
+
+# ----------------------
+# Poetry
+# ----------------------
+poetry.lock
+
+# ----------------------
+# Logs
+# ----------------------
+*.log
+
+# ----------------------
+# React / Node
+# ----------------------
+node_modules/
+dist/
+build/
+.env
+
+# ----------------------
+# OS files
+# ----------------------
+.DS_Store
+Thumbs.db
+
+# ----------------------
+# IDEs
+# ----------------------
+.vscode/
+.idea/
