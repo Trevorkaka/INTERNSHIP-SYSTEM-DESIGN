@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+
+
+    {% if messages %} <!-- check if there are any messages to display (like error messages) -->
+        {%for messages in messages %}
+            <p style="color:red;">{{ message }}</p> <!-- loop through the messages and display them in red color -->
+        {% endfor %}
+    {% endif %} <!-- end of messages loop -->
+
+
+    <form method="POST">  <!-- create a form that submits data using POST method to the same url (login/) -->
+        {% csrf_token %}
+        {{ form.as_p }} <!-- display the form fields as paragraphs -->
+        <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="/register/">Register here</a></p>
+    </body> 
+</html>
