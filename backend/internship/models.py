@@ -19,6 +19,9 @@ class User(AbstractUser):
     def is_academic_supervisor(self):
         return self.role == 'academic_supervisor'
     
+    @property
+    def is_workplace_supervisor(self):
+        return self.role == 'workplace_supervisor'
 
     def __str__(self):
         return f"{self.username} ({self.role})"
