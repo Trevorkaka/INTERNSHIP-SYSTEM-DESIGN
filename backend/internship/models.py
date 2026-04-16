@@ -12,7 +12,20 @@ class User(AbstractUser):
         ('admin', 'Administrator'),
         )
     role = models.CharField(max_length=30, choices = ROLE_CHOICES )
-
+    @property
+    def is_student(self):
+        return self.role == 'student'
+    @property
+    def is_academic_supervisor(self):
+        return self.role == 'academic_supervisor'
+    
+    @property
+    def is_workplace_supervisor(self):
+        return self.role == 'workplace_supervisor'
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
+    
     def __str__(self):
         return f"{self.username} ({self.role})"
     
