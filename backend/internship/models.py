@@ -124,4 +124,4 @@ class Evaluation(models.Model):
 
 
     def __str__(self):
-        return f"{self.Evaluator.username} - {self.criteria.name}"
+        return f"{self.evaluator.username} - {self.criteria.name}"
