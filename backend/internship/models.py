@@ -15,7 +15,10 @@ class User(AbstractUser):
     @property
     def is_student(self):
         return self.role == 'student'
-
+    @property
+    def is_academic_supervisor(self):
+        return self.role == 'academic_supervisor'
+    
 
     def __str__(self):
         return f"{self.username} ({self.role})"
