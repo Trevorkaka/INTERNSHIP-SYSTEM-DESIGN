@@ -12,6 +12,10 @@ class User(AbstractUser):
         ('admin', 'Administrator'),
         )
     role = models.CharField(max_length=30, choices = ROLE_CHOICES )
+    @property
+    def is_student(self):
+        return self.role == 'student'
+
 
     def __str__(self):
         return f"{self.username} ({self.role})"
