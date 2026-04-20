@@ -160,3 +160,6 @@ class Notification(models.Model);
     assessment = models.ForeignKey('Assessment', on_delete=models.CASCADE, null=True, blank=True)
     evaluation = models.ForeignKey('Evaluation', on_delete=models.CASCADE, null=True, blank=True)
     weekly_log = models.ForeignKey('WeeklyLog', on_delete=models.CASCADE, null=True, blank=True)
+
+    is_read= models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
