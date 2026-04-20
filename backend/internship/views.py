@@ -1,16 +1,23 @@
-from asyncio import run
-
+# from asyncio import run
+from rest_framework.authtoken.views import ObtainAuthToken
 from django.shortcuts import render, redirect #to render the html templates and redirect to other pages
 from django.contrib.auth import authenticate, login, logout #to handle user authentication
 from django.contrib import messages #to display messages to the user
 from .forms import RegistrationForm, LoginForm #importing the forms we created in forms.py
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 #from django.http import HttpResponse 
 
 # Create your views here.
 
 #def students(request):
     #return HttpResponse("Welcome to the students page!")
-def register_view(request): #to handle user registration
+# def register_view(request): #to handle user registration
     if request.method == 'POST':
         form = RegistrationForm(request.POST) 
         if form.is_valid():
@@ -23,7 +30,7 @@ def register_view(request): #to handle user registration
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
     
-def login_view(request): #to handle user login
+# def login_view(request): #to handle user login
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -38,6 +45,10 @@ def login_view(request): #to handle user login
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form}) 
-def logout_view(request): #to handle user logout    
-    logout(request) #destroy)
-    return redirect('/login/') #redirect to login page after logout     
+# def logout_view(request): #to handle user logout    
+    # logout(request) #destroy)
+    # return redirect('/login/') #redirect to login page after logout     
+
+
+class CustomAuthToken(ObtainAuthToken):
+    pass 
