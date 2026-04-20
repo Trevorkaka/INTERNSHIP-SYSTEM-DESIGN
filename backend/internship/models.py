@@ -58,7 +58,7 @@ class Student(models.Model):
         return self.user.username
         
 
-class work_place_supervisor(models.Model):
+class WorkPlaceSupervisor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=100)
 
@@ -66,14 +66,14 @@ class work_place_supervisor(models.Model):
         return self.user.username
         
         
-class Academic_supervisor(models.Model):
+class AcademicSupervisor(models.Model):
       user = models. OneToOneField(settings.AUTH_USER_MODEL, on_delete= models.CASCADE)
       department = models.CharField(max_length=100)
 
       def __str__(self):
         return self.user.username
       
-class weeklylog(models.Model):
+class WeeklyLog(models.Model):
      STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
@@ -97,7 +97,7 @@ class weeklylog(models.Model):
         return f"week {self.week_number} -{self.status}"
      
 class Assessment(models.Model):
-    log = models.ForeignKey(weeklylog, on_delete=models.CASCADE)
+    log = models.ForeignKey(WeeklyLog, on_delete=models.CASCADE)
     assessor = models.ForeignKey(User, on_delete=models.CASCADE)
     marks= models.IntegerField()
     feedback= models.TextField()
@@ -108,7 +108,7 @@ class Assessment(models.Model):
         return f"{self.assessor.username}-week{self.log.week_number}"
     
 
-class internshipPlacement(models.Model):
+class InternshipPlacement(models.Model):
      student = models.OneToOneField(Student, on_delete= models.CASCADE)
      company_name = models.CharField(max_length= 100)
      position = models.CharField(max_length= 100)
@@ -128,7 +128,7 @@ class EvaluationCriteria(models.Model):
         return self.name
      
 class Evaluation(models.Model):
-    log = models.ForeignKey(weeklylog, on_delete= models.CASCADE)
+    log = models.ForeignKey(WeeklyLog, on_delete= models.CASCADE)
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE)
     criteria = models.ForeignKey(EvaluationCriteria, on_delete= models.CASCADE)
     score = models.IntegerField()
