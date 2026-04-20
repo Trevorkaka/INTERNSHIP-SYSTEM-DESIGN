@@ -49,6 +49,7 @@ from django.contrib.auth.models import User
     # logout(request) #destroy)
     # return redirect('/login/') #redirect to login page after logout     
 
-
 class CustomAuthToken(ObtainAuthToken):
-    pass 
+#custom login endpoint that returns token + user info + notification
+    def post(self, request, *args, **kwargs):
+        
