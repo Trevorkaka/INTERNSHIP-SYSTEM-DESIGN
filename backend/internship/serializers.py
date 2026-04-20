@@ -20,5 +20,43 @@ class WorkPlaceSupervisorSerializer(serializers.ModelSerializer):
         model = WorkPlaceSupervisor
         fields = '__all__'
 
+class AcademicSupervisorSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = AcademicSupervisor
+        fields = '__all__'
+
+class WeeklyLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeeklyLog
+        fields = '__all__'
+
+class AssessmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assessment
+        fields = '__all__'
+
+class EvaluationCriteriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EvaluationCriteria
+        fields = '__all__'
+
+class EvaluationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Evaluation
+        fields = '__all__'
+
+class InternshipPlacementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InternshipPlacement
+        fields = '__all__'  
+
+
+
+
+    
+
+
 
 
