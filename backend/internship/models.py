@@ -138,3 +138,38 @@ class Evaluation(models.Model):
 
     def __str__(self):
         return f"{self.evaluator.username} - {self.criteria.name}"
+    
+
+
+class Notification(models.Model);
+    NOTIFICATION_TYPES = (
+        ('assessment', 'Assessment Feedback'),
+        ('evaluation', 'Evaluation Feedback'),
+        ('log_reviewed', 'Log Reviewed'),
+        ('log_approved', 'Log Approved'),
+        ('placement', 'Placement Update'),
+    )
+
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+
+
+# link to related objects
+    assessment = models.ForeignKey('Assessment', on_delete=models.CASCADE, null=True, blank=True)
+    evaluation = models.ForeignKey('Evaluation', on_delete=models.CASCADE, null=True, blank=True)
+    weekly_log = models.ForeignKey('WeeklyLog', on_delete=models.CASCADE, null=True, blank=True)
+
+    is_read= models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering =['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.recipient.username}"
+    
+    def mark_as_read(self):
+        self.is_read = True
+        self.save()
