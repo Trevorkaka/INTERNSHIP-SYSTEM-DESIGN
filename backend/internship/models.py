@@ -142,4 +142,12 @@ class Evaluation(models.Model):
 
 
 class Notification(models.Model);
+    NOTIFICATION_TYPES = (
+        ('assessment', 'Assessment Feedback'),
+        ('evaluation', 'Evaluation Feedback'),
+        ('log_reviewed', 'Log Reviewed'),
+        ('log_approved', 'Log Approved'),
+        ('placement', 'Placement Update'),
+    )
+
     
