@@ -52,4 +52,37 @@ from django.contrib.auth.models import User
 class CustomAuthToken(ObtainAuthToken):
 #custom login endpoint that returns token + user info + notification
     def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
         
+        user = authenticate(username=username, password=password)
+        
+        if user is None:
+            return Response({
+                'error': 'Invalid credentials'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        
+        token, created = Token.objects.get_or_create(user=user)
+        
+        # Get user role
+        user_role = self._get_user_role(user)
+        
+        # Get unread notifications
+        notifications = Notification.objects.filter(
+            recipient=user,
+            is_read=False
+        )[:5]  # Last 5 unread
+        
+        return Response({
+            'token': token.key,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'role': user_role
+            },
+            'unread_notifications': NotificationSerializer(notifications, many=True).data,
+            'unread_count': Notification.objects.filter(recipient=user, is_read=False).count()
+        })
