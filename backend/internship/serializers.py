@@ -13,5 +13,12 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = '__all__'
 
+class WorkPlaceSupervisorSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = WorkPlaceSupervisor
+        fields = '__all__'
+
 
 
