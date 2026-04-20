@@ -158,3 +158,4 @@ class Notification(models.Model);
 
 # link to related objects
     assessment = models.ForeignKey('Assessment', on_delete=models.CASCADE, null=True, blank=True)
+    evaluation = models.ForeignKey('Evaluation', on_delete=models.CASCADE, null=True, blank=True)
