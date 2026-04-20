@@ -12,7 +12,20 @@ class User(AbstractUser):
         ('admin', 'Administrator'),
         )
     role = models.CharField(max_length=30, choices = ROLE_CHOICES )
-
+    @property
+    def is_student(self):
+        return self.role == 'student'
+    @property
+    def is_academic_supervisor(self):
+        return self.role == 'academic_supervisor'
+    
+    @property
+    def is_workplace_supervisor(self):
+        return self.role == 'workplace_supervisor'
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
+    
     def __str__(self):
         return f"{self.username} ({self.role})"
     
@@ -45,7 +58,7 @@ class Student(models.Model):
         return self.user.username
         
 
-class work_place_supervisor(models.Model):
+class WorkPlaceSupervisor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=100)
 
@@ -53,14 +66,14 @@ class work_place_supervisor(models.Model):
         return self.user.username
         
         
-class Academic_supervisor(models.Model):
+class AcademicSupervisor(models.Model):
       user = models. OneToOneField(settings.AUTH_USER_MODEL, on_delete= models.CASCADE)
       department = models.CharField(max_length=100)
 
       def __str__(self):
         return self.user.username
       
-class weeklylog(models.Model):
+class WeeklyLog(models.Model):
      STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
@@ -84,7 +97,7 @@ class weeklylog(models.Model):
         return f"week {self.week_number} -{self.status}"
      
 class Assessment(models.Model):
-    log = models.ForeignKey(weeklylog, on_delete=models.CASCADE)
+    log = models.ForeignKey(WeeklyLog, on_delete=models.CASCADE)
     assessor = models.ForeignKey(User, on_delete=models.CASCADE)
     marks= models.IntegerField()
     feedback= models.TextField()
@@ -95,7 +108,7 @@ class Assessment(models.Model):
         return f"{self.assessor.username}-week{self.log.week_number}"
     
 
-class internshipPlacement(models.Model):
+class InternshipPlacement(models.Model):
      student = models.OneToOneField(Student, on_delete= models.CASCADE)
      company_name = models.CharField(max_length= 100)
      position = models.CharField(max_length= 100)
@@ -115,7 +128,7 @@ class EvaluationCriteria(models.Model):
         return self.name
      
 class Evaluation(models.Model):
-    log = models.ForeignKey(weeklylog, on_delete= models.CASCADE)
+    log = models.ForeignKey(WeeklyLog, on_delete= models.CASCADE)
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE)
     criteria = models.ForeignKey(EvaluationCriteria, on_delete= models.CASCADE)
     score = models.IntegerField()
@@ -124,4 +137,39 @@ class Evaluation(models.Model):
 
 
     def __str__(self):
-        return f"{self.Evaluator.username} - {self.criteria.name}"
+        return f"{self.evaluator.username} - {self.criteria.name}"
+    
+
+
+class Notification(models.Model);
+    NOTIFICATION_TYPES = (
+        ('assessment', 'Assessment Feedback'),
+        ('evaluation', 'Evaluation Feedback'),
+        ('log_reviewed', 'Log Reviewed'),
+        ('log_approved', 'Log Approved'),
+        ('placement', 'Placement Update'),
+    )
+
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+
+
+# link to related objects
+    assessment = models.ForeignKey('Assessment', on_delete=models.CASCADE, null=True, blank=True)
+    evaluation = models.ForeignKey('Evaluation', on_delete=models.CASCADE, null=True, blank=True)
+    weekly_log = models.ForeignKey('WeeklyLog', on_delete=models.CASCADE, null=True, blank=True)
+
+    is_read= models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering =['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.recipient.username}"
+    
+    def mark_as_read(self):
+        self.is_read = True
+        self.save()
