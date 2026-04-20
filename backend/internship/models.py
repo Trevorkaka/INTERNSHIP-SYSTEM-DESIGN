@@ -154,4 +154,7 @@ class Notification(models.Model);
     notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
     title = models.CharField(max_length=200)
     message = models.TextField()
-  
+
+
+# link to related objects
+    assessment = models.ForeignKey('Assessment', on_delete=models.CASCADE, null=True, blank=True)
