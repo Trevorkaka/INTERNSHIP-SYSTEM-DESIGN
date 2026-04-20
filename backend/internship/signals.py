@@ -31,3 +31,26 @@ def create_evaluation_notification(sender, instance, created, **kwargs):
             weekly_log=instance.log
         )
  
+
+@receiver(post_save, sender=WeeklyLog)
+def notify_on_status_change(sender, instance, created, **kwargs):
+    """Notify when log status changes to reviewed or approved"""
+    if not created:
+        # Check if status just changed (you might want to track old status)
+        if instance.status == 'reviewed':
+            Notification.objects.create(
+                recipient=instance.student.user,
+                notification_type='log_reviewed',
+                title='Weekly Log Reviewed',
+                message=f'Your Week {instance.week_number} log has been reviewed',
+                weekly_log=instance
+            )
+        elif instance.status == 'approved':
+            Notification.objects.create(
+                recipient=instance.student.user,
+                notification_type='log_approved',
+                title='Weekly Log Approved',
+                message=f'Your Week {instance.week_number} log has been approved',
+                weekly_log=instance
+            )
+ 
