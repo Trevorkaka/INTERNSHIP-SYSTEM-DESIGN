@@ -6,3 +6,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
+class StudentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True) #Shows all the students details. this is a nested serializer that allows us to access the related user details when we serialize a student instance.
+
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+
+
