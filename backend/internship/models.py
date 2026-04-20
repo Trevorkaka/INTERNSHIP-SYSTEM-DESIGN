@@ -150,4 +150,6 @@ class Notification(models.Model);
         ('placement', 'Placement Update'),
     )
 
-  recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')  
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+  
