@@ -141,7 +141,7 @@ class Evaluation(models.Model):
     
 
 
-class Notification(models.Model);
+class Notification(models.Model):
     NOTIFICATION_TYPES = (
         ('assessment', 'Assessment Feedback'),
         ('evaluation', 'Evaluation Feedback'),
