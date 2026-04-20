@@ -10,14 +10,14 @@ class RegistrationForm(forms.ModelForm):
         model = User
         fields = ['username', 'email', 'role', 'password']
 
-        def clean(self):#to validate the form data, in this case to check if the password and confirm password match
-            cleaned_data = super().clean()
-            password = cleaned_data.get('password')
-            confirm = cleaned_data.get('confirm_password')
+    def clean(self):#to validate the form data, in this case to check if the password and confirm password match
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm = cleaned_data.get('confirm_password')
 
-            if password != confirm:
-                raise forms.ValidationError("passwords dont match")
-            return cleaned_data
+        if password != confirm:
+            raise forms.ValidationError("passwords dont match")
+        return cleaned_data
 class LoginForm(forms.Form): #not model form because we are not creating a new user, just authenticating
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
