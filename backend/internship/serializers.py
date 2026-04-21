@@ -2,9 +2,14 @@ from rest_framework import serializers
 from internship.models import Assessment, Evaluation, EvaluationCriteria, InternshipPlacement, User, Student, WorkPlaceSupervisor, AcademicSupervisor, WeeklyLog
 
 class UserSerializer(serializers.ModelSerializer):
+    is_student = serializers.BooleanField(read_only=True)
+    is_academic_supervisor = serializers.BooleanField(read_only=True)
+    is_workplace_supervisor = serializers.BooleanField(read_only=True)
+    is_admin = serializers.BooleanField(read_only=True)
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'username', 'email', 'role', 'is_student', 'is_academic_supervisor', 'is_workplace_supervisor', 'is_admin']
+        read_only_fields = ['role', 'is_student', 'is_academic_supervisor', 'is_workplace_supervisor', 'is_admin']
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True) #Shows all the students details. this is a nested serializer that allows us to access the related user details when we serialize a student instance.
@@ -31,6 +36,7 @@ class WeeklyLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WeeklyLog
         fields = '__all__'
+        read_only_fields = ['status', 'submitted_at']
 
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,9 +49,12 @@ class EvaluationCriteriaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class EvaluationSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Evaluation
         fields = '__all__'
+        read_only_fields = ['evaluator', 'created_at']
+
 
 class InternshipPlacementSerializer(serializers.ModelSerializer):
     class Meta:
