@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from internship.models import Assessment, Evaluation, EvaluationCriteria, InternshipPlacement, User, Student, WorkPlaceSupervisor, AcademicSupervisor, WeeklyLog
+from internship.models import Assessment, Evaluation, EvaluationCriteria, InternshipPlacement, Notification, User, Student, WorkPlaceSupervisor, AcademicSupervisor, WeeklyLog
 
 class UserSerializer(serializers.ModelSerializer):
     is_student = serializers.BooleanField(read_only=True)
@@ -61,6 +61,10 @@ class InternshipPlacementSerializer(serializers.ModelSerializer):
         model = InternshipPlacement
         fields = '__all__'  
 
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
 
 
 
