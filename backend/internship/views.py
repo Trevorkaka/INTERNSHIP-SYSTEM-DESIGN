@@ -39,3 +39,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Notification.objects.filter(recipient=user)
+    
+class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
+    queryset = WorkPlaceSupervisor.objects.all()
+    serializer_class = WorkPlaceSupervisorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class AcademicSupervisorViewSet(viewsets.ModelViewSet):
+    queryset = AcademicSupervisor.objects.all()
+    serializer_class = AcademicSupervisorSerializer
+    permission_classes = [permissions.IsAuthenticated]
