@@ -50,3 +50,24 @@ class AcademicSupervisorViewSet(viewsets.ModelViewSet):
     queryset = AcademicSupervisor.objects.all()
     serializer_class = AcademicSupervisorSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+class WeeklyLogViewSet(viewsets.ModelViewSet):
+    queryset = WeeklyLog.objects.all()
+    serializer_class = WeeklyLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return WeeklyLog.objects.filter(student__user=user)
+        elif user.is_academic_supervisor:
+            return WeeklyLog.objects.filter(student_academic_supervisor_user=user)
+        elif user.is_workplace_supervisor:
+            return WeeklyLog.objects.filter(student_workplace_supervisor_user=user)
+        return WeeklyLog.objects.all()
+
+
+class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
+    queryset = EvaluationCriteria.objects.all()
+    serializer_class = EvaluationCriteriaSerializer
+    permission_classes = [permissions.IsAuthenticated]
