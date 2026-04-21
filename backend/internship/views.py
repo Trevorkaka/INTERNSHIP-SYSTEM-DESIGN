@@ -13,17 +13,27 @@ from internship.serializers import (
  EvaluationCriteriaSerializer, NotificationSerializer,
     EvaluationSerializer, AssessmentSerializer
 )
-
+from .permissions import (
+    IsAdmin, IsAdminOrSelf, IsStudent, IsAcademicSupervisor, 
+    IsWorkplaceSupervisor, IsAdminOrAcademicSupervisor, 
+    IsAdminOrAnySupervisor, IsAdminOrReadOnly
+)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdmin] #Only admins can manage raw user classes.
 
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [IsAdmin]
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):
         user = self.request.user
@@ -43,44 +53,59 @@ class NotificationViewSet(viewsets.ModelViewSet):
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     queryset = WorkPlaceSupervisor.objects.all()
     serializer_class = WorkPlaceSupervisorSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
     queryset = AcademicSupervisor.objects.all()
     serializer_class = AcademicSupervisorSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnly]
 
 class WeeklyLogViewSet(viewsets.ModelViewSet):
     queryset = WeeklyLog.objects.all()
     serializer_class = WeeklyLogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_permissions(self):
+        # PERMISSION: Only Students can write or edit logs.
+        # Supervisors and Admins can only read them.
+        if self.action in ['create', 'update', 'partial_update']:
+            permission_classes = [IsStudent]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
             return WeeklyLog.objects.filter(student__user=user)
         elif user.is_academic_supervisor:
-            return WeeklyLog.objects.filter(student_academic_supervisor_user=user)
+            return WeeklyLog.objects.filter(student__academic_supervisor__user=user)
         elif user.is_workplace_supervisor:
-            return WeeklyLog.objects.filter(student_workplace_supervisor_user=user)
+            return WeeklyLog.objects.filter(student__workplace_supervisor__user=user)
         return WeeklyLog.objects.all()
 
 
 class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnly] # Only admins can create or edit criteria, but anyone can read them.
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     queryset = Evaluation.objects.all()
     serializer_class = EvaluationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def get_permissions(self):
+        #Only Supervisors and Admins can create or edit grades. 
+        #Students can only view their grades.
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAdminOrAnySupervisor]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
-            return Evaluation.objects.filter(log_student_user=user)
+            return Evaluation.objects.filter(log__student__user=user)
         elif user.is_academic_supervisor or user.is_workplace_supervisor:
             return Evaluation.objects.filter(evaluator=user)
         return Evaluation.objects.all()
@@ -89,10 +114,18 @@ class EvaluationViewSet(viewsets.ModelViewSet):
 class AssessmentViewSet(viewsets.ModelViewSet):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_permissions(self):
+        #Same logic as Evaluations. Supervisors grade, Students read.
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAdminOrAnySupervisor]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
-            return Assessment.objects.filter(student__user=user)
+            # FIX: Assessment links to log, log links to student. Double underscores.
+            return Assessment.objects.filter(log__student__user=user)
         return Assessment.objects.all()
