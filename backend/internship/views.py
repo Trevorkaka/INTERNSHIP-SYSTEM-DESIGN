@@ -71,3 +71,28 @@ class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+class EvaluationViewSet(viewsets.ModelViewSet):
+    queryset = Evaluation.objects.all()
+    serializer_class = EvaluationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return Evaluation.objects.filter(log_student_user=user)
+        elif user.is_academic_supervisor or user.is_workplace_supervisor:
+            return Evaluation.objects.filter(evaluator=user)
+        return Evaluation.objects.all()
+
+
+class AssessmentViewSet(viewsets.ModelViewSet):
+    queryset = Assessment.objects.all()
+    serializer_class = AssessmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return Assessment.objects.filter(student__user=user)
+        return Assessment.objects.all()
