@@ -144,7 +144,9 @@ def register_view(request):
             user.set_password(form.cleaned_data['password']) #hash the password before saving
             user.save() #save the user to the database
             return redirect('login') #redirect to login page after successful registration
-        
+        else:
+            #if form has errors, show form again with error messages
+            return render(request, 'register.html', {'form': form})
         #pass
     return render(request, 'register.html')
 
