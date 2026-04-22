@@ -160,6 +160,9 @@ def login_view(request):
             password = form.cleaned_data['password'] #Extract paasword
             user = authenticate(request, username=username, password=password) #check against database for matching user
             if user is not None: #if user credentials are correct
+                login(request, user) #Django creates a session for the user
+                return redirect('home') #send user to home page after successful login
+            else:
                 
     #return render(request, 'login.html')
 
