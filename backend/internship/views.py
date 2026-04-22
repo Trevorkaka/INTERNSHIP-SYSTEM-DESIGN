@@ -1,12 +1,12 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from internship.models import (
+from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
     WeeklyLog, EvaluationCriteria, Evaluation,
     Assessment, Notification, InternshipPlacement
 )
-from internship.serializers import (
+from .serializers import (
     UserSerializer, StudentSerializer, WorkPlaceSupervisorSerializer,
     AcademicSupervisorSerializer, WeeklyLogSerializer,
  EvaluationCriteriaSerializer, NotificationSerializer,
