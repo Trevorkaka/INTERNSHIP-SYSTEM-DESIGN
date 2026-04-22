@@ -146,7 +146,7 @@ def register_view(request):
             return redirect('login') #redirect to login page after successful registration
         else:
             #if form has errors, show form again with error messages
-            return render(request, 'register.html', {'form': form})
+            return render(request, 'register.html', {'form': form}) #show form with error messages
         #pass
     return render(request, 'register.html')
 
