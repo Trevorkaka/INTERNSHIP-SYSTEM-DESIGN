@@ -150,3 +150,4 @@ def login_view(request):
 
 @login_required
 def logout_view(request):
+    """handle user logout"""
