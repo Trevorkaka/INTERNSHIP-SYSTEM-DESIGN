@@ -154,8 +154,14 @@ def login_view(request):
     """Handle user login"""
     if request.method == 'POST':
         # Handle login logic here
-        pass
-    return render(request, 'login.html')
+        form = LoginForm(request.POST) #take form data from user submission
+        if form.is_valid(): #check if form data is valid
+            username = form.cleaned_data['username'] #Extract username
+            password = form.cleaned_data['password'] #Extract paasword
+            user = authenticate(request, username=username, password=password) #check against database for matching user
+            if user is not None: #if user credentials are correct
+                
+    #return render(request, 'login.html')
 
 
 @login_required
