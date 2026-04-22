@@ -135,4 +135,8 @@ class AssessmentViewSet(viewsets.ModelViewSet):
  # Authentication Views
 def register_view(request):
     """Handle user registration"""  
-     if request.method == 'POST': 
+    if request.method == 'POST': 
+        # Handle registration logic here
+        pass
+    return render(request, 'register.html')
+ 
