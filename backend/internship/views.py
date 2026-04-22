@@ -20,7 +20,7 @@ from .permissions import (
     IsWorkplaceSupervisor, IsAdminOrAcademicSupervisor, 
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
-from .forms import RegistrationForm
+from .forms import RegistrationForm, LoginForm
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -147,8 +147,8 @@ def register_view(request):
         else:
             #if form has errors, show form again with error messages
             return render(request, 'register.html', {'form': form}) #show form with error messages
-        #pass
-    return render(request, 'register.html')
+        
+    
 
 def login_view(request):
     """Handle user login"""
