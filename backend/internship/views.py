@@ -146,3 +146,7 @@ def login_view(request):
         # Handle login logic here
         pass
     return render(request, 'login.html')
+
+
+@login_required
+def logout_view(request):
