@@ -135,4 +135,21 @@ class AssessmentViewSet(viewsets.ModelViewSet):
  # Authentication Views
 def register_view(request):
     """Handle user registration"""  
-     if request.method == 'POST': 
+    if request.method == 'POST': 
+        # Handle registration logic here
+        pass
+    return render(request, 'register.html')
+
+def login_view(request):
+    """Handle user login"""
+    if request.method == 'POST':
+        # Handle login logic here
+        pass
+    return render(request, 'login.html')
+
+
+@login_required
+def logout_view(request):
+    """handle user logout"""
+    logout(request)
+    return redirect('login')
