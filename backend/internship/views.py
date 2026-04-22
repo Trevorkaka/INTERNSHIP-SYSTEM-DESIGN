@@ -162,7 +162,9 @@ def login_view(request):
             if user is not None: #if user credentials are correct
                 login(request, user) #Django creates a session for the user
                 return redirect('home') #send user to home page after successful login
-            else:
+            else: #If authentication fails, show form again with error message
+                form.add_error(None, "Invalid username or password") #Add non-field error to form
+                return render(request, 'login.html', {'form': form}) #Show form with error message
                 
     #return render(request, 'login.html')
 
