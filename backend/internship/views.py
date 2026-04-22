@@ -139,4 +139,6 @@ def register_view(request):
         # Handle registration logic here
         pass
     return render(request, 'register.html')
- 
+
+def login_view(request):
+    """Handle user login"""
