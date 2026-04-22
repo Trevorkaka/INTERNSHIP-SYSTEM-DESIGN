@@ -1,6 +1,9 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
     WeeklyLog, EvaluationCriteria, Evaluation,
@@ -128,3 +131,27 @@ class AssessmentViewSet(viewsets.ModelViewSet):
             # FIX: Assessment links to log, log links to student. Double underscores.
             return Assessment.objects.filter(log__student__user=user)
         return Assessment.objects.all()
+
+
+# Authentication Views
+def register_view(request):
+    """Handle user registration"""
+    if request.method == 'POST':
+        # Handle registration logic here
+        pass
+    return render(request, 'register.html')
+
+
+def login_view(request):
+    """Handle user login"""
+    if request.method == 'POST':
+        # Handle login logic here
+        pass
+    return render(request, 'login.html')
+
+
+@login_required
+def logout_view(request):
+    """Handle user logout"""
+    logout(request)
+    return redirect('login')
