@@ -132,4 +132,6 @@ class AssessmentViewSet(viewsets.ModelViewSet):
             return Assessment.objects.filter(log__student__user=user)
         return Assessment.objects.all()
     
-    
+ # Authentication Views
+def register_view(request):
+    """Handle user registration"""   
