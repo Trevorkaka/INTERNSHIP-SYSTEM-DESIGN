@@ -143,7 +143,8 @@ def register_view(request):
             user = form.save(commit=False) #create user object but dont save to database yet
             user.set_password(form.cleaned_data['password']) #hash the password before saving
             user.save() #save the user to the database
-            return
+            return redirect('login') #redirect to login page after successful registration
+        
         #pass
     return render(request, 'register.html')
 
