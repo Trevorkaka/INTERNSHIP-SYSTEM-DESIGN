@@ -138,7 +138,13 @@ def register_view(request):
     """Handle user registration"""  
     if request.method == 'POST': 
         # Handle registration logic here
-        pass
+        form = RegistrationForm(request.POST) #take form data from user submission
+        if form.is_valid(): #check if data passes all validation rules defined in the form
+            user = form.save(commit=False) #create user object but dont save to database yet
+            user.set_password(form.cleaned_data['password']) #hash the password before saving
+            user.save() #save the user to the database
+            return
+        #pass
     return render(request, 'register.html')
 
 def login_view(request):
