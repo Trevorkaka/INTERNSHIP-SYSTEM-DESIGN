@@ -145,3 +145,4 @@ def login_view(request):
     if request.method == 'POST':
         # Handle login logic here
         pass
+    return render(request, 'login.html')
