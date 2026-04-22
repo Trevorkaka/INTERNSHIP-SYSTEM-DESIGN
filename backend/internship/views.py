@@ -20,6 +20,7 @@ from .permissions import (
     IsWorkplaceSupervisor, IsAdminOrAcademicSupervisor, 
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
+from .forms import RegistrationForm
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
