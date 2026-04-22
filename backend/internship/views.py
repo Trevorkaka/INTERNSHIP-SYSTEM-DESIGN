@@ -142,3 +142,6 @@ def register_view(request):
 
 def login_view(request):
     """Handle user login"""
+    if request.method == 'POST':
+        # Handle login logic here
+        pass
