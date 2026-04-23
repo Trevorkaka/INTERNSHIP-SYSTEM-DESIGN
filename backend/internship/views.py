@@ -169,8 +169,10 @@ def login_view(request):
             else: #If authentication fails, show form again with error message
                 form.add_error(None, "Invalid username or password") #Add non-field error to form
                 return render(request, 'login.html', {'form': form}) #Show form with error message
-                
-    #return render(request, 'login.html')
+    else:
+        # GET request - show empty login form
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
 
 
 @login_required
