@@ -1,20 +1,15 @@
-#from django.urls import path #import views from the current directory
-#from .views import students # import the students view from the views.py file in the current directory
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import (
+    UserViewSet, StudentViewSet, WorkPlaceSupervisorViewSet,
+    AcademicSupervisorViewSet, WeeklyLogViewSet, EvaluationCriteriaViewSet,
+    EvaluationViewSet, AssessmentViewSet, NotificationViewSet
+)
 
-#urlpatterns = [
-    #path('students/', students),
+# Initialize the DRF router
+router = DefaultRouter()
 
-#]
-
-from django.urls import path
-#from django.http import HttpResponse
-from . import views
-
-#def test(request):
-    #return HttpResponse("Internship works")
-
-urlpatterns = [
-    path('register/', views.register_view, name='register'),#to handle user registration
-    path('login/',views.login_view, name='login'), #to handle user login
-    path('logout/', views.logout_view, name='logout'), #to handle user logout
-]
+# Register all your viewsets with the router
+# The first argument is the URL prefix, the second is the ViewSet class
+router.register(r'users', UserViewSet, basename='user')
+router.register(r'students', StudentViewSet, basename='student')
