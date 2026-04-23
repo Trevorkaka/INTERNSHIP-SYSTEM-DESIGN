@@ -5,3 +5,6 @@ from .views import (
     AcademicSupervisorViewSet, WeeklyLogViewSet, EvaluationCriteriaViewSet,
     EvaluationViewSet, AssessmentViewSet, NotificationViewSet
 )
+
+# Initialize the DRF router
+router = DefaultRouter()
