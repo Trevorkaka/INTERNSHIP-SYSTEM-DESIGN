@@ -11,3 +11,5 @@ router = DefaultRouter()
 
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'students', StudentViewSet, basename='student')
+router.register(r'workplace-supervisors', WorkPlaceSupervisorViewSet, basename='workplace-supervisor')
+router.register(r'academic-supervisors', AcademicSupervisorViewSet, basename='academic-supervisor')
