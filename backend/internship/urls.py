@@ -17,3 +17,5 @@ router.register(r'workplace-supervisors', WorkPlaceSupervisorViewSet, basename='
 router.register(r'academic-supervisors', AcademicSupervisorViewSet, basename='academic-supervisor')
 router.register(r'weekly-logs', WeeklyLogViewSet, basename='weekly-log')
 router.register(r'evaluation-criteria', EvaluationCriteriaViewSet, basename='evaluation-criteria')
+router.register(r'evaluations', EvaluationViewSet, basename='evaluation')
+router.register(r'assessments', AssessmentViewSet, basename='assessment')
