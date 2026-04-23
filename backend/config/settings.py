@@ -128,3 +128,8 @@ STATICFILES_DIRS = [
 
 AUTH_USER_MODEL = 'internship.User'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
