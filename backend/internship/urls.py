@@ -18,3 +18,9 @@ router.register(r'evaluation-criteria', EvaluationCriteriaViewSet, basename='eva
 router.register(r'evaluations', EvaluationViewSet, basename='evaluation')
 router.register(r'assessments', AssessmentViewSet, basename='assessment')
 router.register(r'notifications', NotificationViewSet, basename='notification')
+
+# Wire up our API using automatic URL routing.
+urlpatterns = [
+    # All the registered routes will be accessible under the 'api/' prefix
+    path('api/', include(router.urls)),
+]
