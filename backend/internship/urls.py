@@ -8,3 +8,6 @@ from .views import (
 
 # Initialize the DRF router
 router = DefaultRouter()
+
+router.register(r'users', UserViewSet, basename='user')
+router.register(r'students', StudentViewSet, basename='student')
