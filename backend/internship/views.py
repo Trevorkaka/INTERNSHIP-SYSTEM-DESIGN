@@ -147,7 +147,11 @@ def register_view(request):
         else:
             #if form has errors, show form again with error messages
             return render(request, 'register.html', {'form': form}) #show form with error messages
-        
+    else:
+        #get request, show empty registration form
+        form = RegistrationForm() #create an empty form instance
+        #now returns the form
+        return render(request, 'register.html', {'form': form})    
     
 
 def login_view(request):
