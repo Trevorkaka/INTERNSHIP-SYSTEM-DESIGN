@@ -128,3 +128,5 @@ STATICFILES_DIRS = [
 
 AUTH_USER_MODEL = 'internship.User'
 
+# Login URL - Tell Django where to redirect when @login_required is triggered 
+LOGIN_URL = 'login'
