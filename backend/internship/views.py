@@ -134,4 +134,51 @@ class AssessmentViewSet(viewsets.ModelViewSet):
         if user.is_student:
             # FIX: Assessment links to log, log links to student. Double underscores.
             return Assessment.objects.filter(log__student__user=user)
+          
         return Assessment.objects.all()
+    
+ # Authentication Views
+def register_view(request):
+    """Handle user registration"""  
+    if request.method == 'POST': 
+        # Handle registration logic here
+        form = RegistrationForm(request.POST) #take form data from user submission
+        if form.is_valid(): #check if data passes all validation rules defined in the form
+            user = form.save(commit=False) #create user object but dont save to database yet
+            user.set_password(form.cleaned_data['password']) #hash the password before saving
+            user.save() #save the user to the database
+            return redirect('login') #redirect to login page after successful registration
+        else:
+            #if form has errors, show form again with error messages
+            return render(request, 'register.html', {'form': form}) #show form with error messages
+    else:
+        #get request, show empty registration form
+        form = RegistrationForm() #create an empty form instance
+        #now returns the form
+        return render(request, 'register.html', {'form': form})    
+    
+
+def login_view(request):
+    """Handle user login"""
+    if request.method == 'POST':
+        # Handle login logic here
+        form = LoginForm(request.POST) #take form data from user submission
+        if form.is_valid(): #check if form data is valid
+            username = form.cleaned_data['username'] #Extract username
+            password = form.cleaned_data['password'] #Extract paasword
+            user = authenticate(request, username=username, password=password) #check against database for matching user
+            if user is not None: #if user credentials are correct
+                login(request, user) #Django creates a session for the user 
+                return redirect('home') #send user to home page after successful login
+            else: #If authentication fails, show form again with error message
+                form.add_error(None, "Invalid username or password") #Add non-field error to form
+                return render(request, 'login.html', {'form': form}) #Show form with error message
+                
+    #return render(request, 'login.html')
+
+
+@login_required
+def logout_view(request):
+    """handle user logout"""
+    logout(request)
+    return redirect('login')
