@@ -68,7 +68,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-scripts/
+
 
 
 
@@ -100,5 +100,5 @@ dist-ssr
 *.sw?
 
 
-scripts/
+
 
