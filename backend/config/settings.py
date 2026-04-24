@@ -148,6 +148,9 @@ STATICFILES_DIRS = [
 #Register Custom User in settings
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+#DRF + JWT CONFIG
+from datetime import timedelta
+
 
 
 AUTH_USER_MODEL = 'internship.User'
