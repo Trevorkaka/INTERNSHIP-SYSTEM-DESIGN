@@ -97,9 +97,9 @@ DATABASES = {
         #'NAME': BASE_DIR / 'db.sqlite3',
 
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iles_db',
-        'USER': 'iles_user',
-        'PASSWORD': 'strongpassword',
+        'NAME': 'group20_db',
+        'USER': 'group20_user',
+        'PASSWORD': 'group20password',
         'HOST': 'localhost',
         'PORT': '5432',
     }
