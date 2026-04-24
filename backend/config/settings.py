@@ -151,6 +151,50 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 #DRF + JWT CONFIG
 from datetime import timedelta
 
+REST_FRAMEWORK = {
+    # --- Auth ---
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+
+    # --- Permissions ---
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
+    # --- Filtering ---
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+
+# --- Pagination ---
+    'DEFAULT_PAGINATION_CLASS': 'apps.common.pagination.StandardResultsSetPagination',
+    'PAGE_SIZE': 10,
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exceptions.custom_exception_handler'
+
+
+#Security
+# Prevent XSS
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevent MIME sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# CSRF protection
+CSRF_COOKIE_HTTPONLY = True
+
+# Clickjacking protection
+X_FRAME_OPTIONS = 'DENY'
+
 
 
 AUTH_USER_MODEL = 'internship.User'
