@@ -99,6 +99,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Ignore executables
+*.exe
 
+# Ignore Poetry's local artifacts (but keep pyproject.toml and poetry.lock!)
+.venv/
 
 
