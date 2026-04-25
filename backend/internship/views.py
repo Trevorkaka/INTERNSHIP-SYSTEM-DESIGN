@@ -81,9 +81,9 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         if user.is_student:
             return WeeklyLog.objects.filter(student__user=user)
         elif user.is_academic_supervisor:
-            return WeeklyLog.objects.filter(student__academic_supervisor__user=user)
+            return WeeklyLog.objects.filter(student__academic_supervisor=user)
         elif user.is_workplace_supervisor:
-            return WeeklyLog.objects.filter(student__workplace_supervisor__user=user)
+            return WeeklyLog.objects.filter(student__workplace_supervisor=user)
         return WeeklyLog.objects.all()
 
 
@@ -128,7 +128,6 @@ class AssessmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
-            # FIX: Assessment links to log, log links to student. Double underscores.
             return Assessment.objects.filter(log__student__user=user)
         return Assessment.objects.all()
     
