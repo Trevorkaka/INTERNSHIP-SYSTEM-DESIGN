@@ -26,6 +26,9 @@ from .permissions import (
 from .forms import RegistrationForm, LoginForm
 #viewsets
 class Uaerviewset(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdmin] #Only admins can manage raw user classes.
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
