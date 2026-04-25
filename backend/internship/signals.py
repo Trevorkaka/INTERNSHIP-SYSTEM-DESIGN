@@ -1,7 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth.models import User
-from .models import Assessment, Evaluation, WeeklyLog, Notification
+from .models import User, Assessment, Evaluation, WeeklyLog, Notification
 
 @receiver(post_save, sender=Assessment)
 def create_assessment_notification(sender, instance, created, **kwargs):
