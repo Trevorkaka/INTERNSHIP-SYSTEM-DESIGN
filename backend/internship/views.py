@@ -118,7 +118,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         try:
             student = Student.objects.get(user=request.user)
             serializer = self.get_serializer(student)
-            return Response(serializer.data)  # ← FIXED (no list wrapper)
+            return Response(serializer.data)  
         except Student.DoesNotExist:
             return Response({
                 'error': 'User is not a student'
