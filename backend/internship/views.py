@@ -64,6 +64,11 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
     serializer_class = WeeklyLogSerializer
 
     def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            permission_classes = [IsStudent]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]  
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
