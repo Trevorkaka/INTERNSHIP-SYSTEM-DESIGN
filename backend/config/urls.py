@@ -30,10 +30,7 @@ urlpatterns = [
 
     #internship app handles /register/, /login/, /logout/
     path('', include('internship.urls')), #include the urls from the internship app, this means any url that starts with / will be handled by the internship app
-    path('students/', views.student_list),
-    path('add/', views.add_student),
-    path('', home ),
-
-     # 👇 ADD THIS
-    path('', include('core.urls')), 
-] #this means /register/ and /login/ work directly instead of /internship/register/ and /internship/login/ because we included the internship urls in the main url configuration
+   
+     # core app handles /students/, /add/, and the home page
+    path('', include('core.urls')), #core/urls.py already defines path('', views.home, name='home'), so we can just include it here without defining a separate path for the home page
+] 
