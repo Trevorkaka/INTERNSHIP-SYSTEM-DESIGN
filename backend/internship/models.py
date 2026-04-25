@@ -12,6 +12,7 @@ class User(AbstractUser):
         ('admin', 'Administrator'),
         )
     role = models.CharField(max_length=30, choices = ROLE_CHOICES )
+    phone_number = models.CharField(max_length=20, blank= True, null = True)
     @property
     def is_student(self):
         return self.role == 'student'
