@@ -35,7 +35,10 @@ class StudentViewSet(viewsets.ModelviewSet):
     serializer_class = StudentSerializer
 
     def get_permissions(self):
-        
+        #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [permissions.IsAuthenticated]
+
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
