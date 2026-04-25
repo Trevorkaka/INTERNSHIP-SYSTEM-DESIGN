@@ -38,6 +38,9 @@ class StudentViewSet(viewsets.ModelviewSet):
         #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
         if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [IsAdmin]
+        return [permission() for permission in permission_classes]
 
 
 class CustomAuthToken(ObtainAuthToken):
