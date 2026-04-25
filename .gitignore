@@ -68,14 +68,14 @@ Thumbs.db
 .vscode/
 .idea/
 
-scripts/
+
 
 
 
 
 
 # Logs
-logs
+
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -99,6 +99,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Ignore executables
+*.exe
 
-scripts/
+# Ignore Poetry's local artifacts (but keep pyproject.toml and poetry.lock!)
+.venv/
+
 

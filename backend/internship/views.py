@@ -1,9 +1,11 @@
-from django.utils import timezone
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
@@ -23,16 +25,79 @@ from .permissions import (
 )
 from .forms import RegistrationForm, LoginForm
 
+class CustomAuthToken(ObtainAuthToken):
+    """custom login end point that returns token + user info + notifications
+    """
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return Response({
+                'error':'Invalid credentials'
+            }, status = status.HTTP_401_UNAUTHORIZED)
+        token, created = Token.objects.get_or_create(user=user)
+
+        #get user role
+        user_role = self._get_user_role(user)
+
+        #get unread notifications
+        notifications = Notification.objects.filter(
+            recipient=user,
+            is_read = False
+        )[:5] # last 5 unread
+
+        return Response({
+            'token': token.key,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'role': user_role
+            },
+            'unread_notifications': NotificationSerializer(notifications, many=True).data,
+            'unread_count': Notification.objects.filter(recipient=user, is_read=False).count()
+        })
+    
+
+    def _get_user_role(self, user):
+        """Determine user's role"""
+        if Student.objects.filter(user=user).exists():
+            return 'student'
+        elif AcademicSupervisor.objects.filter(user=user).exists():
+            return 'academic_supervisor'
+        elif WorkPlaceSupervisor.objects.filter(user=user).exists():
+            return 'workplace_supervisor'
+        return 'unknown'
+ 
+ 
+
+    
+
+
+
+
+
+
+
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdmin] #Only admins can manage raw user classes.
 
 class StudentViewSet(viewsets.ModelViewSet):
+    #student endpoints
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     
     def get_permissions(self):
+        #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
         if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.IsAuthenticated]
         else:
@@ -40,12 +105,53 @@ class StudentViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
+        #STUDENT SEES ONLY THEIR OWN PROFILE : ADMIN SEES ALL
         user = self.request.user
         if user.is_student:
             return Student.objects.filter(user=user)
         return Student.objects.all()
     
+    @action(detail=False, methods=['get'])
+    def my_profile(self, request):
+        """Get current logged-in student's profile"""
+        try:
+            student = Student.objects.get(user=request.user)
+            serializer = self.get_serializer(student)
+            return Response(serializer.data)  # ← FIXED (no list wrapper)
+        except Student.DoesNotExist:
+            return Response({
+                'error': 'User is not a student'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+
+    @action(detail=False, methods=['get'])
+    def my_feedback(self, request):
+        """Get all assessments and evaluations for current student"""
+        try:
+            student = Student.objects.get(user=request.user)
+            assessments = Assessment.objects.filter(log__student=student)
+            evaluations = Evaluation.objects.filter(log__student=student)
+            
+            return Response({
+                'assessments': AssessmentSerializer(assessments, many=True).data,
+                'evaluations': EvaluationSerializer(evaluations, many=True).data,
+                'total_feedback': assessments.count() + evaluations.count()
+            })
+        except Student.DoesNotExist:
+            return Response({
+                'error': 'User is not a student'
+            }, status=status.HTTP_404_NOT_FOUND)
+    
+    
 class NotificationViewSet(viewsets.ModelViewSet):
+ 
+    #Notifications for logged-in user
+    #- GET /api/notifications/ - Get all notifications
+    #- GET /api/notifications/unread/ - Get unread only
+    #- POST /api/notifications/{id}/mark-as-read/ - Mark single notification as read
+    #- POST /api/notifications/mark-all-as-read/ - Mark all as read
+    
+    
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
