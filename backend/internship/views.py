@@ -138,6 +138,15 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'notification': self.get_serializer(notification).data
         })
     
+    @action(detail=False, methods=['post'])
+    def mark_all_as_read(self, request):
+        """Mark all notifications as read"""
+        notifications = self.get_queryset().filter(is_read=False)
+        count = notifications.update(is_read=True)
+        return Response({
+            'status': f'{count} notifications marked as read'
+        })
+    
     
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     queryset = WorkPlaceSupervisor.objects.all()
