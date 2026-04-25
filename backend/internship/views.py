@@ -47,6 +47,12 @@ class StudentViewSet(viewsets.ModelviewSet):
         if user.is_student:
             return Student.objects.filter(user=user)
         return Student.objects.all()
+    
+class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
+    queryset = WorkPlaceSupervisor.objects.all()
+    serializer_class = WorkPlaceSupervisorSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
