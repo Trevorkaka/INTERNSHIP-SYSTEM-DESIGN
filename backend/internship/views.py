@@ -45,8 +45,8 @@ class StudentViewSet(viewsets.ModelviewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
-            return Student.oblects.filter(user=user)
-
+            return Student.objects.filter(user=user)
+        return Student.objects.all()
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
