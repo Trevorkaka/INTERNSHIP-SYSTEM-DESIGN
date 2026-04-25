@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'core',
 
     # Third-party
-    'rest_framework',
+    #'rest_framework',
     'django_filters',
 
     # Local apps
