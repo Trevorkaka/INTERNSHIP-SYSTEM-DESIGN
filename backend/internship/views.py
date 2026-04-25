@@ -15,7 +15,7 @@ from .models import (
 from .serializers import (
     UserSerializer, StudentSerializer, WorkPlaceSupervisorSerializer,
     AcademicSupervisorSerializer, WeeklyLogSerializer,
- EvaluationCriteriaSerializer, NotificationSerializer,
+    EvaluationCriteriaSerializer, NotificationSerializer,
     EvaluationSerializer, AssessmentSerializer
 )
 from .permissions import (
@@ -24,7 +24,8 @@ from .permissions import (
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
 from .forms import RegistrationForm, LoginForm
-
+#viewsets
+class Uaerviewset(viewsets.ModelViewSet):
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
