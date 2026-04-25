@@ -147,6 +147,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'status': f'{count} notifications marked as read'
         })
     
+     @action(detail=False, methods=['post'])
+    def clear_all(self, request):
+        """Delete all notifications"""
+        count = self.get_queryset().delete()[0]
+        return Response({
+            'status': f'{count} notifications deleted'
+        })
+    
     
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     queryset = WorkPlaceSupervisor.objects.all()
