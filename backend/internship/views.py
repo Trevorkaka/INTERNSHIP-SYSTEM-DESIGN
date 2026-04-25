@@ -5,6 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
@@ -23,6 +24,11 @@ from .permissions import (
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
 from .forms import RegistrationForm, LoginForm
+
+class CustomAuthToken(ObtainAuthToken):
+    """custom login end point that returns token + user info + notifications
+    """
+    def post
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
