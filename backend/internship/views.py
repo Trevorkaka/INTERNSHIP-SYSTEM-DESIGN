@@ -92,10 +92,12 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdmin] #Only admins can manage raw user classes.
 
 class StudentViewSet(viewsets.ModelViewSet):
+    #student endpoints
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     
     def get_permissions(self):
+        #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
         if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.IsAuthenticated]
         else:
@@ -103,12 +105,34 @@ class StudentViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
+        #STUDENT SEES ONLY THEIR OWN PROFILE : ADMIN SEES ALL
         user = self.request.user
         if user.is_student:
             return Student.objects.filter(user=user)
         return Student.objects.all()
     
+    @action(detail=False, methods=['get'])
+    def my_profile(self, request):
+        """Get current logged-in student's profile"""
+        try:
+            student = Student.objects.get(user=request.user)
+            serializer = self.get_serializer(student)
+            return Response(serializer.data)  # ← FIXED (no list wrapper)
+        except Student.DoesNotExist:
+            return Response({
+                'error': 'User is not a student'
+            }, status=status.HTTP_404_NOT_FOUND)
+    
+    
 class NotificationViewSet(viewsets.ModelViewSet):
+ 
+    #Notifications for logged-in user
+    #- GET /api/notifications/ - Get all notifications
+    #- GET /api/notifications/unread/ - Get unread only
+    #- POST /api/notifications/{id}/mark-as-read/ - Mark single notification as read
+    #- POST /api/notifications/mark-all-as-read/ - Mark all as read
+    
+    
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -147,7 +171,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             'status': f'{count} notifications marked as read'
         })
     
-     @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'])
     def clear_all(self, request):
         """Delete all notifications"""
         count = self.get_queryset().delete()[0]
