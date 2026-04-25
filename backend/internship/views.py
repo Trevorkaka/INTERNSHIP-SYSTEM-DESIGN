@@ -122,6 +122,25 @@ class StudentViewSet(viewsets.ModelViewSet):
             return Response({
                 'error': 'User is not a student'
             }, status=status.HTTP_404_NOT_FOUND)
+        
+
+    @action(detail=False, methods=['get'])
+    def my_feedback(self, request):
+        """Get all assessments and evaluations for current student"""
+        try:
+            student = Student.objects.get(user=request.user)
+            assessments = Assessment.objects.filter(log__student=student)
+            evaluations = Evaluation.objects.filter(log__student=student)
+            
+            return Response({
+                'assessments': AssessmentSerializer(assessments, many=True).data,
+                'evaluations': EvaluationSerializer(evaluations, many=True).data,
+                'total_feedback': assessments.count() + evaluations.count()
+            })
+        except Student.DoesNotExist:
+            return Response({
+                'error': 'User is not a student'
+            }, status=status.HTTP_404_NOT_FOUND)
     
     
 class NotificationViewSet(viewsets.ModelViewSet):
