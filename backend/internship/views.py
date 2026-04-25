@@ -41,6 +41,11 @@ class StudentViewSet(viewsets.ModelviewSet):
         else:
             permission_classes = [IsAdmin]
         return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return Student.oblects.filter(user=user)
 
 
 class CustomAuthToken(ObtainAuthToken):
