@@ -16,8 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core import views
-from core.views import home
+#from core import views
+#from core.views import home
 
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -30,22 +30,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    #internship app handles /register/, /login/, /logout/
     path('', include('internship.urls')), #include the urls from the internship app, this means any url that starts with / will be handled by the internship app
-    path('students/', views.student_list),
-    path('add/', views.add_student),
-    path('', home ),
-
-     # 👇 ADD THIS
-    path('', include('core.urls')), 
-
-    # Auth
-    path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
-    # Apps
-    path('api/accounts/', include('apps.accounts.urls')),
-    path('api/placements/', include('apps.placements.urls')),
-    path('api/evaluations/', include('apps.evaluations.urls')),
-
-
+   
+     # core app handles /students/, /add/, and the home page
+    path('', include('core.urls')), #core/urls.py already defines path('', views.home, name='home'), so we can just include it here without defining a separate path for the home page
 ] 

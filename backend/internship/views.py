@@ -157,47 +157,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
         return Notification.objects.filter(recipient=self.request.user)
-    
-    @action(detail=False, methods=['get'])
-    def unread(self, request):
-        """Get only unread notifications"""
-        notifications = self.get_queryset().filter(is_read=False)
-        serializer = self.get_serializer(notifications, many=True)
-        return Response({
-            'unread_count': notifications.count(),
-            'notifications': serializer.data  
-        })
-    
-    @action(detail=True, methods=['post'])
-    def mark_as_read(self, request, pk=None):
-        """Mark single notification as read"""
-        notification = self.get_object()
-        notification.is_read = True
-        notification.save()
-        return Response({
-            'status': 'notification marked as read',
-            'notification': self.get_serializer(notification).data
-        })
-    
-    @action(detail=False, methods=['post'])
-    def mark_all_as_read(self, request):
-        """Mark all notifications as read"""
-        notifications = self.get_queryset().filter(is_read=False)
-        count = notifications.update(is_read=True)
-        return Response({
-            'status': f'{count} notifications marked as read'
-        })
-    
-    @action(detail=False, methods=['post'])
-    def clear_all(self, request):
-        """Delete all notifications"""
-        count = self.get_queryset().delete()[0]
-        return Response({
-            'status': f'{count} notifications deleted'
-        })
-    
     
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     queryset = WorkPlaceSupervisor.objects.all()
@@ -228,9 +188,9 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         if user.is_student:
             return WeeklyLog.objects.filter(student__user=user)
         elif user.is_academic_supervisor:
-            return WeeklyLog.objects.filter(student__academic_supervisor__user=user)
+            return WeeklyLog.objects.filter(student__academic_supervisor=user)
         elif user.is_workplace_supervisor:
-            return WeeklyLog.objects.filter(student__workplace_supervisor__user=user)
+            return WeeklyLog.objects.filter(student__workplace_supervisor=user)
         return WeeklyLog.objects.all()
 
 
@@ -275,7 +235,6 @@ class AssessmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
-            # FIX: Assessment links to log, log links to student. Double underscores.
             return Assessment.objects.filter(log__student__user=user)
         return Assessment.objects.all()
     
@@ -290,9 +249,8 @@ def register_view(request):
             user.set_password(form.cleaned_data['password']) #hash the password before saving
             user.save() #save the user to the database
             return redirect('login') #redirect to login page after successful registration
-        else:
             #if form has errors, show form again with error messages
-            return render(request, 'register.html', {'form': form}) #show form with error messages
+        return render(request, 'register.html', {'form': form}) #show form with error messages
     else:
         #get request, show empty registration form
         form = RegistrationForm() #create an empty form instance
