@@ -124,7 +124,18 @@ class NotificationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(notifications, many=True)
         return Response({
             'unread_count': notifications.count(),
-            'notifications': serializer.data  # ← FIXED
+            'notifications': serializer.data  
+        })
+    
+    @action(detail=True, methods=['post'])
+    def mark_as_read(self, request, pk=None):
+        """Mark single notification as read"""
+        notification = self.get_object()
+        notification.is_read = True
+        notification.save()
+        return Response({
+            'status': 'notification marked as read',
+            'notification': self.get_serializer(notification).data
         })
     
     
