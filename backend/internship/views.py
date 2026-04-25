@@ -54,6 +54,17 @@ class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
 
+class AcademicSupervisorViewSet(viewsets.Modelview):
+    querset = AcademicSupervisor.objects.all()
+    serializer_class = AcademicSupervisorSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+class WeeklyLogViewSet(viewsets.ModelViewSet):
+    queryset = WeeklyLog.objects.all()
+    serializer_class = WeeklyLogSerializer
+
+    def get_permissions(self):
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
