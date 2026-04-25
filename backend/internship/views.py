@@ -115,7 +115,18 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Notification.objects.filter(recipient=user)
+        return Notification.objects.filter(recipient=self.request.user)
+    
+    @action(detail=False, methods=['get'])
+    def unread(self, request):
+        """Get only unread notifications"""
+        notifications = self.get_queryset().filter(is_read=False)
+        serializer = self.get_serializer(notifications, many=True)
+        return Response({
+            'unread_count': notifications.count(),
+            'notifications': serializer.data  # ← FIXED
+        })
+    
     
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     queryset = WorkPlaceSupervisor.objects.all()
