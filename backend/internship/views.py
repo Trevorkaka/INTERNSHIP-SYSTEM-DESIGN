@@ -28,7 +28,26 @@ from .forms import RegistrationForm, LoginForm
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
-    def post
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return Response({
+                'error':'Invalid credentials'
+            }, status = status.HTTP_401_UNAUTHORIZED)
+        token, created = Token.objects.get_or_create(user=user)
+
+        #get user role
+        user_role = self._get_user_role(user)
+
+        #get unread notifications
+        notifications = Notification.objects.filter(
+            recipient=user,
+            is_read = False
+        )[:5] # last 5 unread
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
