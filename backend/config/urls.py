@@ -27,6 +27,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    #internship app handles /register/, /login/, /logout/
     path('', include('internship.urls')), #include the urls from the internship app, this means any url that starts with / will be handled by the internship app
     path('students/', views.student_list),
     path('add/', views.add_student),
