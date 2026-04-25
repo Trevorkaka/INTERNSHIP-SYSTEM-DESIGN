@@ -19,6 +19,9 @@ from django.urls import path, include
 from core import views
 from core.views import home
 
+from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 #from django.http import HttpResponse
 
 
@@ -34,4 +37,15 @@ urlpatterns = [
 
      # 👇 ADD THIS
     path('', include('core.urls')), 
-] #this means /register/ and /login/ work directly instead of /internship/register/ and /internship/login/ because we included the internship urls in the main url configuration
+
+    # Auth
+    path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # Apps
+    path('api/accounts/', include('apps.accounts.urls')),
+    path('api/placements/', include('apps.placements.urls')),
+    path('api/evaluations/', include('apps.evaluations.urls')),
+
+
+] 
