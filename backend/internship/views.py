@@ -32,6 +32,7 @@ class Uaerviewset(viewsets.ModelViewSet):
 
 class StudentViewSet(viewsets.ModelviewSet):
     queryset = Student.objects.all()
+    serializer_class = StudentSerializer
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
