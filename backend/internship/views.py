@@ -29,6 +29,9 @@ class Uaerviewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdmin] #Only admins can manage raw user classes.
+
+class StudentViewSet(viewsets.ModelviewSet):
+    queryset = Student.objects.all()
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
