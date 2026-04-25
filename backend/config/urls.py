@@ -19,6 +19,9 @@ from django.urls import path, include
 #from core import views
 #from core.views import home
 
+from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 #from django.http import HttpResponse
 
 
