@@ -13,7 +13,7 @@ def create_assessment_notification(sender, instance, created, **kwargs):
             title='Assessment Feedback Received',
             message=f"You received feedback on week {instance.log.week_number}: {instance.marks} marks",
             assessment=instance,
-            WeeklyLog=instance.log
+            Weekly_log=instance.log
         )
 
 @receiver(post_save, sender=Evaluation)
