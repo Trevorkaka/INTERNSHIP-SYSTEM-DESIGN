@@ -35,7 +35,7 @@ urlpatterns = [
     path('add/', views.add_student),
     path('', home ),
 
-     # 👇 ADD THIS
+     
     path('', include('core.urls')), 
 
     # Auth
