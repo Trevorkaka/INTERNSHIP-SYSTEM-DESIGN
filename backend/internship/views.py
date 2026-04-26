@@ -253,6 +253,16 @@ def register_view(request):
     form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
 
+def login_view(request):
+    """Handle user login"""
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
