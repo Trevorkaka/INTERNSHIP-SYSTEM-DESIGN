@@ -97,6 +97,13 @@ def jwt_logout(request):
             {'message': 'Logged out successfully.'},
             status=status.HTTP_200_OK
         )
+    
+    except TokenError:
+        return Response(
+            {'error': 'Token is invalid or already expired.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
