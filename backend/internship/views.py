@@ -32,6 +32,11 @@ from .forms import RegistrationForm, LoginForm
 api_view(['POST'])
 @permission_classes([AllowAny])  # No auth needed to log in
 def jwt_login(request):
+    """
+    POST /api/auth/login/
+    Body: { "username": "...", "password": "..." }
+    Returns: access token, refresh token, user info, unread notifications
+    """
 
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
