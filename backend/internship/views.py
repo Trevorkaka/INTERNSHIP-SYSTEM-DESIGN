@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -5,7 +6,6 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
@@ -15,7 +15,7 @@ from .models import (
 from .serializers import (
     UserSerializer, StudentSerializer, WorkPlaceSupervisorSerializer,
     AcademicSupervisorSerializer, WeeklyLogSerializer,
- EvaluationCriteriaSerializer, NotificationSerializer,
+    EvaluationCriteriaSerializer, NotificationSerializer,
     EvaluationSerializer, AssessmentSerializer
 )
 from .permissions import (
@@ -24,6 +24,51 @@ from .permissions import (
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
 from .forms import RegistrationForm, LoginForm
+#viewsets
+class Uaerviewset(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdmin] #Only admins can manage raw user classes.
+
+class StudentViewSet(viewsets.ModelviewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+
+    def get_permissions(self):
+        #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [IsAdmin]
+        return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return Student.objects.filter(user=user)
+        return Student.objects.all()
+    
+class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
+    queryset = WorkPlaceSupervisor.objects.all()
+    serializer_class = WorkPlaceSupervisorSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+
+class AcademicSupervisorViewSet(viewsets.Modelview):
+    querset = AcademicSupervisor.objects.all()
+    serializer_class = AcademicSupervisorSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+class WeeklyLogViewSet(viewsets.ModelViewSet):
+    queryset = WeeklyLog.objects.all()
+    serializer_class = WeeklyLogSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            permission_classes = [IsStudent]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]  
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
