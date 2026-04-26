@@ -275,18 +275,5 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-
-      
-    
-
-    def _get_user_role(self, user):
-        """Determine user's role"""
-        if Student.objects.filter(user=user).exists():
-            return 'student'
-        elif AcademicSupervisor.objects.filter(user=user).exists():
-            return 'academic_supervisor'
-        elif WorkPlaceSupervisor.objects.filter(user=user).exists():
-            return 'workplace_supervisor'
-        return 'unknown'
  
  
