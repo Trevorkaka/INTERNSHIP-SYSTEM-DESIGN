@@ -125,7 +125,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     
 filter_backends =[DjangoFilterBackend, SearchFilter, OrderingFilter]
 filterset_fields =['course', 'year_of_study']
-search_fields  = ['user_username',]
+search_fields  = ['user_username', 'user_email','registration_number']
 
     def get_permissions(self):
         #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
