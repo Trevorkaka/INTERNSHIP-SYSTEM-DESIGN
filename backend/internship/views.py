@@ -201,6 +201,10 @@ class AssessmentViewSet(viewsets.ModelViewSet):
         if user.is_student:
             return Assessment.objects.filter(log__student__user=user)
         return Assessment.objects.all()
+    
+    def perform_create(self, serializer):
+        # Automatically set the assessor to the logged-in supervisor
+        serializer.save(assessor=self.request.user)
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
