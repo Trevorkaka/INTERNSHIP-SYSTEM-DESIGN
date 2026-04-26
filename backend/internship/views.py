@@ -235,6 +235,10 @@ class NotificationViewSet(viewsets.ModelViewSet):
             is_read=False
         ).update(is_read=True)
     
+        return Response(
+            {'message': f'{updated} notification(s) marked as read.'},
+            status=status.HTTP_200_OK
+        )
     
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
