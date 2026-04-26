@@ -1,10 +1,14 @@
 from django.utils import timezone
 from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+
 from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
     WeeklyLog, EvaluationCriteria, Evaluation,
@@ -22,7 +26,85 @@ from .permissions import (
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
 from .forms import RegistrationForm, LoginForm
-#viewsets
+
+#--JWT Auth API Views ---------------------
+
+@api_view(['POST'])
+@permission_classes([AllowAny])  # No auth needed to log in
+def jwt_login(request):
+    """
+    POST /api/auth/login/
+    Body: { "username": "...", "password": "..." }
+    Returns: access token, refresh token, user info, unread notifications
+    """
+    username = request.data.get('username')
+    password = request.data.get('password')
+    if not username or not password:
+        return Response(
+            {'error': 'Username and password are required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    user = authenticate(username=username, password=password)
+
+    if user is None:
+        return Response(
+            {'error': 'Invalid username or password.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    
+    # Generate JWT token pair for the user
+    refresh = RefreshToken.for_user(user)
+
+    # Fetch last 5 unread notifications to send with login response
+    notifications = Notification.objects.filter(recipient=user, is_read=False)[:5]
+    
+    return Response({
+        'access':  str(refresh.access_token),  # Short-lived (60 min)
+        'refresh': str(refresh),                # Long-lived (7 days)
+        'user': {
+            'id':         user.id,
+            'username':   user.username,
+            'email':      user.email,
+            'first_name': user.first_name,
+            'last_name':  user.last_name,
+            'role':       user.role,
+        },
+        'unread_notifications': NotificationSerializer(notifications, many=True).data,
+        'unread_count': Notification.objects.filter(recipient=user, is_read=False).count(),
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def jwt_logout(request):
+    """
+    POST /api/auth/logout/
+    Body: { "refresh": "<refresh_token>" }
+    Blacklists the refresh token so it can't be used again.
+    Requires: Authorization: Bearer <access_token>
+    """
+    refresh_token = request.data.get('refresh')
+
+    if not refresh_token:
+        return Response(
+            {'error': 'Refresh token is required to log out.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        token = RefreshToken(refresh_token)
+        token.blacklist()  # Invalidate this refresh token permanently
+        return Response(
+            {'message': 'Logged out successfully.'},
+            status=status.HTTP_200_OK
+        )
+    
+    except TokenError:
+        return Response(
+            {'error': 'Token is invalid or already expired.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+#---------viewsets------------------------
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -273,5 +355,91 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
- 
- 
+
+# ── JWT Authentication Views (for React/API frontend) ─────────────────────────────
+@api_view(['POST'])
+def jwt_login(request):
+    """
+    POST /api/auth/login/
+    Authenticates user with username/password and returns JWT tokens.
+    
+    Request body:
+    {
+        "username": "user@example.com",
+        "password": "password123"
+    }
+    
+    Response:
+    {
+        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+        "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+        "user": {
+            "id": 1,
+            "username": "user@example.com",
+            "email": "user@example.com",
+            "role": "student"
+        }
+    }
+    """
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    # Authenticate the user
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return Response(
+            {'error': 'Invalid username or password'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    
+    # Generate JWT tokens
+    refresh = RefreshToken.for_user(user)
+    
+    return Response({
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+        }
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def jwt_logout(request):
+    """
+    POST /api/auth/logout/
+    Blacklists the refresh token (logs out the user).
+    
+    Request body:
+    {
+        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+    }
+    
+    Response:
+    {
+        "message": "Logged out successfully"
+    }
+    """
+    try:
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response(
+                {'error': 'Refresh token is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        token = RefreshToken(refresh_token)
+        token.blacklist()  # Blacklist the token (requires rest_framework_simplejwt.token_blacklist)
+        
+        return Response(
+            {'message': 'Logged out successfully'},
+            status=status.HTTP_205_RESET_CONTENT
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )

@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
 #-- DRF Router ----------------------------------------------------------------------
@@ -28,6 +29,18 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),#to handle user registration
     path('login/',    views.login_view,    name='login'), #to handle user login
     path('logout/',   views.logout_view,   name='logout'), #to handle user logout
+
+    #--JWT API Auth(for React frontend)
+    #POST{username, password} returns access + refresh tokens +user info
+    path('api/auth/login/', views.jwt_login,  name='jwt-login'),
+    
+    #POST {refresh}  returns new access token (call when access token expires)
+    path('api/auth/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
+
+
+    # POST { refresh } → blacklists refresh token (user logged out)
+    path('api/auth/logout/',  views.jwt_logout,   name='jwt-logout'),
+
 
     #All REST API endpoints live under /api/
     path('api/', include(router.urls)),
