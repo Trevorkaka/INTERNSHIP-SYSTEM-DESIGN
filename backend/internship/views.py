@@ -277,6 +277,11 @@ class EvaluationViewSet(viewsets.ModelViewSet):
     queryset = Evaluation.objects.all()
     serializer_class = EvaluationSerializer
 
+    filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields    = ['criteria', 'log__week_number']
+    search_fields    = ['feedback']
+    ordering_field   = ['score','created_at']   
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminOrAnySupervisor]
