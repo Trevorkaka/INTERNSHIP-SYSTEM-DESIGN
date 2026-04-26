@@ -328,29 +328,6 @@ class CustomAuthToken(ObtainAuthToken):
 
 
     
-   
-
-        
-
-    
-    
-    
-class NotificationViewSet(viewsets.ModelViewSet):
- 
-    #Notifications for logged-in user
-    #- GET /api/notifications/ - Get all notifications
-    #- GET /api/notifications/unread/ - Get unread only
-    #- POST /api/notifications/{id}/mark-as-read/ - Mark single notification as read
-    #- POST /api/notifications/mark-all-as-read/ - Mark all as read
-    
-    
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Notification.objects.filter(recipient=self.request.user)
-    
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     queryset = WorkPlaceSupervisor.objects.all()
     serializer_class = WorkPlaceSupervisorSerializer
