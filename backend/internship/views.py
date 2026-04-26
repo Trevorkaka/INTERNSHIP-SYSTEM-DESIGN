@@ -266,6 +266,8 @@ def login_view(request):
                 return redirect('home')
             form.add_error(None, "Invalid username or password")
             return render(request, 'login.html', {'form': form})
+    form = LoginForm()
+    return render(request, 'login.html', {'form': form})
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
