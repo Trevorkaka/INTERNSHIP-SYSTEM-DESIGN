@@ -127,6 +127,9 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
                 {'error': f'Log must be submitted before it can be reviewed. Current status: {log.status}.'},
                 status=status.HTTP_400_BAD_REQUEST    
             )
+        
+        log.status = 'reviewed'
+        log.save()
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
