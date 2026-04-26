@@ -231,8 +231,9 @@ class NotificationViewSet(viewsets.ModelViewSet):
         Marks ALL of the logged-in user's notifications as read at once.
         """  
         updated = Notification.objects.filter(
-            
-        )  
+            recipient=request.user,
+            is_read=False
+        ).update(is_read=True)
     
     
 class CustomAuthToken(ObtainAuthToken):
