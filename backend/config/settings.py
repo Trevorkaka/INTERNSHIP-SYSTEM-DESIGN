@@ -134,9 +134,10 @@ STATICFILES_DIRS = [
 
 #Register Custom User in settings
 AUTH_USER_MODEL = 'accounts.CustomUser'
+LOGIN_URL = 'login'
 
-#DRF + JWT CONFIG
-from datetime import timedelta
+#--Django REST Framewprk----------------------------------------------------------------------
+
 
 REST_FRAMEWORK = {
     # --- Auth ---
