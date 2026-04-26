@@ -155,7 +155,7 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
-class EvaluationCriterialViewSet(viewsets.ModelViewSet):
+class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
     permission_classes = [IsAdminOrReadOnly] # Only admins can create or edit criteria, but anyone can read them.
