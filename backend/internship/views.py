@@ -167,7 +167,9 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
     
     filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['status', 'week_number']
-
+    search_fields    = ['activities','challenges', 'solutions']  
+    ordering_fields  = ['week_number', 'submitted_at']
+    
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update']:
             permission_classes = [IsStudent]
