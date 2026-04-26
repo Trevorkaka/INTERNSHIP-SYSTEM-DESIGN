@@ -156,6 +156,11 @@ class AcademicSupervisorViewSet(viewsets.ModelViewSet):
     serializer_class = AcademicSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+    filter_backends  =[DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['department']
+    search_fields    = ['user__username', 'user__email', 'department']
+
+
 class WeeklyLogViewSet(viewsets.ModelViewSet):
     queryset = WeeklyLog.objects.all()
     serializer_class = WeeklyLogSerializer
