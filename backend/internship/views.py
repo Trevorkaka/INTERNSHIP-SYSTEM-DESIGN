@@ -52,6 +52,12 @@ def jwt_login(request):
             status=status.HTTP_401_UNAUTHORIZED
         )
     
+    # Generate JWT token pair for the user
+    refresh = RefreshToken.for_user(user)
+
+    # Fetch last 5 unread notifications to send with login response
+    notifications = Notification.objects.filter(recipient=user, is_read=False)[:5]
+
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
