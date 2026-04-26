@@ -185,6 +185,10 @@ class EvaluationViewSet(viewsets.ModelViewSet):
         # Automatically set the evaluator to  the logged-in supervisor when creating an evaluation
         serializer.save(evaluator=self.request.user)
 
+class AssessmentViewSet(viewsets.ModelViewSet):
+    queryset = Assessment.objects.all()
+    serializer_class = AssessmentSerializer
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
