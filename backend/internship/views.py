@@ -105,6 +105,9 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
                 {'error': f'Log is already {log.status}. Only draft logs can be submitted.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        log.status = 'submitted'
+        log.submitted_at = timezone.now()
+        log.save()
         
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
