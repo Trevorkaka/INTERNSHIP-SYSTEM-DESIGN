@@ -92,7 +92,13 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         changes log status from draft to submitted and records the timestamp.
         """
         log = self.get_object()
-            
+
+        if log.student.user != request.user:
+            return Response(
+                {'error': 'You can only submit your own logs.'},
+                status=status.HTTP_403_FORBIDDEN
+        
+            )   
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
