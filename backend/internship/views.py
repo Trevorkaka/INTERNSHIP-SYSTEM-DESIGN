@@ -30,7 +30,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdmin] #Only admins can manage raw user classes.
 
-class StudentViewSet(viewsets.ModelviewSet):
+class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
 
@@ -54,8 +54,8 @@ class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
 
-class AcademicSupervisorViewSet(viewsets.Modelview):
-    querset = AcademicSupervisor.objects.all()
+class AcademicSupervisorViewSet(viewsets.ModelViewSet):
+    queryset = AcademicSupervisor.objects.all()
     serializer_class = AcademicSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
