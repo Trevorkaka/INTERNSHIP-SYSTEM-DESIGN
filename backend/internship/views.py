@@ -336,10 +336,7 @@ class CustomAuthToken(ObtainAuthToken):
 
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAdmin] #Only admins can manage raw user classes.
+
 
 class StudentViewSet(viewsets.ModelViewSet):
     #student endpoints
