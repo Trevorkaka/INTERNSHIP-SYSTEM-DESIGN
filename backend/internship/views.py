@@ -330,10 +330,7 @@ class CustomAuthToken(ObtainAuthToken):
     
 
 
-class AcademicSupervisorViewSet(viewsets.ModelViewSet):
-    queryset = AcademicSupervisor.objects.all()
-    serializer_class = AcademicSupervisorSerializer
-    permission_classes = [IsAdminOrReadOnly]
+
 
 class WeeklyLogViewSet(viewsets.ModelViewSet):
     queryset = WeeklyLog.objects.all()
