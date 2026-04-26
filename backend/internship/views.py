@@ -89,7 +89,14 @@ def jwt_logout(request):
             {'error': 'Refresh token is required to log out.'},
             status=status.HTTP_400_BAD_REQUEST
         )
-
+    
+    try:
+        token = RefreshToken(refresh_token)
+        token.blacklist()  # Invalidate this refresh token permanently
+        return Response(
+            {'message': 'Logged out successfully.'},
+            status=status.HTTP_200_OK
+        )
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
