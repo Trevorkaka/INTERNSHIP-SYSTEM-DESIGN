@@ -325,11 +325,3 @@ class CustomAuthToken(ObtainAuthToken):
         return 'unknown'
  
  
-
-
-
-@login_required
-def logout_view(request):
-    """handle user logout"""
-    logout(request)
-    return redirect('login')
