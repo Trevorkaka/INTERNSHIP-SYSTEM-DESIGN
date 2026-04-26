@@ -224,6 +224,15 @@ class NotificationViewSet(viewsets.ModelViewSet):
         notification.mark_as_read()
         return Response({'message': 'Notification marked as read.'}, status=status.HTTP_200_OK)
     
+    @action(detail=False, methods=['post'])
+    def mark_all_as_read(self, request):
+        """
+        POST /api/notifications/mark_all_as_read/
+        Marks ALL of the logged-in user's notifications as read at once.
+        """  
+        updated = Notification.objects.filter(
+            
+        )  
     
     
 class CustomAuthToken(ObtainAuthToken):
