@@ -135,6 +135,13 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
             {'message': f'Week {log.week_number} log marked as reviewed.'},
             status=status.HTTP_200_OK
         )
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def approve(self, request, pk=None):
+        """
+        POST /api/Weekly-logs/{id}/approve/
+        Admin approves a reviewed log.
+        """
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
