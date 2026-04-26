@@ -326,27 +326,9 @@ class CustomAuthToken(ObtainAuthToken):
  
  
 
-    
-
-
-
-
-
-
-
-
-
-
-
 
     
-    def get_permissions(self):
-        #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
-        if self.action in ['list', 'retrieve']:
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [IsAdmin]
-        return [permission() for permission in permission_classes]
+   
 
     def get_queryset(self):
         #STUDENT SEES ONLY THEIR OWN PROFILE : ADMIN SEES ALL
