@@ -220,7 +220,10 @@ class NotificationViewSet(viewsets.ModelViewSet):
         POST /api/notifications/{id}/mark-as-read/
         Marks a single notification as read.
         """
-        
+        notification = self.get_object()
+        notification.mark_as_read()
+        return Response({'message': 'Notification marked as read.'}, status=status.HTTP_200_OK)
+    
     
     
 class CustomAuthToken(ObtainAuthToken):
