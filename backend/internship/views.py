@@ -3,8 +3,10 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -39,6 +41,7 @@ def jwt_login(request):
     """
     username = request.data.get('username')
     password = request.data.get('password')
+
     if not username or not password:
         return Response(
             {'error': 'Username and password are required.'},
@@ -110,9 +113,19 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdmin] #Only admins can manage raw user classes.
 
+    filter_backends  =   [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields =   ['role']
+    search_fields    =   ['username', 'email', 'first_name', 'last_name']
+    ordering_fields  =   ['username', 'date_joined']
+
+
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    
+filter_backends =[DjangoFilterBackend, SearchFilter, OrderingFilter]
+filterset_fields =['course', 'year_of_study']
+search_fields  = ['user_username',]
 
     def get_permissions(self):
         #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
