@@ -83,7 +83,13 @@ def jwt_logout(request):
     Requires: Authorization: Bearer <access_token>
     """
     refresh_token = request.data.get('refresh')
-    
+
+    if not refresh_token:
+        return Response(
+            {'error': 'Refresh token is required to log out.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
