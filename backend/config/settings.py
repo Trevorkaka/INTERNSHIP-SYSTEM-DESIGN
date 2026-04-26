@@ -21,7 +21,8 @@ INSTALLED_APPS = [
     'internship',
     'rest_framework',
     'rest_framework_simplejwt',        
-    'rest_framework_simplejwt.token_blacklist', # Allows logout (token blacklisting)
+    'rest_framework_simplejwt.token_blacklist',
+    'django_filters' # Allows logout (token blacklisting)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
