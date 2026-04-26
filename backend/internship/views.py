@@ -25,7 +25,7 @@ from .permissions import (
 )
 from .forms import RegistrationForm, LoginForm
 #viewsets
-class Uaerviewset(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdmin] #Only admins can manage raw user classes.
