@@ -326,33 +326,6 @@ class CustomAuthToken(ObtainAuthToken):
  
  
 
-
-
-
-   
-
-    
-    
- # Authentication Views
-def register_view(request):
-    """Handle user registration"""  
-    if request.method == 'POST': 
-        # Handle registration logic here
-        form = RegistrationForm(request.POST) #take form data from user submission
-        if form.is_valid(): #check if data passes all validation rules defined in the form
-            user = form.save(commit=False) #create user object but dont save to database yet
-            user.set_password(form.cleaned_data['password']) #hash the password before saving
-            user.save() #save the user to the database
-            return redirect('login') #redirect to login page after successful registration
-            #if form has errors, show form again with error messages
-        return render(request, 'register.html', {'form': form}) #show form with error messages
-    else:
-        #get request, show empty registration form
-        form = RegistrationForm() #create an empty form instance
-        #now returns the form
-        return render(request, 'register.html', {'form': form})    
-    
-
 def login_view(request):
     """Handle user login"""
     if request.method == 'POST':
