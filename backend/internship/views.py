@@ -305,6 +305,12 @@ class AssessmentViewSet(viewsets.ModelViewSet):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentSerializer
 
+    
+    filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['log__week_number']
+    search_fields    = ['feedback']
+    ordering_fields  = ['marks', 'assessed_at']
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminOrAnySupervisor]
