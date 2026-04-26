@@ -152,6 +152,11 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         log.status = 'approved'
         log.save()
 
+        return Response(
+            {'message': f'Week {log.week_number} log approved.'},
+            status=status.HTTP_200_OK
+        )
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
