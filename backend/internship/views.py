@@ -142,6 +142,13 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         POST /api/Weekly-logs/{id}/approve/
         Admin approves a reviewed log.
         """
+        log = self.get_object()
+
+        if log.status != 'reviewed':
+            return Response(
+                {'error': f'Log must be reviewed before it can be approved. Current status: {log.status}.'},
+                status=status.HTTP_400_BAD_REQUEST    
+            )
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
