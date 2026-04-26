@@ -330,12 +330,7 @@ class CustomAuthToken(ObtainAuthToken):
     
    
 
-    def get_queryset(self):
-        #STUDENT SEES ONLY THEIR OWN PROFILE : ADMIN SEES ALL
-        user = self.request.user
-        if user.is_student:
-            return Student.objects.filter(user=user)
-        return Student.objects.all()
+   
     
     @action(detail=False, methods=['get'])
     def my_profile(self, request):
