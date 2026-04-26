@@ -328,27 +328,8 @@ class CustomAuthToken(ObtainAuthToken):
 
 
 
-class EvaluationViewSet(viewsets.ModelViewSet):
-    queryset = Evaluation.objects.all()
-    serializer_class = EvaluationSerializer
-    def get_permissions(self):
-        #Only Supervisors and Admins can create or edit grades. 
-        #Students can only view their grades.
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            permission_classes = [IsAdminOrAnySupervisor]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_student:
-            return Evaluation.objects.filter(log__student__user=user)
-        elif user.is_academic_supervisor or user.is_workplace_supervisor:
-            return Evaluation.objects.filter(evaluator=user)
-        return Evaluation.objects.all()
-
-
+   
 class AssessmentViewSet(viewsets.ModelViewSet):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentSerializer
