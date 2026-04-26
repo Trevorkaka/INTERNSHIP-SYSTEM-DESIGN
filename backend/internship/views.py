@@ -206,6 +206,11 @@ class AssessmentViewSet(viewsets.ModelViewSet):
         # Automatically set the assessor to the logged-in supervisor
         serializer.save(assessor=self.request.user)
 
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
