@@ -1,7 +1,10 @@
 from django.utils import timezone
 from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -273,5 +276,91 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
- 
- 
+
+# ── JWT Authentication Views (for React/API frontend) ─────────────────────────────
+@api_view(['POST'])
+def jwt_login(request):
+    """
+    POST /api/auth/login/
+    Authenticates user with username/password and returns JWT tokens.
+    
+    Request body:
+    {
+        "username": "user@example.com",
+        "password": "password123"
+    }
+    
+    Response:
+    {
+        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+        "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+        "user": {
+            "id": 1,
+            "username": "user@example.com",
+            "email": "user@example.com",
+            "role": "student"
+        }
+    }
+    """
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    # Authenticate the user
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return Response(
+            {'error': 'Invalid username or password'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    
+    # Generate JWT tokens
+    refresh = RefreshToken.for_user(user)
+    
+    return Response({
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+        }
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def jwt_logout(request):
+    """
+    POST /api/auth/logout/
+    Blacklists the refresh token (logs out the user).
+    
+    Request body:
+    {
+        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+    }
+    
+    Response:
+    {
+        "message": "Logged out successfully"
+    }
+    """
+    try:
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response(
+                {'error': 'Refresh token is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        token = RefreshToken(refresh_token)
+        token.blacklist()  # Blacklist the token (requires rest_framework_simplejwt.token_blacklist)
+        
+        return Response(
+            {'message': 'Logged out successfully'},
+            status=status.HTTP_205_RESET_CONTENT
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )
