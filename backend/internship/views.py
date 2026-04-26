@@ -328,10 +328,6 @@ class CustomAuthToken(ObtainAuthToken):
 
 
     
-class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
-    queryset = WorkPlaceSupervisor.objects.all()
-    serializer_class = WorkPlaceSupervisorSerializer
-    permission_classes = [IsAdminOrReadOnly]
 
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
