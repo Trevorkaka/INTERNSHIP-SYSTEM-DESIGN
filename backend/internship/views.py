@@ -180,6 +180,10 @@ class EvaluationViewSet(viewsets.ModelViewSet):
         elif user.is_academic_supervisor or user.is_workplace_supervisor:
             return Evaluation.objects.filter(evaluator=user)
         return Evaluation.objects.all()
+    
+    def perform_create(self, serializer):
+        # Automatically set the evaluator to  the logged-in supervisor when creating an evaluation
+        serializer.save(evaluator=self.request.user)
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
