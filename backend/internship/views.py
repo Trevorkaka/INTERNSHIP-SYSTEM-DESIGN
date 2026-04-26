@@ -108,7 +108,20 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         log.status = 'submitted'
         log.submitted_at = timezone.now()
         log.save()
+
+        return Response(
+            {'message': f'Week {log.week_number} log submitted successfully.'},
+            status=status.HTTP_200_OK
+
+        )
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrAnySupervisor])
+    def review(self, request, pk=None):
+        """
+        POST /api/weekly-logs/{id}/review/
+        Supervisor marks a submitted log as reviewed. This is a simple status change for now, but could be expanded to include feedback comments in the future.
+        """
         
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
