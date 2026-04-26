@@ -169,7 +169,7 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
     filterset_fields = ['status', 'week_number']
     search_fields    = ['activities','challenges', 'solutions']  
     ordering_fields  = ['week_number', 'submitted_at']
-    
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update']:
             permission_classes = [IsStudent]
@@ -268,6 +268,10 @@ class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
     permission_classes = [IsAdminOrReadOnly] # Only admins can create or edit criteria, but anyone can read them.
+    
+    filter_backends  = [SearchFilter, OrderingFilter]
+    search_fields    = ['name']
+    ordering_fields  = ['name', 'max_score']
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     queryset = Evaluation.objects.all()
