@@ -249,6 +249,7 @@ def register_view(request):
             user.set_password(form.cleaned_data['password'])
             user.save()
             return redirect('login')    
+        return render(request, 'register.html', {'form': form})
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
