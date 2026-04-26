@@ -168,6 +168,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,      #old refresh token becomes invalid after rotation
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'UPDATE_LAST_LOGIN': True,             #Updates user.last_login on token issue
 }
 
 REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exceptions.custom_exception_handler'
