@@ -85,6 +85,15 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         student = self.request.user.student #onetoone reverse relation
         serializer.save(student=student)
 
+    @action(detail=True, methods=['post'], permission_classes=[IsStudent]) 
+    def submit(self, request, pk=None):
+        """
+        POST /api/weekly-logs/{id}/submit/
+        changes log status from draft to submitted and records the timestamp.
+        """
+        log = self.get_object()
+            
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
