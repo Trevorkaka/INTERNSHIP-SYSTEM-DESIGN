@@ -24,7 +24,8 @@ router.register(r'notifications',         views.NotificationViewSet,        base
 
 
 urlpatterns = [
+    #Auth views (rendered HTML pages)
     path('register/', views.register_view, name='register'),#to handle user registration
-    path('login/',views.login_view, name='login'), #to handle user login
-    path('logout/', views.logout_view, name='logout'), #to handle user logout
+    path('login/',    views.login_view,    name='login'), #to handle user login
+    path('logout/',   views.logout_view,   name='logout'), #to handle user logout
 ]
