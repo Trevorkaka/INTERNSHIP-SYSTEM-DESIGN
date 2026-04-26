@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import './dashboards/dashboards.css'
-import StudentDashboard from './dashboards/StudentDashboard'
-import WorkplaceSupervisorDashboard from './dashboards/WorkplaceSupervisorDashboard'
-import Login from './dashboards/Login'
+import { StudentDashboard, WorkplaceSupervisorDashboard, Login } from './components/dashboards'
 
 function App() {
   const [view, setView] = useState('home')
