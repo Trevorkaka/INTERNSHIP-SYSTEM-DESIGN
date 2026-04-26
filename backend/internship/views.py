@@ -326,25 +326,6 @@ class CustomAuthToken(ObtainAuthToken):
  
  
 
-def login_view(request):
-    """Handle user login"""
-    if request.method == 'POST':
-        # Handle login logic here
-        form = LoginForm(request.POST) #take form data from user submission
-        if form.is_valid(): #check if form data is valid
-            username = form.cleaned_data['username'] #Extract username
-            password = form.cleaned_data['password'] #Extract paasword
-            user = authenticate(request, username=username, password=password) #check against database for matching user
-            if user is not None: #if user credentials are correct
-                login(request, user) #Django creates a session for the user 
-                return redirect('home') #send user to home page after successful login
-            else: #If authentication fails, show form again with error message
-                form.add_error(None, "Invalid username or password") #Add non-field error to form
-                return render(request, 'login.html', {'form': form}) #Show form with error message
-    else:
-        # GET request - show empty login form
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
 
 
 @login_required
