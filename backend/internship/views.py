@@ -70,6 +70,16 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]  
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return WeeklyLog.objects.filter(student__user=user)
+        elif user.is_academic_supervisor:
+            return WeeklyLog.objects.filter(student__academic_supervisor=user)
+        elif user.is_workplace_supervisor:
+            return WeeklyLog.objects.filter(student__workplace_supervisor=user)
+        return WeeklyLog.objects.all()
+    
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
