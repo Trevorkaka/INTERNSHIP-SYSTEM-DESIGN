@@ -100,6 +100,12 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         
             )   
 
+        if log.status != 'draft':
+            return Response(
+                {'error': f'Log is already {log.status}. Only draft logs can be submitted.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
