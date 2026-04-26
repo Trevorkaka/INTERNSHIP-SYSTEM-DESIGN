@@ -28,4 +28,12 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),#to handle user registration
     path('login/',    views.login_view,    name='login'), #to handle user login
     path('logout/',   views.logout_view,   name='logout'), #to handle user logout
+
+    #All REST API endpoints live under /api/
+    path('api/', include(router.urls)),
+
+    #DRF browsable API login (useful during development)
+    path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
+
 ]
+
