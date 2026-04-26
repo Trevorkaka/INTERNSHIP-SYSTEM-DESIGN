@@ -32,7 +32,7 @@ urlpatterns = [
 
     #--JWT API Auth(for React frontend)
     #POST{username, password} returns access + refresh tokens +user info
-    path('api/auth/ogin/', views.jwt_login,  name='jwt-login'),
+    path('api/auth/login/', views.jwt_login,  name='jwt-login'),
     
     #POST {refresh}  returns new access token (call when access token expires)
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
