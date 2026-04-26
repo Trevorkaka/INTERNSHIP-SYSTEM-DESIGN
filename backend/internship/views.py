@@ -275,23 +275,6 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-class CustomAuthToken(ObtainAuthToken):
-    """custom login end point that returns token + user info + notifications
-    """
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-
-        user = authenticate(username=username, password=password)
-
-        if user is None:
-            return Response({
-                'error':'Invalid credentials'
-            }, status = status.HTTP_401_UNAUTHORIZED)
-        token, created = Token.objects.get_or_create(user=user)
-
-        #get user role
-        user_role = self._get_user_role(user)
 
         #get unread notifications
         notifications = Notification.objects.filter(
