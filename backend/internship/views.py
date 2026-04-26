@@ -239,7 +239,16 @@ class NotificationViewSet(viewsets.ModelViewSet):
             {'message': f'{updated} notification(s) marked as read.'},
             status=status.HTTP_200_OK
         )
-    
+# Authentication Views
+def register_view(request):
+    """Handle user registration"""
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid(): #check if form data is valid according to the rules defined in the form class
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            return redirect('login')    
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
