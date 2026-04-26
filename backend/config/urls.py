@@ -28,14 +28,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 #def home(request):
     #return HttpResponse("Welcome to ILES System")
 
-urlpatterns = [
+urlpatterns =[
     path('admin/', admin.site.urls),
     path('', include('internship.urls')), #include the urls from the internship app, this means any url that starts with / will be handled by the internship app
     path('students/', views.student_list),
     path('add/', views.add_student),
     path('', home ),
 
-     
+     g
     path('', include('core.urls')), 
 
     # Auth
