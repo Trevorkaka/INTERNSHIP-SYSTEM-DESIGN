@@ -29,7 +29,7 @@ from .forms import RegistrationForm, LoginForm
 
 #--JWT Auth API Views ---------------------
 
-api_view(['POST'])
+@api_view(['POST'])
 @permission_classes([AllowAny])  # No auth needed to log in
 def jwt_login(request):
     """
@@ -44,7 +44,7 @@ def jwt_login(request):
             {'error': 'Username and password are required.'},
             status=status.HTTP_400_BAD_REQUEST
         )
-     user = authenticate(username=username, password=password)
+    user = authenticate(username=username, password=password)
 
     if user is None:
         return Response(
