@@ -18,6 +18,8 @@ router.register(r'workplace-supervisors',views.WorkPlaceSupervisorViewSet, basen
 router.register(r'academic-supervisors', views.AcademicSupervisorViewSet,  basename='academic-supervisor')
 router.register(r'weekly-logs',   views.WeeklyLogViewSet,           basename='weekly-log')
 router.register(r'evaluations',   views.EvaluationViewSet,          basename='evaluation')
+router.register(r'evaluaton-criteria', views.EvaluationCriteriaViewSet, basename='evaluation-criteria')
+router.register(r'assessments',   views.AssessmentViewSet,          basename='assessment')
 urlpatterns = [
     path('register/', views.register_view, name='register'),#to handle user registration
     path('login/',views.login_view, name='login'), #to handle user login
