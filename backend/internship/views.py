@@ -330,23 +330,8 @@ class CustomAuthToken(ObtainAuthToken):
 
 
    
-class AssessmentViewSet(viewsets.ModelViewSet):
-    queryset = Assessment.objects.all()
-    serializer_class = AssessmentSerializer
-    
-    def get_permissions(self):
-        #Same logic as Evaluations. Supervisors grade, Students read.
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            permission_classes = [IsAdminOrAnySupervisor]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_student:
-            return Assessment.objects.filter(log__student__user=user)
-        return Assessment.objects.all()
+    
     
  # Authentication Views
 def register_view(request):
