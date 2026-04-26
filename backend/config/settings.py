@@ -31,16 +31,15 @@ INSTALLED_APPS = [
     'core',
 
     # Third-party
-    'rest_framework',
     'django_filters',
 
     # Local apps
-    'apps.accounts',
-    'apps.placements',
-    'apps.logs',
-    'apps.evaluations',
-    'apps.notifications',
-    'apps.common',
+    #'apps.accounts',
+    #'apps.placements',
+    #'apps.logs',
+    #'apps.evaluations',
+    #'apps.notifications',
+    #'apps.common',
     
     
 ]
@@ -133,8 +132,8 @@ STATICFILES_DIRS = [
     ]
 
 #Register Custom User in settings
-AUTH_USER_MODEL = 'accounts.CustomUser'
-LOGIN_URL = 'login'
+#AUTH_USER_MODEL = 'accounts.CustomUser'
+
 
 #--Django REST Framewprk----------------------------------------------------------------------
 
