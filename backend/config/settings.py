@@ -164,8 +164,8 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),    #Access token expires in 60 minutes
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  #Refresh token expires in 7 days
+    'ROTATE_REFRESH_TOKENS': True,         #Issue new refresh token on every refresh
     'BLACKLIST_AFTER_ROTATION': True,      #old refresh token becomes invalid after rotation
     'AUTH_HEADER_TYPES': ('Bearer',),      #Frontend sends: Authorization Bearer <token>
     'UPDATE_LAST_LOGIN': True,             #Updates user.last_login on token issue
