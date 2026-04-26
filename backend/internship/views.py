@@ -120,7 +120,13 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         POST /api/weekly-logs/{id}/review/
         Supervisor marks a submitted log as reviewed. This is a simple status change for now, but could be expanded to include feedback comments in the future.
         """
-        
+        log = self.get_object()
+
+        if log.status != 'submitted':
+            return Response(
+                {'error': f'Log must be submitted before it can be reviewed. Current status: {log.status}.'},
+                status=status.HTTP_400_BAD_REQUEST    
+            )
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
