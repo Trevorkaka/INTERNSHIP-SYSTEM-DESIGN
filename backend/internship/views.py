@@ -80,6 +80,11 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
             return WeeklyLog.objects.filter(student__workplace_supervisor=user)
         return WeeklyLog.objects.all()
     
+    def perform_create(self, serializer):
+        # Automaticaly link the log to the student logged in
+        student = self.request.user.student #onetoone reverse relation
+        serializer.save(student=student)
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
