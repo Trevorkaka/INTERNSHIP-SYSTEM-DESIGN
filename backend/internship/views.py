@@ -338,10 +338,7 @@ class CustomAuthToken(ObtainAuthToken):
 
 
 
-class StudentViewSet(viewsets.ModelViewSet):
-    #student endpoints
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
+
     
     def get_permissions(self):
         #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
