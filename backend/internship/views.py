@@ -73,6 +73,17 @@ def jwt_login(request):
         'unread_count': Notification.objects.filter(recipient=user, is_read=False).count(),
     }, status=status.HTTP_200_OK)
 
+
+@api_view(['POST'])
+def jwt_logout(request):
+    """
+    POST /api/auth/logout/
+    Body: { "refresh": "<refresh_token>" }
+    Blacklists the refresh token so it can't be used again.
+    Requires: Authorization: Bearer <access_token>
+    """
+    refresh_token = request.data.get('refresh')
+    
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
