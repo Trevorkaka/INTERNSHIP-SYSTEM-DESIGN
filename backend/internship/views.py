@@ -214,6 +214,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user)
     
+    @action(detail=True, methods=['post'])
+    def mark_as_read(self, request, pk=None):
+        """
+        POST /api/notifications/{id}/mark-as-read/
+        Marks a single notification as read.
+        """
+        
+    
     
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
