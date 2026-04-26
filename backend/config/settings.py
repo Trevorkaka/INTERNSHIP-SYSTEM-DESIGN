@@ -167,7 +167,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,      #old refresh token becomes invalid after rotation
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_TYPES': ('Bearer',),      #Frontend sends: Authorization Bearer <token>
     'UPDATE_LAST_LOGIN': True,             #Updates user.last_login on token issue
 }
 
