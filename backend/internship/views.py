@@ -3,8 +3,10 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -39,6 +41,7 @@ def jwt_login(request):
     """
     username = request.data.get('username')
     password = request.data.get('password')
+
     if not username or not password:
         return Response(
             {'error': 'Username and password are required.'},
@@ -110,9 +113,20 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdmin] #Only admins can manage raw user classes.
 
+    filter_backends  =   [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields =   ['role']
+    search_fields    =   ['username', 'email', 'first_name', 'last_name']
+    ordering_fields  =   ['username', 'date_joined']
+
+
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    
+    filter_backends  =  [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields =  ['course', 'year_of_study']
+    search_fields    =  ['user__username', 'user__email','registration_number']
+    ordering_fields  =  ['year_of_study']
 
     def get_permissions(self):
         #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
@@ -133,15 +147,28 @@ class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     serializer_class = WorkPlaceSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+    filter_backends   =  [DjangoFilterBackend, SearchFilter]
+    filterset_fields  =  ['company_name']
+    search_fields     =  ['user__username', 'user_email', 'company_name']
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
     queryset = AcademicSupervisor.objects.all()
     serializer_class = AcademicSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+    filter_backends  = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['department']
+    search_fields    = ['user__username', 'user__email', 'department']
+
+
 class WeeklyLogViewSet(viewsets.ModelViewSet):
     queryset = WeeklyLog.objects.all()
     serializer_class = WeeklyLogSerializer
+    
+    filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['status', 'week_number']
+    search_fields    = ['activities','challenges', 'solutions']  
+    ordering_fields  = ['week_number', 'submitted_at']
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update']:
@@ -241,10 +268,19 @@ class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
     permission_classes = [IsAdminOrReadOnly] # Only admins can create or edit criteria, but anyone can read them.
+    
+    filter_backends  = [SearchFilter, OrderingFilter]
+    search_fields    = ['name']
+    ordering_fields  = ['name', 'max_score']
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     queryset = Evaluation.objects.all()
     serializer_class = EvaluationSerializer
+
+    filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filter_fields    = ['criteria', 'log__week_number']
+    search_fields    = ['feedback']
+    ordering_field   = ['score','created_at']   
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -269,6 +305,12 @@ class AssessmentViewSet(viewsets.ModelViewSet):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentSerializer
 
+    
+    filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['log__week_number']
+    search_fields    = ['feedback']
+    ordering_fields  = ['marks', 'assessed_at']
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminOrAnySupervisor]
@@ -290,6 +332,12 @@ class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    
+    filter_backends  = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['is_read', 'notification_type']
+    ordering_fields  = ['created_at']
+
 
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user)
