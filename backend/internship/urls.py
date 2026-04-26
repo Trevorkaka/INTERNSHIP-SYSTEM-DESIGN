@@ -37,6 +37,11 @@ urlpatterns = [
     #POST {refresh}  returns new access token (call when access token expires)
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
 
+    
+    # POST { refresh } → blacklists refresh token (user logged out)
+    path('api/auth/logout/',  views.jwt_logout,   name='jwt-logout'),
+
+
     #All REST API endpoints live under /api/
     path('api/', include(router.urls)),
 
