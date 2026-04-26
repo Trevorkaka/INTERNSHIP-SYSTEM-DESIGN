@@ -20,6 +20,9 @@ router.register(r'weekly-logs',   views.WeeklyLogViewSet,           basename='we
 router.register(r'evaluations',   views.EvaluationViewSet,          basename='evaluation')
 router.register(r'evaluaton-criteria', views.EvaluationCriteriaViewSet, basename='evaluation-criteria')
 router.register(r'assessments',   views.AssessmentViewSet,          basename='assessment')
+router.register(r'notifications', views.NotificationViewSet,        basename='notification')
+
+
 urlpatterns = [
     path('register/', views.register_view, name='register'),#to handle user registration
     path('login/',views.login_view, name='login'), #to handle user login
