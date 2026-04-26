@@ -276,25 +276,7 @@ def logout_view(request):
     return redirect('login')
 
 
-        #get unread notifications
-        notifications = Notification.objects.filter(
-            recipient=user,
-            is_read = False
-        )[:5] # last 5 unread
-
-        return Response({
-            'token': token.key,
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'role': user_role
-            },
-            'unread_notifications': NotificationSerializer(notifications, many=True).data,
-            'unread_count': Notification.objects.filter(recipient=user, is_read=False).count()
-        })
+      
     
 
     def _get_user_role(self, user):
