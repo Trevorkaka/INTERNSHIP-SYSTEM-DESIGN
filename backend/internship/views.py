@@ -37,7 +37,9 @@ def jwt_login(request):
     Body: { "username": "...", "password": "..." }
     Returns: access token, refresh token, user info, unread notifications
     """
-
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
