@@ -58,7 +58,7 @@ def jwt_login(request):
     # Fetch last 5 unread notifications to send with login response
     notifications = Notification.objects.filter(recipient=user, is_read=False)[:5]
     
-     return Response({
+    return Response({
         'access':  str(refresh.access_token),  # Short-lived (60 min)
         'refresh': str(refresh),                # Long-lived (7 days)
         'user': {
@@ -69,7 +69,10 @@ def jwt_login(request):
             'last_name':  user.last_name,
             'role':       user.role,
         },
-    
+        'unread_notifications': NotificationSerializer(notifications, many=True).data,
+        'unread_count': Notification.objects.filter(recipient=user, is_read=False).count(),
+    }, status=status.HTTP_200_OK)
+
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
