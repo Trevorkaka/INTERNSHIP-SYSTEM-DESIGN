@@ -11,6 +11,10 @@ from . import views
 #   PATCH  /api/students/{id}/     → partial_update
 #   DELETE /api/students/{id}/     → destroy
 
+router = DefaultRouter()
+router.register(r'users',         views.UserViewSet,                basename='user')
+router.register(r'students',      views.StudentViewSet,             basename='student')
+
 
 urlpatterns = [
     path('register/', views.register_view, name='register'),#to handle user registration
