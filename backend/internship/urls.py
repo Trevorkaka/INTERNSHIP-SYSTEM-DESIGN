@@ -14,7 +14,8 @@ from . import views
 router = DefaultRouter()
 router.register(r'users',         views.UserViewSet,                basename='user')
 router.register(r'students',      views.StudentViewSet,             basename='student')
-
+router.register(r'workplace-supervisors',views.WorkPlaceSupervisorViewSet, basename='workplace-supervisor')
+router.register(r'academic-supervisors', views.AcademicSupervisorViewSet,  basename='academic-supervisor')
 
 urlpatterns = [
     path('register/', views.register_view, name='register'),#to handle user registration
