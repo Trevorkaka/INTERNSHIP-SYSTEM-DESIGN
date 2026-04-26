@@ -147,7 +147,9 @@ class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     serializer_class = WorkPlaceSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
-   
+    filter_backends   =  [DjangoFilterBackend, SearchFilter]
+    filterset_fields  =  ['company_name']
+    search_fields     =  ['user__username', 'user_email', 'company_name']
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
     queryset = AcademicSupervisor.objects.all()
