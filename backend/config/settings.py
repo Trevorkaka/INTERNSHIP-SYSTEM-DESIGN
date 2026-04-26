@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',        
     'rest_framework_simplejwt.token_blacklist',
-    'django_filters' # Allows logout (token blacklisting)
+    'django_filters',  # For filtering querysets
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -32,8 +32,8 @@ INSTALLED_APPS = [
     'core',
 
     # Third-party
-    'django_filters',
-
+    # 'rest_framework_simplejwt',  # For JWT token authentication
+    
     # Local apps
     #'apps.accounts',
     #'apps.placements',
@@ -80,15 +80,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
 
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'group20_db',
-        'USER': 'group20_user',
-        'PASSWORD': 'group20password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        #'ENGINE': 'django.db.backends.postgresql',
+        #'NAME': 'group20_db',
+        #'USER': 'group20_user',
+        #'PASSWORD': 'group20password',
+        #'HOST': 'localhost',
+        #'PORT': '5432',
     }
 }
 
