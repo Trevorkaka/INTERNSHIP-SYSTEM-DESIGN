@@ -123,9 +123,10 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     
-filter_backends =[DjangoFilterBackend, SearchFilter, OrderingFilter]
-filterset_fields =['course', 'year_of_study']
-search_fields  = ['user_username', 'user_email','registration_number']
+    filter_backends  =  [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields =  ['course', 'year_of_study']
+    search_fields    =  ['user__username', 'user__email','registration_number']
+    ordering_fields  =  ['year_of_study']
 
     def get_permissions(self):
         #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
@@ -146,6 +147,7 @@ class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     serializer_class = WorkPlaceSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+   
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
     queryset = AcademicSupervisor.objects.all()
