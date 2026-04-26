@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenRefreshview  
+from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
 #-- DRF Router ----------------------------------------------------------------------
@@ -37,7 +37,7 @@ urlpatterns = [
     #POST {refresh}  returns new access token (call when access token expires)
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
 
-    
+
     # POST { refresh } → blacklists refresh token (user logged out)
     path('api/auth/logout/',  views.jwt_logout,   name='jwt-logout'),
 
