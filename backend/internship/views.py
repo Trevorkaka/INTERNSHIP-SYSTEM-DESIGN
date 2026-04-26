@@ -8,6 +8,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+
 from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
     WeeklyLog, EvaluationCriteria, Evaluation,
@@ -25,6 +26,13 @@ from .permissions import (
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
 from .forms import RegistrationForm, LoginForm
+
+#--JWT Auth API Views ---------------------
+
+api_view(['POST'])
+@permission_classes([AllowAny])  # No auth needed to log in
+def jwt_login(request):
+
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
