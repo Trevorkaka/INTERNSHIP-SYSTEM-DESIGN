@@ -39,6 +39,11 @@ def jwt_login(request):
     """
     username = request.data.get('username')
     password = request.data.get('password')
+    if not username or not password:
+        return Response(
+            {'error': 'Username and password are required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
 #viewsets
 class UserViewSet(viewsets.ModelViewSet):
