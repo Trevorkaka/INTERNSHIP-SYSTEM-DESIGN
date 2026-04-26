@@ -269,6 +269,12 @@ def login_view(request):
     form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
+@login_required
+def logout_view(request):
+    """Handle user logout"""
+    logout(request)
+    return redirect('login')
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
