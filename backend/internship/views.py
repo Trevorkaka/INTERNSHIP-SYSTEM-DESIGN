@@ -327,35 +327,6 @@ class CustomAuthToken(ObtainAuthToken):
  
 
 
-    
-
-
-
-
-class WeeklyLogViewSet(viewsets.ModelViewSet):
-    queryset = WeeklyLog.objects.all()
-    serializer_class = WeeklyLogSerializer
-    
-    def get_permissions(self):
-        # PERMISSION: Only Students can write or edit logs.
-        # Supervisors and Admins can only read them.
-        if self.action in ['create', 'update', 'partial_update']:
-            permission_classes = [IsStudent]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_student:
-            return WeeklyLog.objects.filter(student__user=user)
-        elif user.is_academic_supervisor:
-            return WeeklyLog.objects.filter(student__academic_supervisor=user)
-        elif user.is_workplace_supervisor:
-            return WeeklyLog.objects.filter(student__workplace_supervisor=user)
-        return WeeklyLog.objects.all()
-
-
 class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
