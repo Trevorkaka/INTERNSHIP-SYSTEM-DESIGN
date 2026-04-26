@@ -250,6 +250,9 @@ def register_view(request):
             user.save()
             return redirect('login')    
         return render(request, 'register.html', {'form': form})
+    form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
+
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
     """
