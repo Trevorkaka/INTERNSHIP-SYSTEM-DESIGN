@@ -104,7 +104,7 @@ def jwt_logout(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-#viewsets
+#---------viewsets------------------------
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
