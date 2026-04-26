@@ -195,6 +195,12 @@ class AssessmentViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return Assessment.objects.filter(log__student__user=user)
+        return Assessment.objects.all()
 
 class CustomAuthToken(ObtainAuthToken):
     """custom login end point that returns token + user info + notifications
