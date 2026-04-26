@@ -6,9 +6,6 @@ from datatime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-hjt1o9cdh1e(a^#v1tz)gzniggyxk8v9ozlwtpmjn5b*gb__7w'
 
@@ -21,8 +18,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework.authtoken',
     'internship',
+    'rest_framework',
+    'rest_framework_simplejwt',        
+    'rest_framework_simplejwt.token_blacklist', # Allows logout (token blacklisting)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
