@@ -18,5 +18,21 @@ export default function Login({onLogin}){
       setError(err.response?.data?.error || 'Login failed')
     }
   }
-
+  return(
+    <form onSubmit={submit} style={{ display: 'grid', gap: 8, maxWidth: 360 }}>
+      <h3>Sign in</h3>
+      {error && <div style={{ color: 'crimson' }}>{error}</div>}
+      <label>
+        Username
+        <input value={username} onChange={(e) => setUsername(e.target.value)} />
+      </label>
+      <label>
+        Password
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </label>
+      <div>
+        <button type="submit">Sign in</button>
+      </div>
+    </form>
+  )
 }
