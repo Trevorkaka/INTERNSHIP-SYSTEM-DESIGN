@@ -37,5 +37,21 @@ export default function WorkplaceSupervisorDashboard() {
             <h1 style={{ color: '#1a1c2e' }}>Workplace Supervisor Portal</h1>
             <p style={{ color: '#64748b', marginBottom: '30px' }}>Review and verify student weekly logs.</p>
             
-           
+            <Card title="Pending Log Reviews">
+                {loading ? (
+                    <div>Loading logs...</div>
+                ) : logs.length === 0 ? (
+                    <div style={{ padding: '20px', textAlign: 'center' }}>No logs submitted for review yet.</div>
+                ) : (
+                    <div style={{ display: 'grid', gap: '15px' }}>
+                        {logs.map((log) => (
+                            <div key={log.id} style={logBoxStyle}>
+                                <div>
+                                    <span style={badgeStyle(log.status)}>{log.status.toUpperCase()}</span>
+                                    <h3 style={{ margin: '10px 0 5px 0' }}>Week {log.week_number} Log</h3>
+                                    <p style={{ fontSize: '14px', color: '#475569' }}><strong>Activities:</strong> {log.activities.substring(0, 100)}...</p>
+                                </div>
+                                
+                                
+
 
