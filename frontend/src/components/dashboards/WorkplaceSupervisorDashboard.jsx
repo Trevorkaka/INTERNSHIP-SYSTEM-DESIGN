@@ -80,6 +80,14 @@ const logBoxStyle = {
     backgroundColor: '#fff'
 };
 
+const badgeStyle = (status) => ({
+    fontSize: '10px',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    backgroundColor: status === 'submitted' ? '#dcfce7' : '#f1f5f9',
+    color: status === 'submitted' ? '#166534' : '#475569',
+    fontWeight: 'bold'
+});
 
 
 
