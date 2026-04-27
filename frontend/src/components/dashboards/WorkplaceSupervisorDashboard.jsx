@@ -17,4 +17,17 @@ export default function WorkplaceSupervisorDashboard() {
             setLoading(false);
         }
     };
-    
+
+     useEffect(() => {
+        fetchLogs();
+    }, []);
+
+    const handleReview = async (logId) => {
+        try {
+            await api.post(`/weekly-logs/${logId}/review/`);
+            alert("Log marked as reviewed!");
+            fetchLogs(); // Refresh the list
+        } catch (err) {
+            alert(err.response?.data?.error || "Error reviewing log");
+        }
+    };
