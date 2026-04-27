@@ -89,5 +89,15 @@ const badgeStyle = (status) => ({
     fontWeight: 'bold'
 });
 
+const reviewBtnStyle = {
+    backgroundColor: '#1e293b',
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: 'bold'
+};
+
 
 
