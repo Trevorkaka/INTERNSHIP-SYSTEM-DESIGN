@@ -69,4 +69,17 @@ export default function WorkplaceSupervisorDashboard() {
     );
 }
 
+// Styles
+const logBoxStyle = {
+    border: '1px solid #e2e8f0',
+    padding: '20px',
+    borderRadius: '12px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff'
+};
+
+
+
 
