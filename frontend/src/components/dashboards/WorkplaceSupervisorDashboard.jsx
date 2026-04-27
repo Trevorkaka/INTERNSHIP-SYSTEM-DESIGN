@@ -52,6 +52,21 @@ export default function WorkplaceSupervisorDashboard() {
                                     <p style={{ fontSize: '14px', color: '#475569' }}><strong>Activities:</strong> {log.activities.substring(0, 100)}...</p>
                                 </div>
                                 
-                                
+                                {log.status === 'submitted' && (
+                                    <button 
+                                        onClick={() => handleReview(log.id)}
+                                        style={reviewBtnStyle}
+                                    >
+                                        Mark as Reviewed
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </Card>
+        </div>
+    );
+}
 
 
