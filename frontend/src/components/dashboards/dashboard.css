@@ -1,3 +1,4 @@
 .dashboard {padding: 16px; font-family: system-ui, sans-serif}
 .dashboard h2 {margin-bottom: 12px}
 .dashboard table {border-collapse: collapse; width:100%}
+.dashboard th, .dashboard td {border: 1px solid  #ddd; padding: 8px }
