@@ -31,3 +31,11 @@ export default function WorkplaceSupervisorDashboard() {
             alert(err.response?.data?.error || "Error reviewing log");
         }
     };
+
+    return (
+        <div className="dashboard-container" style={{ padding: '20px' }}>
+            <h1 style={{ color: '#1a1c2e' }}>Workplace Supervisor Portal</h1>
+            <p style={{ color: '#64748b', marginBottom: '30px' }}>Review and verify student weekly logs.</p>
+            
+           
+
