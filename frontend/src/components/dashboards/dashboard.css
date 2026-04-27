@@ -2,3 +2,6 @@
 .dashboard h2 {margin-bottom: 12px}
 .dashboard table {border-collapse: collapse; width:100%}
 .dashboard th, .dashboard td {border: 1px solid  #ddd; padding: 8px }
+.login-form {display: flex; flex-direction: column; gap: 8px; max-width: 320px}
+.login-form input {padding: 6px}
+.error {color:crimson}
