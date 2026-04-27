@@ -17,3 +17,4 @@ export default function StudentDashboard() {
                     console.error(err);
                 } finally {
                     if (mounted) setStudents(res.data);
+                } catch (err) {}
