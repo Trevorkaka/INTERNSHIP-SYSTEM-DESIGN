@@ -153,6 +153,124 @@ export default function AdminDashboard(){
             </Card>
           </div>
         )}
-
-        
+ 
+        {activeTab === 'users' && (
+          <Card title={`All Users (${filteredUsers.length})`}>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ marginRight: 8 }}>Filter by role:</label>
+              <select
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+                style={{
+                  padding: '6px 12px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 4,
+                  fontSize: 12,
+                }}
+              >
+                <option value="all">All Roles</option>
+                <option value="student">Students</option>
+                <option value="academic_supervisor">Academic Supervisors</option>
+                <option value="workplace_supervisor">Workplace Supervisors</option>
+                <option value="admin">Admins</option>
+              </select>
+            </div>
+ 
+            {filteredUsers.length === 0 ? (
+              <div style={{ padding: '12px', color: '#64748b' }}>No users found.</div>
+            ) : (
+              <List
+                items={filteredUsers}
+                keyExtractor={(user) => user.id}
+                renderItem={(user) => (
+                  <div style={{ width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <strong>{user.username}</strong>
+                        <div style={{ fontSize: 12, color: '#64748b' }}>{user.email}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '4px 8px',
+                            backgroundColor: '#f0f9ff',
+                            color: '#0369a1',
+                            borderRadius: 4,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            textTransform: 'capitalize',
+                          }}
+                        >
+                          {user.role?.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              />
+            )}
+          </Card>
+        )}
+ 
+        {activeTab === 'students' && (
+          <Card title={`Students (${students.length})`}>
+            {students.length === 0 ? (
+              <div style={{ padding: '12px', color: '#64748b' }}>No students registered.</div>
+            ) : (
+              <List
+                items={students}
+                keyExtractor={(student) => student.id}
+                renderItem={(student) => (
+                  <div style={{ width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div>
+                        <strong>{student.user?.first_name} {student.user?.last_name}</strong>
+                        <div style={{ fontSize: 12, color: '#64748b' }}>
+                          {student.registration_number}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: 12, color: '#64748b' }}>{student.course}</div>
+                        <div style={{ fontSize: 12, fontWeight: 500 }}>Year {student.year_of_study}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              />
+            )}
+          </Card>
+        )}
+ 
+        {activeTab === 'supervisors' && (
+          <Card title={`Supervisors (${supervisors.length})`}>
+            {supervisors.length === 0 ? (
+              <div style={{ padding: '12px', color: '#64748b' }}>No supervisors registered.</div>
+            ) : (
+              <List
+                items={supervisors}
+                keyExtractor={(supervisor) => supervisor.id}
+                renderItem={(supervisor) => (
+                  <div style={{ width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div>
+                        <strong>{supervisor.user?.first_name} {supervisor.user?.last_name}</strong>
+                        <div style={{ fontSize: 12, color: '#64748b' }}>{supervisor.user?.email}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: 12, color: '#64748b' }}>{supervisor.company_name}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              />
+            )}
+          </Card>
+        )}
+      </div>
+    </div>
+  );
 }
+ 
+
+
