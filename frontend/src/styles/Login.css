@@ -32,3 +32,4 @@
 }
 
 .login-card form {
+    display: flex;
