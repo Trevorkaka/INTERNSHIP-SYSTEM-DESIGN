@@ -60,8 +60,20 @@ export default function AdminDashboard(){
     loadData();
     return () => (mounted = false);
 }, [] );
-const filteredUsers = 
-    filterRole === 'all' ? users : users.filter((u) => u.role === filterRole);
+    const filteredUsers = filterRole === 'all' ? users : users.filter((u) => u.role === filterRole);
+
+    
+     if (loading) {
+    return (
+      <Card title="Loading...">
+        <div style={{ textAlign: 'center', padding: '20px' }}>Loading admin dashboard...</div>
+      </Card>
+    );
+  }
+
+
+
+    
  
  
   })
