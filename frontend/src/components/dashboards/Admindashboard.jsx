@@ -58,7 +58,11 @@ export default function AdminDashboard(){
     }
 
     loadData();
-    
+    return () => (mounted = false);
+}, [] );
+const filteredUsers = 
+    filterRole === 'all' ? users : users.filter((u) => u.role === filterRole);
+ 
  
   })
 }
