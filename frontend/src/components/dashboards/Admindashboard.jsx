@@ -11,4 +11,10 @@ export default function AdminDashboard(){
         totalSupervisors: 0,
         totalLogs: 0,
   });
+  const [users, setUsers] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [supervisors, setSupervisors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [filterRole, setFilterRole] = useState('all');
 }
