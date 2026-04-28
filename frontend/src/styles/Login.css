@@ -60,3 +60,4 @@
 }
 
 .form-group input:focus {
+    outline: none;
