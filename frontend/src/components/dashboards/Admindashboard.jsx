@@ -56,6 +56,9 @@ export default function AdminDashboard(){
         if (mounted) setLoading(false);
       }
     }
+
+    loadData();
+    
  
   })
 }
