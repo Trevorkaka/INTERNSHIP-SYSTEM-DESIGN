@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import api from './API'; 
-import Card from './Card'; 
+import api from '../../utils/api'; 
+import Card from '../../utils/Card'; 
 import './dashboard.css';
 
 export default function WorkplaceSupervisorDashboard() {
