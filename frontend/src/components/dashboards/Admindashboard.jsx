@@ -4,3 +4,11 @@ import card from '../Shared/Card';
 import List from '../Shared/list';
 import '../styles/Dashboard.css';
 
+export default function AdminDashboard(){
+    const [stats, setStats] = useState({
+        totalUsers: 0,
+        totalStudents: 0,
+        totalSupervisors: 0,
+        totalLogs: 0,
+  });
+}
