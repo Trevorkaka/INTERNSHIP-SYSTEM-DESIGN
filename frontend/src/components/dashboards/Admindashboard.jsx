@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from '../../utils/api';
 import card from '../Shared/Card';
 import List from '../Shared/list';
@@ -17,4 +17,8 @@ export default function AdminDashboard(){
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [filterRole, setFilterRole] = useState('all');
+
+  useEffect(() =>{
+    
+  })
 }
