@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from '../../utils/api';
-import Card from '../Card';
-import List from '../List';
+import Card from '../Shared/Card';
+import List from '../Shared/List';
 
 export default function StudentDashboard() {
     const [students, setStudents] = useState([]);
@@ -25,13 +25,13 @@ export default function StudentDashboard() {
 
         return (
             <div style = {{display: 'grid',gap:12}}>
-                <card title = {`Students (${students.length})`}>
+                <Card title = {`Students (${students.length})`}>
                     {loading ? (
                         <div>Loading...</div>
                     ) : students.length === 0 ? (
                         <div>No students</div>
                     ) : (
-                        <list
+                        <List
                             items = {students}
                             renderItem = {(s) => (
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -47,7 +47,7 @@ export default function StudentDashboard() {
             )}
           />
         )}
-      </card>
+      </Card>
     </div>
   )
 }

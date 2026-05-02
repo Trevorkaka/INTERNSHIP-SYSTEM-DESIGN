@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from '../../utils/api';
 import Card from '../Shared/Card';
-import List from '../Shared/list';
+import List from '../Shared/List';
 import '../styles/Dashboard.css';
 
-export default function AcademicsupervisorDashboard() {
+export default function AcademicSupervisorDashboard() {
     const [supervisors, setSupervisors] = useState([]);
     const [students, setStudents] = useState([]);
     const [evaluations, setEvaluations] = useState([]);
@@ -192,7 +192,7 @@ export default function AcademicsupervisorDashboard() {
                 ) : (
                   <List
                     items={supervisedStudents}
-                    keyExtractor={(student) => student.id}
+                    //keyExtractor={(student) => student.id}
                     renderItem={(student) => (
                       <div style={{ width: '100%' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -235,7 +235,7 @@ export default function AcademicsupervisorDashboard() {
             ) : (
               <List
                 items={studentEvaluations}
-                keyExtractor={(evaluation) => evaluation.id}
+               // keyExtractor={(evaluation) => evaluation.id}
                 renderItem={(evaluation) => (
                   <div style={{ width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
