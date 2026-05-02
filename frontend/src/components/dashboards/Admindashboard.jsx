@@ -181,7 +181,7 @@ export default function AdminDashboard(){
             ) : (
               <List
                 items={filteredUsers}
-                keyExtractor={(user) => user.id}
+                //keyExtractor={(user) => user.id}
                 renderItem={(user) => (
                   <div style={{ width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -220,7 +220,7 @@ export default function AdminDashboard(){
             ) : (
               <List
                 items={students}
-                keyExtractor={(student) => student.id}
+               // keyExtractor={(student) => student.id}
                 renderItem={(student) => (
                   <div style={{ width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -249,7 +249,7 @@ export default function AdminDashboard(){
             ) : (
               <List
                 items={supervisors}
-                keyExtractor={(supervisor) => supervisor.id}
+                //keyExtractor={(supervisor) => supervisor.id}
                 renderItem={(supervisor) => (
                   <div style={{ width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
