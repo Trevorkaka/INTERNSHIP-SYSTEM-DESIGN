@@ -1,7 +1,7 @@
-import { use, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from '../../utils/api';
-import card from '../Card';
-import list from '../List';
+import Card from '../Card';
+import List from '../List';
 
 export default function StudentDashboard() {
     const [students, setStudents] = useState([]);
