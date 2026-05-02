@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from '../../utils/api';
 import Card from '../Shared/Card';
-import List from '../Shared/list';
+import List from '../Shared/List';
 import '../styles/Dashboard.css';
 
 export default function AdminDashboard(){
