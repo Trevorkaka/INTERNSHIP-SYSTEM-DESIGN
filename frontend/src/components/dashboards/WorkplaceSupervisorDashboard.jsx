@@ -4,7 +4,7 @@ import Card from '../../Shared/Card';
 import './css/dashboard.css';
 
 export default function WorkplaceSupervisorDashboard() {
-    const [logs, setLogs] = useState([]); // We fetch logs directly because your backend filters them!
+    const [logs, setLogs] = useState([]); 
     const [loading, setLoading] = useState(true);
 
     const fetchLogs = async () => {
