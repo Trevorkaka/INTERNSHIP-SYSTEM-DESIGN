@@ -4,7 +4,7 @@ import Card from '../Shared/Card';
 import List from '../Shared/list';
 import '../styles/Dashboard.css';
 
-export default function AcademicsupervisorDashboard() {
+export default function AcademicSupervisorDashboard() {
     const [supervisors, setSupervisors] = useState([]);
     const [students, setStudents] = useState([]);
     const [evaluations, setEvaluations] = useState([]);
