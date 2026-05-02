@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import { StudentDashboard, WorkplaceSupervisorDashboard } from './components/dashboards'
 import  Login  from './components/auth/dashboards'
 
 function App() {
