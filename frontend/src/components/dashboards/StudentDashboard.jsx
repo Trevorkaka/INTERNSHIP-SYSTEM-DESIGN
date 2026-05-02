@@ -47,7 +47,7 @@ export default function StudentDashboard() {
             )}
           />
         )}
-      </card>
+      </Card>
     </div>
   )
 }
