@@ -235,7 +235,7 @@ export default function AcademicSupervisorDashboard() {
             ) : (
               <List
                 items={studentEvaluations}
-                keyExtractor={(evaluation) => evaluation.id}
+               // keyExtractor={(evaluation) => evaluation.id}
                 renderItem={(evaluation) => (
                   <div style={{ width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
