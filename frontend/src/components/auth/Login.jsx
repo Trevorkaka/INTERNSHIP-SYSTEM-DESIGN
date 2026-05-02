@@ -1,5 +1,6 @@
 import { useState } from "react"
-import axios from "axios"
+import api from '../../utils/api';
+//import axios from "axios"
 
 export default function Login({onLogin}){
     const [username, setUsername] = useState('')
@@ -10,7 +11,7 @@ export default function Login({onLogin}){
     e.preventDefault()
     setError(null)
     try {
-      const res = await axios.post('/api/auth/login/', { username, password })
+      const res = await api.post('/auth/login/', { username, password })
       localStorage.setItem('access', res.data.access)
       localStorage.setItem('refresh', res.data.refresh)
       onLogin && onLogin(res.data.user)
