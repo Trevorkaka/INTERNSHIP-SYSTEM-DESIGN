@@ -192,7 +192,7 @@ export default function AcademicSupervisorDashboard() {
                 ) : (
                   <List
                     items={supervisedStudents}
-                    keyExtractor={(student) => student.id}
+                    //keyExtractor={(student) => student.id}
                     renderItem={(student) => (
                       <div style={{ width: '100%' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
