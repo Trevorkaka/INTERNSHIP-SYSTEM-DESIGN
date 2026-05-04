@@ -141,6 +141,10 @@ STATICFILES_DIRS = [
 # Allows your React dev server to talk to Django during development.
 # When you deploy, replace these with your actual frontend domain.
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',   # Vite (React default)
+    'http://localhost:3000',   # Create React App default
+]
 
 
 
