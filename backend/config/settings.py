@@ -137,6 +137,13 @@ STATICFILES_DIRS = [
     BASE_DIR / "static"
     ]
 
+#-----CORS---
+# Allows your React dev server to talk to Django during development.
+# When you deploy, replace these with your actual frontend domain.
+
+
+
+
 #Register Custom User in settings
 #AUTH_USER_MODEL = 'accounts.CustomUser'
 
