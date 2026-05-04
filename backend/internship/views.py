@@ -442,7 +442,10 @@ def logout_view(request):
 @api_view(['POST'])
 def jwt_logout(request):
     """
+    """
     POST /api/auth/logout/
+    
+    """
     
     """
     try:
@@ -457,4 +460,4 @@ def jwt_logout(request):
         token.blacklist()  # Blacklist the token (requires rest_framework_simplejwt.token_blacklist)
         
         return Response(
-     
+        """
