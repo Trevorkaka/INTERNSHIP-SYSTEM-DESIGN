@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',        
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',  # For filtering querysets
+    'corsheaders'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
