@@ -380,7 +380,14 @@ def register_view(request):
         return render(request, 'register.html', {'form': form})
     form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
-
+       {'message': 'Logged out successfully'},
+            status=status.HTTP_205_RESET_CONTENT
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 def login_view(request):
     """Handle user login"""
     if request.method == 'POST':
@@ -404,30 +411,7 @@ def logout_view(request):
     return redirect('login')
 
 
-# ── JWT Authentication Views (for React/API frontend) ─────────────────────────────
-@api_view(['POST'])
-def jwt_login(request):
-    """
-    POST /api/auth/login/
-    Authenticates user with username/password and returns JWT tokens.
-    
-    Request body:
-    {
-        "username": "user@example.com",
-        "password": "password123"
-    }
-    
-    Response:
-    {
-        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-        "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-        "user": {
-            "id": 1,
-            "username": "user@example.com",
-            "email": "user@example.com",
-            "role": "student"
-        }
-    }
+
     """
     username = request.data.get('username')
     password = request.data.get('password')
@@ -459,17 +443,7 @@ def jwt_login(request):
 def jwt_logout(request):
     """
     POST /api/auth/logout/
-    Blacklists the refresh token (logs out the user).
     
-    Request body:
-    {
-        "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-    }
-    
-    Response:
-    {
-        "message": "Logged out successfully"
-    }
     """
     try:
         refresh_token = request.data.get('refresh')
@@ -483,11 +457,4 @@ def jwt_logout(request):
         token.blacklist()  # Blacklist the token (requires rest_framework_simplejwt.token_blacklist)
         
         return Response(
-            {'message': 'Logged out successfully'},
-            status=status.HTTP_205_RESET_CONTENT
-        )
-    except Exception as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+     
