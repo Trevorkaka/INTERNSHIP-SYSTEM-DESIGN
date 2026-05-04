@@ -146,6 +146,9 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',   # Create React App default
 ]
 
+CORS_ALLOW_CREDENTIALS = True   # Needed so React can send the Authorization header
+
+
 
 
 #Register Custom User in settings
