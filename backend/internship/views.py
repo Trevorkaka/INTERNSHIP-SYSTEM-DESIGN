@@ -380,14 +380,7 @@ def register_view(request):
         return render(request, 'register.html', {'form': form})
     form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
-       {'message': 'Logged out successfully'},
-            status=status.HTTP_205_RESET_CONTENT
-        )
-    except Exception as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+
 def login_view(request):
     """Handle user login"""
     if request.method == 'POST':
@@ -411,53 +404,62 @@ def logout_view(request):
     return redirect('login')
 
 
-
-    """
+# ── JWT Authentication Views (for React/API frontend) ─────────────────────────────
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def jwt_login(request):
+    """Handle JWT login for API clients."""
     username = request.data.get('username')
     password = request.data.get('password')
-    
-    # Authenticate the user
+
+    if not username or not password:
+        return Response(
+            {'error': 'Username and password are required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     user = authenticate(request, username=username, password=password)
     if user is None:
         return Response(
-            {'error': 'Invalid username or password'},
+            {'error': 'Invalid username or password.'},
             status=status.HTTP_401_UNAUTHORIZED
         )
-    
-    # Generate JWT tokens
+
     refresh = RefreshToken.for_user(user)
-    
+
     return Response({
-        'refresh': str(refresh),
         'access': str(refresh.access_token),
+        'refresh': str(refresh),
         'user': {
             'id': user.id,
             'username': user.username,
             'email': user.email,
-            'role': user.role,
+            'role': getattr(user, 'role', None),
         }
     }, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def jwt_logout(request):
-    """
-    """
-    POST /api/auth/logout/
-    
-    """
-    
-    """
-    try:
-        refresh_token = request.data.get('refresh')
-        if not refresh_token:
-            return Response(
-                {'error': 'Refresh token is required'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        token = RefreshToken(refresh_token)
-        token.blacklist()  # Blacklist the token (requires rest_framework_simplejwt.token_blacklist)
-        
+    """Blacklists a refresh token to log the user out."""
+    refresh_token = request.data.get('refresh')
+    if not refresh_token:
         return Response(
-        """
+            {'error': 'Refresh token is required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        return Response(
+            {'message': 'Logged out successfully.'},
+            status=status.HTTP_205_RESET_CONTENT
+        )
+    except TokenError:
+        return Response(
+            {'error': 'Token is invalid or already expired.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
