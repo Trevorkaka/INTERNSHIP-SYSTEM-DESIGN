@@ -206,9 +206,3 @@ CSRF_COOKIE_HTTPONLY = True
 # Clickjacking protection
 X_FRAME_OPTIONS = 'DENY'
 
-
-
-AUTH_USER_MODEL = 'internship.User'
-
-# Login URL - Tell Django where to redirect when @login_required is triggered 
-LOGIN_URL = 'login'
