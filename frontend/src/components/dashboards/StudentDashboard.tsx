@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Clock, FileText, TrendingUp, CheckSquare, AlertCircle } from 'lucide-react'
+// @ts-ignore
+import React from 'react'
 
 interface Props {
   setPage: (page: string) => void
