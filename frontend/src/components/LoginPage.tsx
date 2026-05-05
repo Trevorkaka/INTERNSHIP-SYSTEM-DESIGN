@@ -28,3 +28,21 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
+
+  return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-5 relative overflow-hidden">
+      {/* Background glows */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-violet-600/15 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+
+      <div className="bg-white rounded-2xl p-10 w-full max-w-md relative z-10 shadow-2xl">
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-lg">
+            IL
+          </div>
+          <div>
+            <div className="text-2xl font-black tracking-tight">ILES</div>
+            <div className="text-xs text-gray-400 mt-0.5">Internship Logging & Evaluation System</div>
+          </div>
+        </div>
