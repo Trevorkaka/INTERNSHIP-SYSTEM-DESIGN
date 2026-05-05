@@ -133,3 +133,20 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
           </button>
         </div>
       </aside>
+
+      {/* ── Main ── */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Topbar */}
+        <header className="h-15 bg-white border-b border-gray-200 px-7 flex items-center justify-between flex-shrink-0">
+          <h1 className="text-xl font-black tracking-tight text-gray-900">{pageTitle}</h1>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifs(!showNotifs)}
+              className="w-9 h-9 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center relative transition-colors"
+            >
+              <Bell size={15} className="text-gray-600"/>
+              {unread > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"/>
+              )}
+            </button>
