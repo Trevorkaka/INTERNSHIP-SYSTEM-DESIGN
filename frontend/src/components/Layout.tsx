@@ -11,3 +11,9 @@ interface NavItem {
   label: string
   icon: ReactNode
 }
+
+interface LayoutProps {
+  children: ReactNode
+  page: string
+  setPage: (page: string) => void
+}
