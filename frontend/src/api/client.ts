@@ -18,3 +18,19 @@ client.interceptors.request.use((config) => {
   }
   return config
 })
+// ── Response interceptor ──────────────────────────────────────────────────────
+// If a request fails with 401 (token expired), try to refresh automatically.
+// If refresh also fails, clear storage and redirect to login.
+client.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const original = error.config
+
+    if (error.response?.status === 401 && !original._retry) {
+      original._retry = true
+
+      const refresh = localStorage.getItem('refresh_token')
+      if (!refresh) {
+        clearAuthAndRedirect()
+        return Promise.reject(error)
+      }
