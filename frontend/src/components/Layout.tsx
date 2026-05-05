@@ -46,3 +46,9 @@ const NAV_BY_ROLE: Record<string, NavItem[]> = {
   ],
 }
 
+const ROLE_LABEL: Record<string, string> = {
+  student: 'Student Intern',
+  workplace_supervisor: 'Workplace Supervisor',
+  academic_supervisor: 'Academic Supervisor',
+  admin: 'Administrator',
+}
