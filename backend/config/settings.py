@@ -20,6 +20,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'internship',
     'rest_framework',
+    'django-cors-header',
     'rest_framework_simplejwt',        
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',  # For filtering querysets
