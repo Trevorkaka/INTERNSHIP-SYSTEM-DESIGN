@@ -52,3 +52,14 @@ const ROLE_LABEL: Record<string, string> = {
   academic_supervisor: 'Academic Supervisor',
   admin: 'Administrator',
 }
+
+
+function initials(name: string) {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+}
+
+const MOCK_NOTIFS = [
+  { id: 1, title: 'Log Approved', message: 'Week 12 log approved by Sarah Martinez', time: '10 min ago', read: false },
+  { id: 2, title: 'Assessment Feedback', message: 'You received 42/50 marks on Week 11', time: '2 hrs ago', read: false },
+  { id: 3, title: 'Log Reviewed', message: 'Your Week 10 log has been reviewed', time: '1 day ago', read: true },
+]
