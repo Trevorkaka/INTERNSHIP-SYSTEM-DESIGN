@@ -3,6 +3,13 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Layout from './components/Layout'
 import LoginPage from './components/LoginPage'
 
+// ── Dashboards ────────────────────────────────────────────────────────────────
+// Import each dashboard — we'll build these next
+import StudentDashboard from './components/dashboards/StudentDashboard'
+import WorkplaceSupervisorDashboard from './components/dashboards/WorkplaceSupervisorDashboard'
+import AcademicSupervisorDashboard from './components/dashboards/AcademicSupervisorDashboard'
+import AdminDashboard from './components/dashboards/AdminDashboard'
+
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth()
   const [page, setPage] = useState('dashboard')
