@@ -30,3 +30,10 @@ const NAV_BY_ROLE: Record<string, NavItem[]> = {
     { id: 'interns',   label: 'My Interns', icon: <Users size={16}/> },
     { id: 'reviews',   label: 'Reviews',    icon: <ClipboardCheck size={16}/> },
   ],
+  academic_supervisor: [
+    { id: 'dashboard',   label: 'Dashboard',   icon: <LayoutDashboard size={16}/> },
+    { id: 'students',    label: 'My Students', icon: <Users size={16}/> },
+    { id: 'evaluations', label: 'Evaluations', icon: <ClipboardCheck size={16}/> },
+    { id: 'analytics',   label: 'Analytics',   icon: <BarChart2 size={16}/> },
+  ],
+
