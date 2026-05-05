@@ -14,4 +14,17 @@ export default function LoginPage() {
     { label: 'Academic Supervisor',   username: 'drmichaelchen', email: 'academic@iles.edu' },
     { label: 'Administrator',         username: 'jenwilliams',   email: 'admin@iles.edu' },
   ]
-  
+
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      await login(username, password)
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Invalid username or password.')
+    } finally {
+      setLoading(false)
+    }
+  }
