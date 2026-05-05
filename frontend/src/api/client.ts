@@ -34,3 +34,30 @@ client.interceptors.response.use(
         clearAuthAndRedirect()
         return Promise.reject(error)
       }
+
+
+      try {
+        const { data } = await axios.post('http://127.0.0.1:8000/api/auth/refresh/', {
+          refresh,
+        })
+        localStorage.setItem('access_token', data.access)
+        original.headers.Authorization = `Bearer ${data.access}`
+        return client(original) // retry the original request with new token
+      } catch {
+        clearAuthAndRedirect()
+        return Promise.reject(error)
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)
+
+function clearAuthAndRedirect() {
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
+  localStorage.removeItem('user')
+  window.location.href = '/login'
+}
+
+export default client
