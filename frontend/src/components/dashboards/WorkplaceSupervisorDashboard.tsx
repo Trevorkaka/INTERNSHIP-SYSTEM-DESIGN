@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Users, ClipboardCheck, Star, MessageSquare } from 'lucide-react'
+import React from 'react'
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {

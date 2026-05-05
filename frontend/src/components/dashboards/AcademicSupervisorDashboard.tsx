@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ClipboardCheck, FileText, BarChart2, Download } from 'lucide-react'
+import React from 'react'
 
 function EvalModal({ onClose }: { onClose: () => void }) {
   return (
