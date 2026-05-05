@@ -26,3 +26,48 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  // On app load, restore user from localStorage if tokens exist
+  useEffect(() => {
+    const stored = localStorage.getItem('user')
+    const token = localStorage.getItem('access_token')
+    if (stored && token) {
+      setUser(JSON.parse(stored))
+    }
+    setIsLoading(false)
+  }, [])
+  
+  const login = async (username: string, password: string) => {
+    const { data } = await client.post('/api/auth/login/', { username, password })
+  
+    // Store tokens and user in localStorage
+    localStorage.setItem('access_token', data.access)
+    localStorage.setItem('refresh_token', data.refresh)
+    localStorage.setItem('user', JSON.stringify(data.user))
+  
+    setUser(data.user)
+  }
+
+
+
+  const logout = async () => {
+    try {
+      const refresh = localStorage.getItem('refresh_token')
+      if (refresh) {
+        await client.post('/api/auth/logout/', { refresh })
+      }
+    } catch {
+      // Even if logout API fails, clear local state
+    } finally {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      localStorage.removeItem('user')
+      setUser(null)
+    }
+  }
+  
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
