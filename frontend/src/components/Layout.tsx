@@ -17,3 +17,11 @@ interface LayoutProps {
   page: string
   setPage: (page: string) => void
 }
+
+const NAV_BY_ROLE: Record<string, NavItem[]> = {
+  student: [
+    { id: 'dashboard',   label: 'Dashboard',      icon: <LayoutDashboard size={16}/> },
+    { id: 'activities',  label: 'Activity Logs',  icon: <FileText size={16}/> },
+    { id: 'evaluations', label: 'Evaluations',    icon: <ClipboardCheck size={16}/> },
+    { id: 'performance', label: 'Performance',    icon: <BarChart2 size={16}/> },
+  ],
