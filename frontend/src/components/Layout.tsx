@@ -112,3 +112,24 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
             </button>
           ))}
         </nav>
+
+
+        {/* Footer */}
+        <div className="p-4 border-t border-white/8">
+          <div className="flex items-center gap-2.5 px-1 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              {initials(fullName)}
+            </div>
+            <div className="min-w-0">
+              <div className="text-white text-sm font-semibold truncate">{fullName}</div>
+              <div className="text-white/35 text-[11px] truncate">{ROLE_LABEL[user?.role ?? '']}</div>
+            </div>
+          </div>
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg w-full text-white/35 hover:text-red-300 hover:bg-red-500/10 text-xs font-medium transition-all"
+          >
+            <LogOut size={13}/> Sign out
+          </button>
+        </div>
+      </aside>
