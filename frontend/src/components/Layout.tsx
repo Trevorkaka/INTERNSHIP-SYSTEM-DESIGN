@@ -37,3 +37,12 @@ const NAV_BY_ROLE: Record<string, NavItem[]> = {
     { id: 'analytics',   label: 'Analytics',   icon: <BarChart2 size={16}/> },
   ],
 
+  admin: [
+    { id: 'dashboard',  label: 'Dashboard',  icon: <LayoutDashboard size={16}/> },
+    { id: 'placements', label: 'Placements', icon: <Building2 size={16}/> },
+    { id: 'oversight',  label: 'Oversight',  icon: <BookOpen size={16}/> },
+    { id: 'analytics',  label: 'Analytics',  icon: <BarChart2 size={16}/> },
+    { id: 'settings',   label: 'Settings',   icon: <Settings size={16}/> },
+  ],
+}
+
