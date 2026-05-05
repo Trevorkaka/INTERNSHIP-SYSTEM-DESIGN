@@ -75,3 +75,22 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
   const fullName = `${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim() || user?.username || ''
 
   const markAllRead = () => setNotifs(notifs.map(n => ({ ...n, read: true })))
+
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-gray-50">
+      {/* ── Sidebar ── */}
+      <aside className="w-60 bg-gray-950 flex flex-col flex-shrink-0 relative overflow-hidden">
+        {/* Glow */}
+        <div className="absolute -top-16 -right-16 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Brand */}
+        <div className="px-5 py-6 border-b border-white/8">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white text-sm font-black">IL</div>
+            <div>
+              <div className="text-white font-black text-lg tracking-tight leading-none">ILES</div>
+              <div className="text-white/30 text-[10px] mt-0.5 tracking-wide">Internship System</div>
+            </div>
+          </div>
+        </div>
