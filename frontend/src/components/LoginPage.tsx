@@ -78,3 +78,12 @@ export default function LoginPage() {
               <span>⚠</span> {error}
             </div>
           )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold rounded-lg text-sm transition-colors"
+          >
+            {loading ? 'Signing in…' : 'Sign In'}
+          </button>
+        </form>
