@@ -63,3 +63,15 @@ const MOCK_NOTIFS = [
   { id: 2, title: 'Assessment Feedback', message: 'You received 42/50 marks on Week 11', time: '2 hrs ago', read: false },
   { id: 3, title: 'Log Reviewed', message: 'Your Week 10 log has been reviewed', time: '1 day ago', read: true },
 ]
+
+export default function Layout({ children, page, setPage }: LayoutProps) {
+  const { user, logout } = useAuth()
+  const [showNotifs, setShowNotifs] = useState(false)
+  const [notifs, setNotifs] = useState(MOCK_NOTIFS)
+
+  const navItems = NAV_BY_ROLE[user?.role ?? ''] ?? []
+  const pageTitle = navItems.find(n => n.id === page)?.label ?? 'ILES'
+  const unread = notifs.filter(n => !n.read).length
+  const fullName = `${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim() || user?.username || ''
+
+  const markAllRead = () => setNotifs(notifs.map(n => ({ ...n, read: true })))
