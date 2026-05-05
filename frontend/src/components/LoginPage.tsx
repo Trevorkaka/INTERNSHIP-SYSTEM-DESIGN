@@ -46,3 +46,16 @@ export default function LoginPage() {
             <div className="text-xs text-gray-400 mt-0.5">Internship Logging & Evaluation System</div>
           </div>
         </div>
+
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="your username"
+              required
+              className="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+            />
