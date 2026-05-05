@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',        
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',  # For filtering querysets
+    'corsheaders'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.corsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -93,6 +95,9 @@ DATABASES = {
     }
 }
 
+# ---Auth--
+AUTH_USER_MODEL = 'internship.User'
+LOGIN_URL = 'login'
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -132,6 +137,20 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
     ]
+
+#-----CORS---
+# Allows your React dev server to talk to Django during development.
+# When you deploy, replace these with your actual frontend domain.
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',   # Vite (React default)
+    'http://localhost:3000',   # Create React App default
+]
+
+CORS_ALLOW_CREDENTIALS = True   # Needed so React can send the Authorization header
+
+
+
 
 #Register Custom User in settings
 #AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -188,9 +207,3 @@ CSRF_COOKIE_HTTPONLY = True
 # Clickjacking protection
 X_FRAME_OPTIONS = 'DENY'
 
-
-
-AUTH_USER_MODEL = 'internship.User'
-
-# Login URL - Tell Django where to redirect when @login_required is triggered 
-LOGIN_URL = 'login'
