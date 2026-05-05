@@ -87,3 +87,25 @@ export default function LoginPage() {
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
+
+
+        {/* Demo accounts */}
+        <div className="mt-6 pt-5 border-t border-gray-100">
+          <p className="text-xs text-gray-400 mb-3 font-medium">Quick access — demo accounts:</p>
+          <div className="grid grid-cols-2 gap-2">
+            {demos.map(d => (
+              <button
+                key={d.username}
+                onClick={() => { setUsername(d.username); setPassword('password123') }}
+                className="p-2.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-lg text-left transition-all"
+              >
+                <div className="text-xs font-semibold text-gray-800">{d.label}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{d.email}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
