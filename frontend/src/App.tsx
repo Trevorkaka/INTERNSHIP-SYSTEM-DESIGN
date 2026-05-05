@@ -10,6 +10,12 @@ import WorkplaceSupervisorDashboard from './components/dashboards/WorkplaceSuper
 import AcademicSupervisorDashboard from './components/dashboards/AcademicSupervisorDashboard'
 import AdminDashboard from './components/dashboards/AdminDashboard'
 
+// ── Pages ─────────────────────────────────────────────────────────────────────
+import StudentActivityLogs from './components/pages/StudentActivityLogs'
+import StudentEvaluations from './components/pages/StudentEvaluations'
+import StudentPerformance from './components/pages/StudentPerformance'
+import AdminPlacements from './components/pages/AdminPlacements'
+
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth()
   const [page, setPage] = useState('dashboard')
