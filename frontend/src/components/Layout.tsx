@@ -150,3 +150,26 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"/>
               )}
             </button>
+
+
+            {showNotifs && (
+              <div className="absolute top-11 right-0 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                  <span className="text-sm font-bold">Notifications</span>
+                  <button onClick={markAllRead} className="text-xs text-blue-600 font-medium hover:underline">Mark all read</button>
+                </div>
+                {notifs.map(n => (
+                  <div
+                    key={n.id}
+                    onClick={() => setNotifs(notifs.map(x => x.id === n.id ? { ...x, read: true } : x))}
+                    className={`px-4 py-3 cursor-pointer border-b border-gray-50 hover:bg-gray-50 transition-colors ${!n.read ? 'bg-blue-50' : ''}`}
+                  >
+                    <div className="text-sm font-semibold text-gray-900">{n.title}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{n.message}</div>
+                    <div className="text-xs text-gray-400 mt-1">{n.time}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </header>
