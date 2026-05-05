@@ -173,3 +173,15 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
             )}
           </div>
         </header>
+
+        {/* Page content */}
+        <main
+          className="flex-1 overflow-y-auto p-7"
+          onClick={() => showNotifs && setShowNotifs(false)}
+        >
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
