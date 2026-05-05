@@ -29,26 +29,28 @@ function AppRouter() {
     )
   }
 
-  if (!isAuthenticated) {
-    return <LoginPage />
+  if (!isAuthenticated) return <LoginPage />
+
+  const renderPage = () => {
+    switch (user?.role) {
+      case 'student':
+        if (page === 'activities')  return <StudentActivityLogs />
+        if (page === 'evaluations') return <StudentEvaluations />
+        if (page === 'performance') return <StudentPerformance />
+        return <StudentDashboard setPage={setPage} />
+
+      case 'workplace_supervisor':
+        return <WorkplaceSupervisorDashboard />
+
+      case 'academic_supervisor':
+        return <AcademicSupervisorDashboard />
+
+      case 'admin':
+        if (page === 'placements') return <AdminPlacements />
+        return <AdminDashboard setPage={setPage} />
+
+      default:
+        return <div className="text-red-500">Unknown role: {user?.role}</div>
+    }
   }
 
-  return (
-    <Layout page={page} setPage={setPage}>
-      <div className="rounded-3xl border border-dashed border-slate-300/30 bg-white/80 p-8 shadow-lg text-slate-700">
-        <h2 className="text-2xl font-semibold mb-4">Welcome to ILES</h2>
-        <p className="text-sm text-slate-500">
-          Select a page from the sidebar to continue.
-        </p>
-      </div>
-    </Layout>
-  )
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  )
-}
