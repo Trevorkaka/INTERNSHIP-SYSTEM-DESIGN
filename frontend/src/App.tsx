@@ -54,3 +54,10 @@ function AppRouter() {
     }
   }
 
+  return (
+    <Layout page={page} setPage={setPage}>
+      {renderPage()}
+    </Layout>
+  )
+}
+
