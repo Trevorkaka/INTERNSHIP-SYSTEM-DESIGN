@@ -94,3 +94,21 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
             </div>
           </div>
         </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
+          <p className="text-white/25 text-[10px] font-semibold uppercase tracking-widest px-2 pb-2 pt-1">Navigation</p>
+          {navItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setPage(item.id)}
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg w-full text-left text-sm font-medium transition-all
+                ${page === item.id
+                  ? 'bg-blue-600/20 text-white'
+                  : 'text-white/50 hover:text-white/90 hover:bg-white/6'}`}
+            >
+              <span className={page === item.id ? 'text-blue-400' : ''}>{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
