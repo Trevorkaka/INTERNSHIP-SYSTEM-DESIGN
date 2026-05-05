@@ -16,14 +16,15 @@ import StudentEvaluations from './components/pages/StudentEvaluations'
 import StudentPerformance from './components/pages/StudentPerformance'
 import AdminPlacements from './components/pages/AdminPlacements'
 
-function AppContent() {
-  const { isAuthenticated, isLoading } = useAuth()
+// ── Router ────────────────────────────────────────────────────────────────────
+function AppRouter() {
+  const { user, isAuthenticated, isLoading } = useAuth()
   const [page, setPage] = useState('dashboard')
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
-        Loading...
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-white/40 text-sm">Loading…</div>
       </div>
     )
   }
