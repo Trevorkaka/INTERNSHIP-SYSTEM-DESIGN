@@ -61,3 +61,12 @@ function AppRouter() {
   )
 }
 
+
+// ── Root ──────────────────────────────────────────────────────────────────────
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  )
+}
