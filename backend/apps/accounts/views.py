@@ -13,3 +13,7 @@ from .serializers import (
 
 User = get_user_model()
 
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+
