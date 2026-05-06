@@ -70,4 +70,10 @@ class UserSignupSerializer(serializers.ModelSerializer):
             user.save()
             return user
         
+
+class UserLoginSerializer(serializers.Serializer):
+    """Simple serializer for login credentials"""
+    username = serializers.CharField()
+    password = serializers.CharField()
+        
     
