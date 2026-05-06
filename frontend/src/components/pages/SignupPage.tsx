@@ -19,3 +19,7 @@ export default function SignupPage() {
     staff_number: '',
     department: '',
   })
+
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
