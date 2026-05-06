@@ -135,4 +135,6 @@ def refresh_token(request):
                 {'error': 'Refresh token is required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        token = RefreshToken(refresh_token)
 
