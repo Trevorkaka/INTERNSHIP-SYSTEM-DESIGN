@@ -27,4 +27,5 @@ urlpatterns = [
    
      # core app handles /students/, /add/, and the home page
     path('', include('core.urls')), #core/urls.py already defines path('', views.home, name='home'), so we can just include it here without defining a separate path for the home page
+    path('api/', include('apps.accounts.urls')),
 ] 
