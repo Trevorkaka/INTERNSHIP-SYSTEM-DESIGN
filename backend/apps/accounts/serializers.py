@@ -75,5 +75,13 @@ class UserLoginSerializer(serializers.Serializer):
     """Simple serializer for login credentials"""
     username = serializers.CharField()
     password = serializers.CharField()
+
+
+class UserResponseSerializer(serializers.ModelSerializer):
+    """Serializer for returning user data (no password)"""
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role']
+
         
     
