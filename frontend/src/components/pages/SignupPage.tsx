@@ -23,3 +23,9 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+
+   const roles = [
+    { value: 'student', label: 'Student Intern' },
+    { value: 'academic_supervisor', label: 'Academic Supervisor' },
+    { value: 'workplace_supervisor', label: 'Workplace Supervisor' },
+  ]
