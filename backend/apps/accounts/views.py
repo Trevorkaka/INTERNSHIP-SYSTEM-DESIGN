@@ -120,4 +120,8 @@ def logout(request):
             {'error': str(e)},
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
 
