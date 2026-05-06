@@ -60,4 +60,16 @@ export default function SignupPage() {
       const response = await client.post('/api/auth/signup/', submitData)
       
       setSuccess(true)
+
+
+       setTimeout(() => {
+        navigate('/dashboard')
+      }, 1500)
+    } catch (err: any) {
+      const errorData = err.response?.data || {}
+      setErrors(errorData)
+    } finally {
+      setLoading(false)
+    }
+  }
       
