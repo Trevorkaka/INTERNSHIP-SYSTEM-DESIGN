@@ -223,4 +223,118 @@ export default function SignupPage() {
               )}
             </div>
           )}
+
+           {showStaffNumber && (
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Staff Number *</label>
+              <input
+                type="text"
+                name="staff_number"
+                value={formData.staff_number}
+                onChange={handleChange}
+                placeholder="e.g., STAFF-2024-001"
+                required={showStaffNumber}
+                className={`w-full px-3.5 py-2.5 border-2 rounded-lg text-sm outline-none focus:bg-white transition-colors bg-gray-50 ${
+                  errors.staff_number ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-blue-500'
+                }`}
+              />
+              {errors.staff_number && (
+                <p className="text-xs text-red-600 mt-1">
+                  {Array.isArray(errors.staff_number) ? errors.staff_number[0] : errors.staff_number}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Department */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Department (Optional)</label>
+            <input
+              type="text"
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              placeholder="e.g., Computer Science"
+              className="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition-colors bg-gray-50 focus:bg-white"
+            />
+          </div>
+
+          {/* Passwords */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Min 8 chars"
+                required
+                className={`w-full px-3.5 py-2.5 border-2 rounded-lg text-sm outline-none focus:bg-white transition-colors bg-gray-50 ${
+                  errors.password ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-blue-500'
+                }`}
+              />
+              {errors.password && (
+                <p className="text-xs text-red-600 mt-1">
+                  {Array.isArray(errors.password) ? errors.password[0] : errors.password}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Confirm</label>
+              <input
+                type="password"
+                name="password_confirm"
+                value={formData.password_confirm}
+                onChange={handleChange}
+                placeholder="Confirm password"
+                required
+                className={`w-full px-3.5 py-2.5 border-2 rounded-lg text-sm outline-none focus:bg-white transition-colors bg-gray-50 ${
+                  errors.password_confirm ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-blue-500'
+                }`}
+              />
+              {errors.password_confirm && (
+                <p className="text-xs text-red-600 mt-1">
+                  {Array.isArray(errors.password_confirm) ? errors.password_confirm[0] : errors.password_confirm}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* General error */}
+          {errors.non_field_errors && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              <span>⚠</span>
+              <div>
+                {Array.isArray(errors.non_field_errors) 
+                  ? errors.non_field_errors[0] 
+                  : errors.non_field_errors}
+              </div>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold rounded-lg text-sm transition-colors mt-6"
+          >
+            {loading ? 'Creating account…' : 'Create Account'}
+          </button>
+        </form>
+
+        {/* Login Link */}
+        <div className="mt-6 pt-5 border-t border-gray-100 text-center">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <a href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+              Sign in
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
       
