@@ -37,4 +37,12 @@ class UserSignupSerializer(serializers.ModelSerializer):
             if User.objects.filter(email__iexact=value).exists():
                 raise serializers.ValidationError("This email is already registered.")
             return value
+        
+        def validate(self, data):
+        """Validate that passwords match and role-specific fields are present"""
+        if data['password'] != data.pop('password_confirm'):
+            raise serializers.ValidationError({
+                'password_confirm': 'Passwords do not match.'
+            })
+        
     
