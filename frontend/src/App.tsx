@@ -1,10 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useState } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Layout from './components/Layout'
 import LoginPage from './components/LoginPage'
-import SignupPage from './pages/SignupPage'
-import Dashboard from './pages/Dashboard'
 
 // ── Dashboards ────────────────────────────────────────────────────────────────
 // Import each dashboard — we'll build these next
@@ -64,29 +61,11 @@ function AppRouter() {
   )
 }
 
-function App() {
+// ── Root ──────────────────────────────────────────────────────────────────────
+export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/" element={<Navigate to="/login" />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
   )
 }
-
-export default App
-
-
-// ── Root ──────────────────────────────────────────────────────────────────────
-// export default function App() {
-//   return (
-//     <AuthProvider>
-//       <AppRouter />
-//     </AuthProvider>
-//   )
-// }
