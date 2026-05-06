@@ -137,4 +137,14 @@ def refresh_token(request):
             )
         
         token = RefreshToken(refresh_token)
+        
+        return Response({
+            'access': str(token.access_token),
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {'error': 'Invalid refresh token.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
 
