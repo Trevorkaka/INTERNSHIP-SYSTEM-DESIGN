@@ -10,4 +10,12 @@ class UserSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(validators=[EmailValidator()])
+
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'first_name', 'last_name', 
+            'password', 'password_confirm', 'role', 
+            'department', 'staff_number', 'student_number'
+        ]
     
