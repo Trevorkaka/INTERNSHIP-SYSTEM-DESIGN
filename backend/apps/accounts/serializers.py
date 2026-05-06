@@ -61,4 +61,13 @@ class UserSignupSerializer(serializers.ModelSerializer):
                 
             return data
         
+        @transaction.atomic
+        def create(self, validated_data):
+            """Create user with proper password hashing"""
+            password = validated_data.pop('password')
+            user = User(**validated_data)
+            user.set_password(password)
+            user.save()
+            return user
+        
     
