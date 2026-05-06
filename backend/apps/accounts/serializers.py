@@ -18,4 +18,9 @@ class UserSignupSerializer(serializers.ModelSerializer):
             'password', 'password_confirm', 'role', 
             'department', 'staff_number', 'student_number'
         ]
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'role': {'required': True},
+        }
     
