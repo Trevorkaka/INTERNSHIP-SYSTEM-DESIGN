@@ -20,11 +20,10 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'internship',
     'rest_framework',
-    'django-cors-header',
-    'rest_framework_simplejwt',        
+    'corsheaders',
+    'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',  # For filtering querysets
-    'corsheaders'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,7 +49,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.corsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -96,7 +95,7 @@ DATABASES = {
 }
 
 # ---Auth--
-AUTH_USER_MODEL = 'internship.User', 'accounts.CustomUser'
+AUTH_USER_MODEL = 'internship.User'
 LOGIN_URL = 'login'
 
 # Password validation
