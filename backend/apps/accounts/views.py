@@ -107,3 +107,17 @@ def logout(request):
                 {'error': 'Refresh token is required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        
+        return Response(
+            {'message': 'Logged out successfully!'},
+            status=status.HTTP_200_OK
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
