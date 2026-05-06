@@ -38,3 +38,20 @@ def signup(request):
     """
     serializer = UserSignupSerializer(data=request.data)
 
+    if serializer.is_valid():
+        user = serializer.save()
+        
+        # Generate tokens for new user
+        refresh = RefreshToken.for_user(user)
+        
+        response_serializer = UserResponseSerializer(user)
+        
+        return Response({
+            'message': 'Account created successfully!',
+            'user': response_serializer.data,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        }, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
