@@ -72,4 +72,10 @@ export default function SignupPage() {
       setLoading(false)
     }
   }
+
+
+   const showStudentNumber = formData.role === 'student'
+  const showStaffNumber = ['academic_supervisor', 'workplace_supervisor'].includes(formData.role)
+
+  return (
       
