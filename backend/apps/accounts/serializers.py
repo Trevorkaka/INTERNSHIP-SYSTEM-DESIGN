@@ -25,10 +25,16 @@ class UserSignupSerializer(serializers.ModelSerializer):
         }
 
         def validate_username(self, value):
-            
+
             if len(value) < 3:
                 raise serializers.ValidationError("Username must be at least 3 characters long.")
             if User.objects.filter(username__iexact=value).exists():
                 raise serializers.ValidationError("This username is already taken.")
+            return value
+        
+        def validate_email(self, value):
+        
+            if User.objects.filter(email__iexact=value).exists():
+                raise serializers.ValidationError("This email is already registered.")
             return value
     
