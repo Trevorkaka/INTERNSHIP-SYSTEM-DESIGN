@@ -47,5 +47,16 @@ class UserSignupSerializer(serializers.ModelSerializer):
         
 
             role = data.get('role')
+
+            if role == 'student':
+                if not data.get('student_number'):
+                    raise serializers.ValidationError({
+                        'student_number': 'Student number is required for student role.'
+                })
+            elif role in ['workplace_supervisor', 'academic_supervisor']:
+                if not data.get('staff_number'):
+                    raise serializers.ValidationError({
+                        'staff_number': 'Staff number is required for supervisors.'
+                    })
         
     
