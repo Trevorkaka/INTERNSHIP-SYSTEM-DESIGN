@@ -29,3 +29,10 @@ export default function SignupPage() {
     { value: 'academic_supervisor', label: 'Academic Supervisor' },
     { value: 'workplace_supervisor', label: 'Workplace Supervisor' },
   ]
+
+   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
