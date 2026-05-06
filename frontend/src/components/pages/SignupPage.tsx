@@ -44,3 +44,8 @@ export default function SignupPage() {
       }))
     }
   }
+
+    const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setErrors({})
+    setLoading(true)
