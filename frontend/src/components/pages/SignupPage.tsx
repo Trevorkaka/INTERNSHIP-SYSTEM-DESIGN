@@ -49,3 +49,10 @@ export default function SignupPage() {
     e.preventDefault()
     setErrors({})
     setLoading(true)
+
+    try {
+      // Remove empty optional fields
+      const submitData = { ...formData }
+      if (!submitData.department) delete submitData.department
+      if (!submitData.student_number) delete submitData.student_number
+      if (!submitData.staff_number) delete submitData.staff_number
