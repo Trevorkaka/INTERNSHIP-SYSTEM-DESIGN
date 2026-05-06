@@ -39,10 +39,13 @@ class UserSignupSerializer(serializers.ModelSerializer):
             return value
         
         def validate(self, data):
-        """Validate that passwords match and role-specific fields are present"""
-        if data['password'] != data.pop('password_confirm'):
-            raise serializers.ValidationError({
-                'password_confirm': 'Passwords do not match.'
-            })
+        
+            if data['password'] != data.pop('password_confirm'):
+                raise serializers.ValidationError({
+                    'password_confirm': 'Passwords do not match.'
+                })
+        
+
+            role = data.get('role')
         
     
