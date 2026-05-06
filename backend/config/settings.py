@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'internship',
     'rest_framework',
     'REST_FRAMEWORK config',
+    'SIMPLE_JWT config',
     'django-cors-header',
     'rest_framework_simplejwt',        
     'rest_framework_simplejwt.token_blacklist',
