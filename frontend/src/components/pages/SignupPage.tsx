@@ -56,3 +56,8 @@ export default function SignupPage() {
       if (!submitData.department) delete submitData.department
       if (!submitData.student_number) delete submitData.student_number
       if (!submitData.staff_number) delete submitData.staff_number
+
+      const response = await client.post('/api/auth/signup/', submitData)
+      
+      setSuccess(true)
+      
