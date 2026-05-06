@@ -98,7 +98,7 @@ DATABASES = {
 }
 
 # ---Auth--
-AUTH_USER_MODEL = 'internship.User'
+AUTH_USER_MODEL = 'internship.User', 'accounts.CustomUser'
 LOGIN_URL = 'login'
 
 # Password validation
