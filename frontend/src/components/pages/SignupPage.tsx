@@ -36,3 +36,11 @@ export default function SignupPage() {
       ...prev,
       [name]: value
     }))
+
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }))
+    }
+  }
