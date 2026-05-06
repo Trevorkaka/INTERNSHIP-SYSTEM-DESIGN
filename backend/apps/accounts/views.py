@@ -36,4 +36,5 @@ def signup(request):
     Optional:
     - department (str)
     """
+    serializer = UserSignupSerializer(data=request.data)
 
