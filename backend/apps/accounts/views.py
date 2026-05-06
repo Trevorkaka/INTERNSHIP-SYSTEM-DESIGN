@@ -82,4 +82,16 @@ def login(request):
             status=status.HTTP_401_UNAUTHORIZED
         )
     
+    # Generate tokens
+    refresh = RefreshToken.for_user(user)
+    response_serializer = UserResponseSerializer(user)
+    
+    return Response({
+        'message': 'Login successful!',
+        'user': response_serializer.data,
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+    }, status=status.HTTP_200_OK)
+
+    
 
