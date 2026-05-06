@@ -58,5 +58,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError({
                         'staff_number': 'Staff number is required for supervisors.'
                     })
+                
+            return data
         
     
