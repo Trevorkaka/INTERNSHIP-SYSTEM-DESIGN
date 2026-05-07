@@ -1,72 +1,58 @@
-import { Users, Building2, Download, Settings } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Users, Building2, Download, Settings, Loader } from 'lucide-react'
+import client from '../../api/client'
 
 interface Props {
   setPage: (page: string) => void
 }
 
 export default function AdminDashboard({ setPage }: Props) {
+  const [students, setStudents]     = useState<any[]>([])
+  const [placements, setPlacements] = useState<any[]>([])
+  const [logs, setLogs]             = useState<any[]>([])
+  const [loading, setLoading]       = useState(true)
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true)
+      try {
+        const [sRes, pRes, lRes] = await Promise.all([
+          client.get('/api/students/'),
+          client.get('/api/placements/'),
+          client.get('/api/weekly-logs/'),
+        ])
+        setStudents(sRes.data.results ?? sRes.data)
+        setPlacements(pRes.data.results ?? pRes.data)
+        setLogs(lRes.data.results ?? lRes.data)
+      } catch {}
+      finally { setLoading(false) }
+    }
+    fetch()
+  }, [])
+
+  const pendingLogs  = logs.filter(l => l.status === 'submitted').length
+  const approvedLogs = logs.filter(l => l.status === 'approved').length
+  const draftLogs    = logs.filter(l => l.status === 'draft').length
+
   const stats = [
-    { label: 'Total Placements',  value: '248', sub: '+12 this month',       color: 'text-blue-600'   },
-    { label: 'Partner Companies', value: '64',  sub: '+3 new',               color: 'text-green-600'  },
-    { label: 'Avg Performance',   value: '84%', sub: '+2% this semester',    color: 'text-violet-600' },
-    { label: 'At-Risk Students',  value: '8',   sub: 'Requires attention',   color: 'text-red-600'    },
-  ]
-
-  const placements = [
-    { student: 'Alex Johnson',    company: 'Tech Innovations Inc.',  supervisor: 'Sarah Martinez',  start: '15 Jan 2026', status: 'active', progress: 72 },
-    { student: 'Emily Davis',     company: 'Digital Solutions Ltd.', supervisor: 'John Smith',      start: '20 Jan 2026', status: 'active', progress: 68 },
-    { student: 'Michael Brown',   company: 'Creative Agency Co.',   supervisor: 'Lisa Anderson',   start: '1 Feb 2026',  status: 'active', progress: 58 },
-  ]
-
-  const actions = [
-    { action: 'Approve new company partnership request', priority: 'high',   date: '5 May 2026'  },
-    { action: 'Review 8 at-risk student cases',          priority: 'high',   date: '6 May 2026'  },
-    { action: 'Process end-of-semester evaluations',     priority: 'medium', date: '15 May 2026' },
-    { action: 'Update internship policies',              priority: 'low',    date: '20 May 2026' },
-  ]
-
-  const depts = [
-    { name: 'Computer Science',        students: 82, score: 87, color: 'bg-blue-500'   },
-    { name: 'Business Administration', students: 64, score: 83, color: 'bg-green-500'  },
-    { name: 'Engineering',             students: 56, score: 85, color: 'bg-violet-500' },
-    { name: 'Design & Media',          students: 46, score: 81, color: 'bg-amber-500'  },
+    { label: 'Total Students',   value: students.length + '',   sub: 'registered',         color: 'text-blue-600'   },
+    { label: 'Active Placements',value: placements.length + '', sub: 'internships',         color: 'text-green-600'  },
+    { label: 'Pending Reviews',  value: pendingLogs + '',       sub: 'logs awaiting review',color: 'text-amber-600'  },
+    { label: 'Total Logs',       value: logs.length + '',       sub: approvedLogs + ' approved', color: 'text-violet-600' },
   ]
 
   const quickActions = [
     { label: 'Manage Placements', icon: <Users size={15} className="text-blue-600"/>,     onClick: () => setPage('placements') },
-    { label: 'Add Company',       icon: <Building2 size={15} className="text-blue-600"/>, onClick: () => {} },
+    { label: 'Add Company',       icon: <Building2 size={15} className="text-blue-600"/>, onClick: () => setPage('placements') },
     { label: 'Export Reports',    icon: <Download size={15} className="text-blue-600"/>,  onClick: () => {} },
     { label: 'System Settings',   icon: <Settings size={15} className="text-blue-600"/>,  onClick: () => setPage('settings') },
   ]
 
-  const summaryCards = [
-    {
-      title: 'Completion Rates',
-      rows: [
-        ['Successfully Completed', '92%', 92, 'bg-green-500'],
-        ['In Progress',            '6%',   6, 'bg-blue-500' ],
-        ['Discontinued',           '2%',   2, 'bg-red-500'  ],
-      ],
-    },
-    {
-      title: 'Review Status',
-      rows: [
-        ['Pending Reviews',       '23',        null, null],
-        ['Pending Evaluations',   '12',        null, null],
-        ['Completed This Week',   '56',        null, null],
-        ['Avg Response Time',     '2.3 days',  null, null],
-      ],
-    },
-    {
-      title: 'System Health',
-      rows: [
-        ['Active Users Today', '187',      null, 'text-green-600'],
-        ['System Uptime',      '99.8%',    null, 'text-green-600'],
-        ['Sync Status',        'Current',  null, 'text-green-600'],
-        ['Last Backup',        '2 hrs ago',null, null            ],
-      ],
-    },
-  ]
+  if (loading) return (
+    <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
+      <Loader size={16} className="animate-spin"/> Loading dashboard…
+    </div>
+  )
 
   return (
     <div className="space-y-6">
@@ -89,68 +75,81 @@ export default function AdminDashboard({ setPage }: Props) {
             <button onClick={() => setPage('placements')} className="text-xs font-semibold text-blue-600 hover:underline">View All</button>
           </div>
           <div className="p-4 space-y-3">
-            {placements.map((p, i) => (
-              <div key={i} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="text-sm font-bold">{p.student}</div>
-                    <div className="text-xs text-gray-500 mt-0.5">{p.company}</div>
-                    <div className="text-xs text-gray-400 mt-0.5">Supervisor: {p.supervisor}</div>
+            {placements.length === 0 && (
+              <div className="text-center text-gray-400 text-sm py-8">No placements yet.</div>
+            )}
+            {placements.slice(0, 5).map((p: any) => {
+              const start = new Date(p.start_date)
+              const end   = new Date(p.end_date)
+              const progress = Math.min(100, Math.max(0,
+                Math.round(((Date.now() - start.getTime()) / (end.getTime() - start.getTime())) * 100)
+              ))
+              return (
+                <div key={p.id} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <div className="text-sm font-bold">{p.company_name}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">{p.position}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{p.start_date} – {p.end_date}</div>
+                    </div>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">active</span>
                   </div>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">{p.status}</span>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-gray-400">Progress</span>
+                    <span className="font-bold">{progress}%</span>
+                  </div>
+                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-600 rounded-full" style={{ width: progress + '%' }}/>
+                  </div>
                 </div>
-                <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-gray-400">Started {p.start}</span>
-                  <span className="font-bold">{p.progress}%</span>
-                </div>
-                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-600 rounded-full" style={{ width: p.progress + '%' }}/>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
-        {/* Pending actions */}
+        {/* Log status summary */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
-            <h2 className="text-sm font-bold">Pending Actions</h2>
+            <h2 className="text-sm font-bold">Log Status Overview</h2>
           </div>
-          <div className="p-4 space-y-2">
-            {actions.map((a, i) => (
-              <div key={i} className={`p-3 rounded-xl border cursor-pointer hover:opacity-80 transition-opacity
-                ${a.priority === 'high'   ? 'bg-red-50 border-red-200'     :
-                  a.priority === 'medium' ? 'bg-amber-50 border-amber-200' :
-                  'bg-gray-50 border-gray-200'}`}>
-                <div className="text-sm font-semibold text-gray-900">{a.action}</div>
-                <div className="text-xs text-gray-400 mt-1">Due: {a.date}</div>
+          <div className="p-4 space-y-4">
+            {[
+              ['Draft',     draftLogs,    'bg-gray-300'   ],
+              ['Submitted', pendingLogs,  'bg-amber-400'  ],
+              ['Reviewed',  logs.filter(l => l.status === 'reviewed').length,  'bg-blue-500' ],
+              ['Approved',  approvedLogs, 'bg-green-500'  ],
+            ].map(([label, count, color]) => (
+              <div key={label as string}>
+                <div className="flex justify-between text-xs mb-1.5">
+                  <span className="text-gray-500 capitalize font-medium">{label}</span>
+                  <span className="font-bold">{count}</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${color}`}
+                    style={{ width: logs.length ? ((count as number) / logs.length * 100) + '%' : '0%' }}/>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Department performance */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-bold">Performance by Department</h2>
-        </div>
-        <div className="p-5 space-y-4">
-          {depts.map(d => (
-            <div key={d.name}>
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <div className={`w-2.5 h-2.5 rounded-full ${d.color}`}/>
-                  {d.name}
-                  <span className="text-xs font-normal text-gray-400">({d.students} students)</span>
+          {/* Students list */}
+          <div className="px-5 pb-4">
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3 pt-4 border-t border-gray-100">Registered Students</div>
+            {students.slice(0, 4).map((s: any) => (
+              <div key={s.id} className="flex items-center gap-2.5 py-2">
+                <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600 flex-shrink-0">
+                  {s.user?.first_name?.[0] ?? '?'}{s.user?.last_name?.[0] ?? ''}
                 </div>
-                <span className="text-sm font-bold">{d.score}%</span>
+                <div>
+                  <div className="text-sm font-semibold">{s.user?.first_name} {s.user?.last_name}</div>
+                  <div className="text-xs text-gray-400">{s.course} · {s.registration_number}</div>
+                </div>
               </div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${d.color}`} style={{ width: d.score + '%' }}/>
-              </div>
-            </div>
-          ))}
+            ))}
+            {students.length > 4 && (
+              <div className="text-xs text-blue-600 font-medium mt-1">+{students.length - 4} more students</div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -170,25 +169,43 @@ export default function AdminDashboard({ setPage }: Props) {
         </div>
       </div>
 
-      {/* Summary cards */}
+      {/* System summary */}
       <div className="grid grid-cols-3 gap-4">
-        {summaryCards.map(section => (
+        {[
+          {
+            title: 'Submission Rate',
+            rows: [
+              ['Total Logs Created', logs.length],
+              ['Submitted',          logs.filter(l => l.status !== 'draft').length],
+              ['Approved',           approvedLogs],
+            ],
+          },
+          {
+            title: 'Review Progress',
+            rows: [
+              ['Awaiting Review',    pendingLogs],
+              ['Under Review',       logs.filter(l => l.status === 'reviewed').length],
+              ['Fully Approved',     approvedLogs],
+            ],
+          },
+          {
+            title: 'System Overview',
+            rows: [
+              ['Total Students',     students.length],
+              ['Active Placements',  placements.length],
+              ['Total Activity Logs',logs.length],
+            ],
+          },
+        ].map(section => (
           <div key={section.title} className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-5 py-4 border-b border-gray-100">
               <h2 className="text-sm font-bold">{section.title}</h2>
             </div>
             <div className="p-4 space-y-3">
-              {section.rows.map(([label, value, pct, color]) => (
-                <div key={label as string}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-500">{label}</span>
-                    <span className={`font-bold ${color ?? 'text-gray-900'}`}>{value}</span>
-                  </div>
-                  {pct !== null && (
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${color}`} style={{ width: (pct as number) + '%' }}/>
-                    </div>
-                  )}
+              {section.rows.map(([label, value]) => (
+                <div key={label as string} className="flex justify-between text-sm">
+                  <span className="text-gray-500">{label}</span>
+                  <span className="font-bold">{value}</span>
                 </div>
               ))}
             </div>

@@ -22,7 +22,7 @@ router.register(r'evaluations',           views.EvaluationViewSet,          base
 router.register(r'evaluaton-criteria',    views.EvaluationCriteriaViewSet,  basename='evaluation-criteria')
 router.register(r'assessments',           views.AssessmentViewSet,          basename='assessment')
 router.register(r'notifications',         views.NotificationViewSet,        basename='notification')
-
+router.register(r'placements',            views.InternshipPlacementViewSet, basename='placement')
 
 urlpatterns = [
     #Auth views (rendered HTML pages)
