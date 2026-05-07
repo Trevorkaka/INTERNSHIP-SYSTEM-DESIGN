@@ -1,21 +1,13 @@
 from pathlib import Path
 from datetime import timedelta
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-hjt1o9cdh1e(a^#v1tz)gzniggyxk8v9ozlwtpmjn5b*gb__7w'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'internship',
@@ -23,7 +15,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'django_filters',  # For filtering querysets
+    'django_filters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,25 +23,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-
-    # Third-party
-    # 'rest_framework_simplejwt',  # For JWT token authentication
-    
-    # Local apps
-    #'apps.accounts',
-    #'apps.placements',
-    #'apps.logs',
-    #'apps.evaluations',
-    #'apps.notifications',
-    #'apps.common',
-    
-    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',       # ✅ Must be above CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -76,133 +55,78 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-
-        #'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': 'group20_db',
-        #'USER': 'group20_user',
-        #'PASSWORD': 'group20password',
-        #'HOST': 'localhost',
-        #'PORT': '5432',
+        # PostgreSQL — uncomment when ready:
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'group20_db',
+        # 'USER': 'group20_user',
+        # 'PASSWORD': 'group20password',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 }
 
-# ---Auth--
 AUTH_USER_MODEL = 'internship.User'
 LOGIN_URL = 'login'
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static"
-    ]
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-#-----CORS---
-# Allows your React dev server to talk to Django during development.
-# When you deploy, replace these with your actual frontend domain.
+# Media files (for future file uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
+# ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',   # Vite (React default)
-    'http://localhost:3000',   # Create React App default
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
 ]
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_CREDENTIALS = True   # Needed so React can send the Authorization header
-
-
-
-
-#Register Custom User in settings
-#AUTH_USER_MODEL = 'accounts.CustomUser'
-
-
-#--Django REST Framewprk----------------------------------------------------------------------
-
-
+# ── REST Framework ─────────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
-    # --- Auth ---
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-
-    # --- Permissions ---
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-
-    # --- Filtering ---
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
-'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
-
-# --- Pagination ---
-    'DEFAULT_PAGINATION_CLASS': 'apps.common.pagination.StandardResultsSetPagination',
-    'PAGE_SIZE': 10,
+    # ✅ No custom pagination or exception handler — those apps don't exist
 }
 
+# ── SimpleJWT ──────────────────────────────────────────────────────────────────
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),    #Access token expires in 60 minutes
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  #Refresh token expires in 7 days
-    'ROTATE_REFRESH_TOKENS': True,         #Issue new refresh token on every refresh
-    'BLACKLIST_AFTER_ROTATION': True,      #old refresh token becomes invalid after rotation
-    'AUTH_HEADER_TYPES': ('Bearer',),      #Frontend sends: Authorization Bearer <token>
-    'UPDATE_LAST_LOGIN': True,             #Updates user.last_login on token issue
+    'ACCESS_TOKEN_LIFETIME':    timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME':   timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS':    True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES':        ('Bearer',),
+    'UPDATE_LAST_LOGIN':        True,
 }
 
-#REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exceptions.custom_exception_handler'
-
-
-#Security
-# Prevent XSS
+# ── Security ───────────────────────────────────────────────────────────────────
 SECURE_BROWSER_XSS_FILTER = True
-
-# Prevent MIME sniffing
 SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# CSRF protection
 CSRF_COOKIE_HTTPONLY = True
-
-# Clickjacking protection
 X_FRAME_OPTIONS = 'DENY'
-
