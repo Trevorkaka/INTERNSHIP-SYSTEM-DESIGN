@@ -36,7 +36,7 @@ class WeeklyLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WeeklyLog
         fields = '__all__'
-        read_only_fields = ['status', 'submitted_at']
+        read_only_fields = ['status', 'submitted_at','student']
 
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
