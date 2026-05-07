@@ -190,7 +190,7 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True,             #Updates user.last_login on token issue
 }
 
-REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exceptions.custom_exception_handler'
+#REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exceptions.custom_exception_handler'
 
 
 #Security
