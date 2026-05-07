@@ -164,7 +164,7 @@ class AcademicSupervisorViewSet(viewsets.ModelViewSet):
 
 
 class WeeklyLogViewSet(viewsets.ModelViewSet):
-    queryset = WeeklyLog.objects.all()
+    queryset = WeeklyLog.objects.all().order_by('-id')
     serializer_class = WeeklyLogSerializer
     
     filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]

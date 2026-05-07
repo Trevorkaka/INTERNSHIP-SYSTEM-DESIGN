@@ -97,7 +97,9 @@ class WeeklyLog(models.Model):
 
      def __str__(self):
         return f"week {self.week_number} -{self.status}"
-     
+     class Meta:
+         ordering = ['-id']
+         
 class Assessment(models.Model):
     log = models.ForeignKey(WeeklyLog, on_delete=models.CASCADE)
     assessor = models.ForeignKey(User, on_delete=models.CASCADE)
