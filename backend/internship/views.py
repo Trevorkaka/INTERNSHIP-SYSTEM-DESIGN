@@ -23,7 +23,7 @@ from .serializers import (
     EvaluationSerializer, AssessmentSerializer, InternshipPlacementSerializer
 )
 from .permissions import (
-    IsAdmin, IsAdminOrSelf, IsStudent, IsAcademicSupervisor,
+    IsAdmin, IsStudent, IsAcademicSupervisor,
     IsWorkplaceSupervisor, IsAdminOrAcademicSupervisor,
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
@@ -39,11 +39,17 @@ def jwt_login(request):
     password = request.data.get('password')
 
     if not username or not password:
-        return Response({'error': 'Username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'error': 'Username and password are required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     user = authenticate(username=username, password=password)
     if user is None:
-        return Response({'error': 'Invalid username or password.'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(
+            {'error': 'Invalid username or password.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
     refresh = RefreshToken.for_user(user)
     notifications = Notification.objects.filter(recipient=user, is_read=False)[:5]
@@ -74,7 +80,70 @@ def jwt_logout(request):
         token.blacklist()
         return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
     except TokenError:
-        return Response({'error': 'Token is invalid or already expired.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Token is invalid or expired.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_api(request):
+    """
+    POST /api/auth/register/
+    Creates user + role profile in one request.
+    """
+    data = request.data
+
+    # Validate required fields
+    for field in ['username', 'email', 'password', 'first_name', 'last_name', 'role']:
+        if not data.get(field):
+            return Response({field: ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if data['role'] not in ['student', 'academic_supervisor', 'workplace_supervisor']:
+        return Response(
+            {'role': ['Invalid role.']},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if User.objects.filter(username=data['username']).exists():
+        return Response({'username': ['Username already taken.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email=data['email']).exists():
+        return Response({'email': ['Email already registered.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.create_user(
+            username=data['username'],
+            email=data['email'],
+            password=data['password'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            role=data['role'],
+        )
+
+        if data['role'] == 'student':
+            Student.objects.create(
+                user=user,
+                registration_number=data.get('registration_number', ''),
+                course=data.get('course', ''),
+                year_of_study=int(data.get('year_of_study', 1)),
+            )
+        elif data['role'] == 'academic_supervisor':
+            AcademicSupervisor.objects.create(
+                user=user,
+                department=data.get('department', ''),
+            )
+        elif data['role'] == 'workplace_supervisor':
+            WorkPlaceSupervisor.objects.create(
+                user=user,
+                company_name=data.get('company_name', ''),
+            )
+
+        return Response({
+            'message': 'Account created successfully.',
+            'user': {'id': user.id, 'username': user.username, 'role': user.role}
+        }, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # ── ViewSets ───────────────────────────────────────────────────────────────────
@@ -112,6 +181,42 @@ class StudentViewSet(viewsets.ModelViewSet):
         if user.is_academic_supervisor:
             return Student.objects.filter(academic_supervisor=user)
         return Student.objects.all()
+
+    @action(detail=True, methods=['patch'], permission_classes=[IsAdmin])
+    def assign_supervisors(self, request, pk=None):
+        """
+        PATCH /api/students/{id}/assign_supervisors/
+        Body: { academic_supervisor: user_id, work_place_supervisor: user_id }
+        Admin only.
+        """
+        student = self.get_object()
+        academic_id  = request.data.get('academic_supervisor')
+        workplace_id = request.data.get('work_place_supervisor')
+
+        if academic_id:
+            try:
+                student.academic_supervisor = User.objects.get(
+                    id=academic_id, role='academic_supervisor'
+                )
+            except User.DoesNotExist:
+                return Response(
+                    {'error': f'Academic supervisor with id {academic_id} not found.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        if workplace_id:
+            try:
+                student.work_place_supervisor = User.objects.get(
+                    id=workplace_id, role='workplace_supervisor'
+                )
+            except User.DoesNotExist:
+                return Response(
+                    {'error': f'Workplace supervisor with id {workplace_id} not found.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        student.save()
+        return Response(StudentSerializer(student).data, status=status.HTTP_200_OK)
 
 
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
@@ -152,7 +257,7 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         if user.is_academic_supervisor:
             return WeeklyLog.objects.filter(student__academic_supervisor=user).order_by('-id')
         if user.is_workplace_supervisor:
-            # ✅ Fixed: was student__workplace_supervisor (wrong field name)
+            # ✅ Correct field name: work_place_supervisor
             return WeeklyLog.objects.filter(student__work_place_supervisor=user).order_by('-id')
         return WeeklyLog.objects.all().order_by('-id')
 
@@ -166,26 +271,26 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
         if log.student.user != request.user:
             return Response({'error': 'You can only submit your own logs.'}, status=status.HTTP_403_FORBIDDEN)
         if log.status != 'draft':
-            return Response({'error': f'Log is already {log.status}.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': f'Only draft logs can be submitted. Current: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
         log.status = 'submitted'
         log.submitted_at = timezone.now()
         log.save()
-        return Response({'message': f'Week {log.week_number} log submitted.'}, status=status.HTTP_200_OK)
+        return Response({'message': f'Week {log.week_number} submitted successfully.'}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminOrAnySupervisor])
     def review(self, request, pk=None):
         log = self.get_object()
         if log.status != 'submitted':
-            return Response({'error': f'Log must be submitted first. Status: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': f'Log must be submitted first. Current: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
         log.status = 'reviewed'
         log.save()
-        return Response({'message': f'Week {log.week_number} marked reviewed.'}, status=status.HTTP_200_OK)
+        return Response({'message': f'Week {log.week_number} marked as reviewed.'}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
     def approve(self, request, pk=None):
         log = self.get_object()
         if log.status != 'reviewed':
-            return Response({'error': f'Log must be reviewed first. Status: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': f'Log must be reviewed first. Current: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
         log.status = 'approved'
         log.save()
         return Response({'message': f'Week {log.week_number} approved.'}, status=status.HTTP_200_OK)
@@ -195,9 +300,8 @@ class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
     permission_classes = [IsAdminOrReadOnly]
-    filter_backends  = [SearchFilter, OrderingFilter]
-    search_fields    = ['name']
-    ordering_fields  = ['name', 'max_score']
+    filter_backends = [SearchFilter]
+    search_fields   = ['name']
 
 
 class EvaluationViewSet(viewsets.ModelViewSet):
@@ -245,6 +349,7 @@ class AssessmentViewSet(viewsets.ModelViewSet):
         return Assessment.objects.all()
 
     def perform_create(self, serializer):
+        # ✅ assessor is set automatically from logged-in user
         serializer.save(assessor=self.request.user)
 
 
@@ -263,12 +368,12 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def mark_as_read(self, request, pk=None):
         n = self.get_object()
         n.mark_as_read()
-        return Response({'message': 'Marked as read.'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Marked as read.'})
 
     @action(detail=False, methods=['post'])
     def mark_all_as_read(self, request):
         updated = Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
-        return Response({'message': f'{updated} notifications marked as read.'}, status=status.HTTP_200_OK)
+        return Response({'message': f'{updated} notifications marked as read.'})
 
 
 class InternshipPlacementViewSet(viewsets.ModelViewSet):
