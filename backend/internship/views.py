@@ -11,6 +11,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
+from .serializers import InternshipPlacementSerializer
+
 from .models import (
     User, Student, WorkPlaceSupervisor, AcademicSupervisor,
     WeeklyLog, EvaluationCriteria, Evaluation,
@@ -367,6 +369,18 @@ class NotificationViewSet(viewsets.ModelViewSet):
             {'message': f'{updated} notification(s) marked as read.'},
             status=status.HTTP_200_OK
         )
+    
+class InternshipPlacementViewSet(viewsets.ModelViewSet):
+    queryset = InternshipPlacement.objects.all()
+    serializer_class = InternshipPlacementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return InternshipPlacement.objects.filter(student__user=user)
+        return InternshipPlacement.objects.all()
+    
 # Authentication Views
 def register_view(request):
     """Handle user registration"""

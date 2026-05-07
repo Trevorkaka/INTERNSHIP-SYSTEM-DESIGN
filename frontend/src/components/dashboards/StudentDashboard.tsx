@@ -1,22 +1,57 @@
-import { useState } from 'react'
-import { Clock, FileText, TrendingUp, CheckSquare, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Clock, FileText, TrendingUp, CheckSquare, AlertCircle, Loader } from 'lucide-react'
+import { logsAPI } from '../../api/services'
+import client from '../../api/client'
 
 interface Props {
   setPage: (page: string) => void
 }
 
-function statusBadge(status: string) {
-  const map: Record<string, string> = {
-    approved: 'bg-green-100 text-green-700',
-    submitted: 'bg-blue-100 text-blue-700',
-    pending:   'bg-yellow-100 text-yellow-700',
-    reviewed:  'bg-blue-100 text-blue-700',
-    draft:     'bg-gray-100 text-gray-500',
-  }
-  return `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${map[status] ?? 'bg-gray-100 text-gray-500'}`
+interface Log {
+  id: number
+  week_number: number
+  status: string
+  activities: string
+  submitted_at: string | null
 }
 
-function NewLogModal({ onClose }: { onClose: () => void }) {
+interface Placement {
+  id: number
+  company_name: string
+  position: string
+  start_date: string
+  end_date: string
+  student: number
+}
+
+function NewLogModal({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
+  const [form, setForm] = useState({ week_number: '', activities: '', challenges: '', solutions: '' })
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (asDraft: boolean) => {
+    if (!form.week_number || !form.activities) {
+      setError('Week number and activities are required.')
+      return
+    }
+    setSaving(true)
+    try {
+      const res = await logsAPI.create({
+        week_number: Number(form.week_number),
+        activities: form.activities,
+        challenges: form.challenges,
+        solutions: form.solutions,
+      })
+      if (!asDraft) await logsAPI.submit(res.data.id)
+      onSaved()
+      onClose()
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to save log.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-5 z-50"
       onClick={e => e.target === e.currentTarget && onClose()}>
@@ -28,38 +63,47 @@ function NewLogModal({ onClose }: { onClose: () => void }) {
         <div className="p-6 overflow-y-auto flex-1 space-y-4">
           <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
             <AlertCircle size={14} className="text-blue-600 mt-0.5 flex-shrink-0"/>
-            <p className="text-xs text-blue-700">Logs must be submitted weekly and approved by your workplace supervisor before the deadline.</p>
+            <p className="text-xs text-blue-700">Submit your log weekly. Your workplace supervisor will review it.</p>
           </div>
+          {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600">{error}</div>}
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">Week Number</label>
-            <input type="number" placeholder="e.g. 13" className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Start Date</label>
-              <input type="date" className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">End Date</label>
-              <input type="date" className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
-            </div>
+            <input type="number" placeholder="e.g. 13" min="1" max="52"
+              value={form.week_number}
+              onChange={e => setForm({ ...form, week_number: e.target.value })}
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">Activities & Tasks Completed</label>
-            <textarea rows={4} placeholder="Describe your activities and responsibilities this week…" className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y"/>
+            <textarea rows={4} placeholder="Describe your activities this week…"
+              value={form.activities}
+              onChange={e => setForm({ ...form, activities: e.target.value })}
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y"/>
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">Challenges Faced</label>
-            <textarea rows={3} placeholder="What challenges did you encounter?" className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y"/>
+            <textarea rows={3} placeholder="What challenges did you encounter?"
+              value={form.challenges}
+              onChange={e => setForm({ ...form, challenges: e.target.value })}
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y"/>
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">Solutions & Learning Outcomes</label>
-            <textarea rows={3} placeholder="How did you resolve challenges? What did you learn?" className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y"/>
+            <textarea rows={3} placeholder="How did you resolve challenges?"
+              value={form.solutions}
+              onChange={e => setForm({ ...form, solutions: e.target.value })}
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y"/>
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-100">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Save as Draft</button>
-          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">Submit Log</button>
+          <button onClick={() => handleSubmit(true)} disabled={saving}
+            className="px-4 py-2 text-sm font-semibold border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
+            Save as Draft
+          </button>
+          <button onClick={() => handleSubmit(false)} disabled={saving}
+            className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50">
+            {saving ? 'Submitting…' : 'Submit Log'}
+          </button>
         </div>
       </div>
     </div>
@@ -67,35 +111,64 @@ function NewLogModal({ onClose }: { onClose: () => void }) {
 }
 
 export default function StudentDashboard({ setPage }: Props) {
+  const [logs, setLogs] = useState<Log[]>([])
+  const [placement, setPlacement] = useState<Placement | null>(null)
+  const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
 
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [lRes, pRes] = await Promise.all([
+        logsAPI.list(),
+        client.get('/api/placements/'),
+      ])
+      const allLogs = lRes.data.results ?? lRes.data
+      setLogs(allLogs)
+      const placements = pRes.data.results ?? pRes.data
+      if (placements.length) setPlacement(placements[0])
+    } catch {}
+    finally { setLoading(false) }
+  }
+
+  useEffect(() => { fetchData() }, [])
+
+  const submitted = logs.filter(l => l.status !== 'draft').length
+  const approved  = logs.filter(l => l.status === 'approved').length
+  const draft     = logs.filter(l => l.status === 'draft').length
+
+  const recentLogs = logs.slice(0, 3)
+
+  // Placement progress
+  const progress = placement
+    ? Math.min(100, Math.max(0, Math.round(
+        ((Date.now() - new Date(placement.start_date).getTime()) /
+         (new Date(placement.end_date).getTime() - new Date(placement.start_date).getTime())) * 100
+      )))
+    : 0
+
   const stats = [
-    { label: 'Total Hours',      value: '156',  sub: '+12 this week',        color: 'text-blue-600',   bg: 'bg-blue-50',   icon: <Clock size={18} className="text-blue-600"/> },
-    { label: 'Logs Submitted',   value: '24',   sub: '3 pending review',     color: 'text-green-600',  bg: 'bg-green-50',  icon: <FileText size={18} className="text-green-600"/> },
-    { label: 'Performance',      value: '87%',  sub: '+5% from last month',  color: 'text-violet-600', bg: 'bg-violet-50', icon: <TrendingUp size={18} className="text-violet-600"/> },
-    { label: 'Completed Tasks',  value: '18/20',sub: '90% completion rate',  color: 'text-amber-600',  bg: 'bg-amber-50',  icon: <CheckSquare size={18} className="text-amber-600"/> },
+    { label: 'Logs Submitted',  value: submitted + '',      sub: draft + ' draft',        color: 'text-blue-600',   bg: 'bg-blue-50',   icon: <FileText size={18} className="text-blue-600"/> },
+    { label: 'Logs Approved',   value: approved + '',       sub: 'out of ' + logs.length, color: 'text-green-600',  bg: 'bg-green-50',  icon: <CheckSquare size={18} className="text-green-600"/> },
+    { label: 'Progress',        value: progress + '%',      sub: 'internship completion',  color: 'text-violet-600', bg: 'bg-violet-50', icon: <TrendingUp size={18} className="text-violet-600"/> },
+    { label: 'Total Logs',      value: logs.length + '',    sub: 'all time',              color: 'text-amber-600',  bg: 'bg-amber-50',  icon: <Clock size={18} className="text-amber-600"/> },
   ]
 
-  const logs = [
-    { id: 1, week: 'Week 12', date: '28 Apr – 2 May 2026', hours: 40, status: 'approved' },
-    { id: 2, week: 'Week 11', date: '21–25 Apr 2026',       hours: 38, status: 'approved' },
-    { id: 3, week: 'Week 10', date: '14–18 Apr 2026',       hours: 40, status: 'pending'  },
-  ]
+  const statusBadge = (status: string) => {
+    const map: Record<string, string> = {
+      approved: 'bg-green-100 text-green-700',
+      submitted: 'bg-blue-100 text-blue-700',
+      reviewed: 'bg-blue-100 text-blue-700',
+      draft: 'bg-gray-100 text-gray-500',
+    }
+    return `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${map[status] ?? 'bg-gray-100 text-gray-500'}`
+  }
 
-  const deadlines = [
-    { task: 'Submit Week 13 Activity Log',         due: '9 May 2026',  priority: 'high'   },
-    { task: 'Complete Mid-Term Self-Evaluation',   due: '15 May 2026', priority: 'medium' },
-    { task: 'Review Supervisor Feedback',          due: '20 May 2026', priority: 'low'    },
-  ]
-
-  const placementDetails = [
-    ['Company',              'Tech Innovations Inc.'],
-    ['Position',             'Software Development Intern'],
-    ['Duration',             'Jan 15 – Jun 15, 2026'],
-    ['Workplace Supervisor', 'Sarah Martinez'],
-    ['Academic Supervisor',  'Dr. Michael Chen'],
-    ['Required Hours',       '320 hours'],
-  ]
+  if (loading) return (
+    <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
+      <Loader size={16} className="animate-spin"/> Loading dashboard…
+    </div>
+  )
 
   return (
     <div className="space-y-6">
@@ -111,77 +184,109 @@ export default function StudentDashboard({ setPage }: Props) {
         ))}
       </div>
 
-      {/* Logs + Deadlines */}
+      {/* Logs + quick info */}
       <div className="grid grid-cols-[1fr_340px] gap-4">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
             <h2 className="text-sm font-bold">Recent Activity Logs</h2>
-            <button onClick={() => setShowModal(true)} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
-              + New Log
-            </button>
+            <div className="flex gap-2">
+              <button onClick={() => setPage('activities')} className="px-3 py-1.5 border-2 border-gray-200 text-gray-600 text-xs font-semibold rounded-lg hover:bg-gray-50 transition-colors">View All</button>
+              <button onClick={() => setShowModal(true)} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">+ New Log</button>
+            </div>
           </div>
           <div className="p-4 space-y-2">
-            {logs.map(log => (
+            {recentLogs.length === 0 && (
+              <div className="text-center text-gray-400 text-sm py-8">
+                No logs yet. Click <strong>+ New Log</strong> to get started.
+              </div>
+            )}
+            {recentLogs.map(log => (
               <div key={log.id} onClick={() => setPage('activities')}
-                className="p-4 border-2 border-gray-100 hover:border-blue-300 hover:shadow-sm rounded-xl cursor-pointer transition-all">
+                className="p-4 border-2 border-gray-100 hover:border-blue-300 rounded-xl cursor-pointer transition-all">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-sm font-bold">{log.week}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-700">{log.hours}h</span>
-                    <span className={statusBadge(log.status)}>{log.status}</span>
-                  </div>
+                  <span className="text-sm font-bold">Week {log.week_number}</span>
+                  <span className={statusBadge(log.status)}>{log.status}</span>
                 </div>
-                <div className="text-xs text-gray-400">{log.date}</div>
+                {log.submitted_at && (
+                  <div className="text-xs text-gray-400">Submitted {new Date(log.submitted_at).toLocaleDateString()}</div>
+                )}
+                {log.activities && (
+                  <div className="text-xs text-gray-500 mt-1 line-clamp-1">{log.activities}</div>
+                )}
               </div>
             ))}
           </div>
         </div>
 
+        {/* Status breakdown */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
-            <h2 className="text-sm font-bold">Upcoming Deadlines</h2>
+            <h2 className="text-sm font-bold">Log Status Overview</h2>
           </div>
           <div className="p-4 space-y-4">
-            {deadlines.map((d, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${d.priority === 'high' ? 'bg-red-500' : d.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`}/>
-                <div>
-                  <div className="text-sm font-semibold text-gray-800">{d.task}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">Due {d.due}</div>
+            {(['draft', 'submitted', 'reviewed', 'approved'] as const).map(status => {
+              const count = logs.filter(l => l.status === status).length
+              const pct = logs.length ? Math.round((count / logs.length) * 100) : 0
+              const colors: Record<string, string> = {
+                draft: 'bg-gray-300', submitted: 'bg-blue-500',
+                reviewed: 'bg-violet-500', approved: 'bg-green-500',
+              }
+              return (
+                <div key={status}>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-gray-500 capitalize font-medium">{status}</span>
+                    <span className="font-bold">{count}</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${colors[status]}`} style={{ width: pct + '%' }}/>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
 
       {/* Placement info */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-        <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-bold">Current Internship</h2>
-        </div>
-        <div className="p-5">
-          <div className="grid grid-cols-3 gap-5 mb-5">
-            {placementDetails.map(([label, value]) => (
-              <div key={label}>
-                <div className="text-xs text-gray-400 mb-1">{label}</div>
-                <div className="text-sm font-semibold text-gray-900">{value}</div>
+      {placement ? (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-bold">Current Internship Placement</h2>
+          </div>
+          <div className="p-5">
+            <div className="grid grid-cols-3 gap-5 mb-5">
+              {[
+                ['Company',    placement.company_name],
+                ['Position',   placement.position],
+                ['Start Date', placement.start_date],
+                ['End Date',   placement.end_date],
+                ['Progress',   progress + '%'],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <div className="text-xs text-gray-400 mb-1">{label}</div>
+                  <div className="text-sm font-semibold text-gray-900">{value}</div>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-gray-500">Overall Progress</span>
+                <span className="font-bold">{progress}%</span>
               </div>
-            ))}
-          </div>
-          <div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-500">Overall Progress</span>
-              <span className="font-bold">48.75%</span>
-            </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-600 rounded-full" style={{ width: '48.75%' }}/>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-600 rounded-full" style={{ width: progress + '%' }}/>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 text-center">
+          <div className="text-gray-400 text-sm">No internship placement assigned yet.</div>
+          <div className="text-gray-300 text-xs mt-1">Contact your administrator to get placed.</div>
+        </div>
+      )}
 
-      {showModal && <NewLogModal onClose={() => setShowModal(false)} />}
+      {showModal && <NewLogModal onClose={() => setShowModal(false)} onSaved={fetchData} />}
     </div>
   )
 }
