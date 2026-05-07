@@ -3,29 +3,15 @@ import { useAuth } from '../contexts/AuthContext'
 import { notificationsAPI } from '../api/services'
 import {
   LayoutDashboard, FileText, ClipboardCheck, BarChart2,
-  Users, Settings, Bell, LogOut, BookOpen, Building2
+  Users, Settings, Bell, LogOut, BookOpen, Building2, UserCheck
 } from 'lucide-react'
 
-interface NavItem {
-  id: string
-  label: string
-  icon: ReactNode
-}
-
+interface NavItem { id: string; label: string; icon: ReactNode }
 interface Notification {
-  id: number
-  title: string
-  message: string
-  is_read: boolean
-  created_at: string
-  notification_type: string
+  id: number; title: string; message: string;
+  is_read: boolean; created_at: string; notification_type: string
 }
-
-interface LayoutProps {
-  children: ReactNode
-  page: string
-  setPage: (page: string) => void
-}
+interface LayoutProps { children: ReactNode; page: string; setPage: (p: string) => void }
 
 const NAV_BY_ROLE: Record<string, NavItem[]> = {
   student: [
@@ -46,11 +32,12 @@ const NAV_BY_ROLE: Record<string, NavItem[]> = {
     { id: 'analytics',   label: 'Analytics',   icon: <BarChart2 size={16}/> },
   ],
   admin: [
-    { id: 'dashboard',  label: 'Dashboard',  icon: <LayoutDashboard size={16}/> },
-    { id: 'placements', label: 'Placements', icon: <Building2 size={16}/> },
-    { id: 'oversight',  label: 'Oversight',  icon: <BookOpen size={16}/> },
-    { id: 'analytics',  label: 'Analytics',  icon: <BarChart2 size={16}/> },
-    { id: 'settings',   label: 'Settings',   icon: <Settings size={16}/> },
+    { id: 'dashboard',   label: 'Dashboard',    icon: <LayoutDashboard size={16}/> },
+    { id: 'placements',  label: 'Placements',   icon: <Building2 size={16}/> },
+    { id: 'supervisors', label: 'Assign Supervisors', icon: <UserCheck size={16}/> },
+    { id: 'oversight',   label: 'Oversight',    icon: <BookOpen size={16}/> },
+    { id: 'analytics',   label: 'Analytics',    icon: <BarChart2 size={16}/> },
+    { id: 'settings',    label: 'Settings',     icon: <Settings size={16}/> },
   ],
 }
 
@@ -68,26 +55,22 @@ function initials(name: string) {
 export default function Layout({ children, page, setPage }: LayoutProps) {
   const { user, logout } = useAuth()
   const [showNotifs, setShowNotifs] = useState(false)
-  const [notifs, setNotifs] = useState<Notification[]>([])
+  const [notifs, setNotifs]         = useState<Notification[]>([])
 
-  const navItems = NAV_BY_ROLE[user?.role ?? ''] ?? []
+  const navItems  = NAV_BY_ROLE[user?.role ?? ''] ?? []
   const pageTitle = navItems.find(n => n.id === page)?.label ?? 'ILES'
-  const unread = notifs.filter(n => !n.is_read).length
-  const fullName = `${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim() || user?.username || ''
+  const unread    = notifs.filter(n => !n.is_read).length
+  const fullName  = `${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim() || user?.username || ''
 
-  // Load notifications from Django
   const fetchNotifs = async () => {
     try {
       const res = await notificationsAPI.list()
       setNotifs(res.data.results ?? res.data)
-    } catch {
-      // silently fail — notifications are non-critical
-    }
+    } catch {}
   }
 
   useEffect(() => {
     fetchNotifs()
-    // Poll every 30 seconds for new notifications
     const interval = setInterval(fetchNotifs, 30000)
     return () => clearInterval(interval)
   }, [])
@@ -108,11 +91,10 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
-      {/* ── Sidebar ── */}
+      {/* Sidebar */}
       <aside className="w-60 bg-gray-950 flex flex-col flex-shrink-0 relative overflow-hidden">
         <div className="absolute -top-16 -right-16 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"/>
 
-        {/* Brand */}
         <div className="px-5 py-6 border-b border-white/8">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white text-sm font-black">IL</div>
@@ -123,8 +105,7 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
+        <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
           <p className="text-white/25 text-[10px] font-semibold uppercase tracking-widest px-2 pb-2 pt-1">Navigation</p>
           {navItems.map(item => (
             <button key={item.id} onClick={() => setPage(item.id)}
@@ -138,7 +119,6 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
           ))}
         </nav>
 
-        {/* Footer */}
         <div className="p-4 border-t border-white/8">
           <div className="flex items-center gap-2.5 px-1 mb-3">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -156,9 +136,8 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
         </div>
       </aside>
 
-      {/* ── Main ── */}
+      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Topbar */}
         <header className="h-[60px] bg-white border-b border-gray-200 px-7 flex items-center justify-between flex-shrink-0">
           <h1 className="text-xl font-black tracking-tight text-gray-900">{pageTitle}</h1>
 
@@ -174,7 +153,12 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
             {showNotifs && (
               <div className="absolute top-11 right-0 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                  <span className="text-sm font-bold">Notifications {unread > 0 && <span className="ml-1 text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">{unread}</span>}</span>
+                  <span className="text-sm font-bold">
+                    Notifications
+                    {unread > 0 && (
+                      <span className="ml-1.5 bg-red-100 text-red-600 text-xs px-1.5 py-0.5 rounded-full">{unread}</span>
+                    )}
+                  </span>
                   <button onClick={markAllRead} className="text-xs text-blue-600 font-medium hover:underline">Mark all read</button>
                 </div>
                 {notifs.length === 0 && (
@@ -185,9 +169,7 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
                     className={`px-4 py-3 cursor-pointer border-b border-gray-50 hover:bg-gray-50 transition-colors ${!n.is_read ? 'bg-blue-50' : ''}`}>
                     <div className="text-sm font-semibold text-gray-900">{n.title}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{n.message}</div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      {new Date(n.created_at).toLocaleDateString()}
-                    </div>
+                    <div className="text-xs text-gray-400 mt-1">{new Date(n.created_at).toLocaleDateString()}</div>
                   </div>
                 ))}
               </div>
@@ -195,8 +177,8 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-7" onClick={() => showNotifs && setShowNotifs(false)}>
+        <main className="flex-1 overflow-y-auto p-7"
+          onClick={() => showNotifs && setShowNotifs(false)}>
           {children}
         </main>
       </div>
