@@ -3,15 +3,6 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
-#-- DRF Router ----------------------------------------------------------------------
-# The router auto-generates all standard CRUD endpoints for each ViewSet:
-#   GET    /api/students/          → list
-#   POST   /api/students/          → create
-#   GET    /api/students/{id}/     → retrieve
-#   PUT    /api/students/{id}/     → update
-#   PATCH  /api/students/{id}/     → partial_update
-#   DELETE /api/students/{id}/     → destroy
-
 router = DefaultRouter()
 router.register(r'users',                 views.UserViewSet,                basename='user')
 router.register(r'students',              views.StudentViewSet,             basename='student')
@@ -19,34 +10,23 @@ router.register(r'workplace-supervisors', views.WorkPlaceSupervisorViewSet, base
 router.register(r'academic-supervisors',  views.AcademicSupervisorViewSet,  basename='academic-supervisor')
 router.register(r'weekly-logs',           views.WeeklyLogViewSet,           basename='weekly-log')
 router.register(r'evaluations',           views.EvaluationViewSet,          basename='evaluation')
-router.register(r'evaluaton-criteria',    views.EvaluationCriteriaViewSet,  basename='evaluation-criteria')
+router.register(r'evaluation-criteria',   views.EvaluationCriteriaViewSet,  basename='evaluation-criteria')
 router.register(r'assessments',           views.AssessmentViewSet,          basename='assessment')
 router.register(r'notifications',         views.NotificationViewSet,        basename='notification')
-
+router.register(r'placements',            views.InternshipPlacementViewSet, basename='placement')
 
 urlpatterns = [
-    #Auth views (rendered HTML pages)
-    path('register/', views.register_view, name='register'),#to handle user registration
-    path('login/',    views.login_view,    name='login'), #to handle user login
-    path('logout/',   views.logout_view,   name='logout'), #to handle user logout
+    # HTML pages
+    path('register/', views.register_view, name='register'),
+    path('login/',    views.login_view,    name='login'),
+    path('logout/',   views.logout_view,   name='logout'),
 
-    #--JWT API Auth(for React frontend)
-    #POST{username, password} returns access + refresh tokens +user info
-    path('api/auth/login/', views.jwt_login,  name='jwt-login'),
-    
-    #POST {refresh}  returns new access token (call when access token expires)
-    path('api/auth/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
+    # JWT API auth
+    path('api/auth/login/',    views.jwt_login,            name='jwt-login'),
+    path('api/auth/refresh/',  TokenRefreshView.as_view(), name='jwt-refresh'),
+    path('api/auth/logout/',   views.jwt_logout,           name='jwt-logout'),
+    path('api/auth/register/', views.register_api,         name='jwt-register'),  
 
-
-    # POST { refresh } → blacklists refresh token (user logged out)
-    path('api/auth/logout/',  views.jwt_logout,   name='jwt-logout'),
-
-
-    #All REST API endpoints live under /api/
+    # All REST endpoints
     path('api/', include(router.urls)),
-
-    #DRF browsable API login (useful during development)
-    path('api/auth/', include('rest_framework.urls', namespace='rest_framework')),
-
 ]
-

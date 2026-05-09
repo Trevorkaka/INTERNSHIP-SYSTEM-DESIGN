@@ -20,25 +20,21 @@ from .serializers import (
     UserSerializer, StudentSerializer, WorkPlaceSupervisorSerializer,
     AcademicSupervisorSerializer, WeeklyLogSerializer,
     EvaluationCriteriaSerializer, NotificationSerializer,
-    EvaluationSerializer, AssessmentSerializer
+    EvaluationSerializer, AssessmentSerializer, InternshipPlacementSerializer
 )
 from .permissions import (
-    IsAdmin, IsAdminOrSelf, IsStudent, IsAcademicSupervisor, 
-    IsWorkplaceSupervisor, IsAdminOrAcademicSupervisor, 
+    IsAdmin, IsStudent, IsAcademicSupervisor,
+    IsWorkplaceSupervisor, IsAdminOrAcademicSupervisor,
     IsAdminOrAnySupervisor, IsAdminOrReadOnly
 )
 from .forms import RegistrationForm, LoginForm
 
-#--JWT Auth API Views ---------------------
+
+# ── JWT Auth ───────────────────────────────────────────────────────────────────
 
 @api_view(['POST'])
-@permission_classes([AllowAny])  # No auth needed to log in
+@permission_classes([AllowAny])
 def jwt_login(request):
-    """
-    POST /api/auth/login/
-    Body: { "username": "...", "password": "..." }
-    Returns: access token, refresh token, user info, unread notifications
-    """
     username = request.data.get('username')
     password = request.data.get('password')
 
@@ -47,23 +43,20 @@ def jwt_login(request):
             {'error': 'Username and password are required.'},
             status=status.HTTP_400_BAD_REQUEST
         )
-    user = authenticate(username=username, password=password)
 
+    user = authenticate(username=username, password=password)
     if user is None:
         return Response(
             {'error': 'Invalid username or password.'},
             status=status.HTTP_401_UNAUTHORIZED
         )
-    
-    # Generate JWT token pair for the user
-    refresh = RefreshToken.for_user(user)
 
-    # Fetch last 5 unread notifications to send with login response
+    refresh = RefreshToken.for_user(user)
     notifications = Notification.objects.filter(recipient=user, is_read=False)[:5]
-    
+
     return Response({
-        'access':  str(refresh.access_token),  # Short-lived (60 min)
-        'refresh': str(refresh),                # Long-lived (7 days)
+        'access':  str(refresh.access_token),
+        'refresh': str(refresh),
         'user': {
             'id':         user.id,
             'username':   user.username,
@@ -79,233 +72,266 @@ def jwt_login(request):
 
 @api_view(['POST'])
 def jwt_logout(request):
-    """
-    POST /api/auth/logout/
-    Body: { "refresh": "<refresh_token>" }
-    Blacklists the refresh token so it can't be used again.
-    Requires: Authorization: Bearer <access_token>
-    """
     refresh_token = request.data.get('refresh')
-
     if not refresh_token:
-        return Response(
-            {'error': 'Refresh token is required to log out.'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
+        return Response({'error': 'Refresh token required.'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         token = RefreshToken(refresh_token)
-        token.blacklist()  # Invalidate this refresh token permanently
-        return Response(
-            {'message': 'Logged out successfully.'},
-            status=status.HTTP_200_OK
-        )
-    
+        token.blacklist()
+        return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
     except TokenError:
+        return Response({'error': 'Token is invalid or expired.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_api(request):
+    """
+    POST /api/auth/register/
+    Creates user + role profile in one request.
+    """
+    data = request.data
+
+    # Validate required fields
+    for field in ['username', 'email', 'password', 'first_name', 'last_name', 'role']:
+        if not data.get(field):
+            return Response({field: ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if data['role'] not in ['student', 'academic_supervisor', 'workplace_supervisor']:
         return Response(
-            {'error': 'Token is invalid or already expired.'},
+            {'role': ['Invalid role.']},
             status=status.HTTP_400_BAD_REQUEST
         )
-    
-#---------viewsets------------------------
+
+    if User.objects.filter(username=data['username']).exists():
+        return Response({'username': ['Username already taken.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email=data['email']).exists():
+        return Response({'email': ['Email already registered.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.create_user(
+            username=data['username'],
+            email=data['email'],
+            password=data['password'],
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            role=data['role'],
+        )
+
+        if data['role'] == 'student':
+            Student.objects.create(
+                user=user,
+                registration_number=data.get('registration_number', ''),
+                course=data.get('course', ''),
+                year_of_study=int(data.get('year_of_study', 1)),
+            )
+        elif data['role'] == 'academic_supervisor':
+            AcademicSupervisor.objects.create(
+                user=user,
+                department=data.get('department', ''),
+            )
+        elif data['role'] == 'workplace_supervisor':
+            WorkPlaceSupervisor.objects.create(
+                user=user,
+                company_name=data.get('company_name', ''),
+            )
+
+        return Response({
+            'message': 'Account created successfully.',
+            'user': {'id': user.id, 'username': user.username, 'role': user.role}
+        }, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ── ViewSets ───────────────────────────────────────────────────────────────────
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdmin] #Only admins can manage raw user classes.
-
-    filter_backends  =   [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields =   ['role']
-    search_fields    =   ['username', 'email', 'first_name', 'last_name']
-    ordering_fields  =   ['username', 'date_joined']
+    permission_classes = [IsAdmin]
+    filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['role']
+    search_fields    = ['username', 'email', 'first_name', 'last_name']
+    ordering_fields  = ['username', 'date_joined']
 
 
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    
-    filter_backends  =  [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields =  ['course', 'year_of_study']
-    search_fields    =  ['user__username', 'user__email','registration_number']
-    ordering_fields  =  ['year_of_study']
+    filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['course', 'year_of_study']
+    search_fields    = ['user__username', 'user__email', 'registration_number',
+                        'user__first_name', 'user__last_name']
+    ordering_fields  = ['year_of_study']
 
     def get_permissions(self):
-        #RESTRICT CREATE/UPDATE/DELETE TO ADMINS ONLY
         if self.action in ['list', 'retrieve']:
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [IsAdmin]
-        return [permission() for permission in permission_classes]
-    
+            return [permissions.IsAuthenticated()]
+        return [IsAdmin()]
+
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
             return Student.objects.filter(user=user)
+        if user.is_workplace_supervisor:
+            return Student.objects.filter(work_place_supervisor=user)
+        if user.is_academic_supervisor:
+            return Student.objects.filter(academic_supervisor=user)
         return Student.objects.all()
-    
+
+    @action(detail=True, methods=['patch'], permission_classes=[IsAdmin])
+    def assign_supervisors(self, request, pk=None):
+        """
+        PATCH /api/students/{id}/assign_supervisors/
+        Body: { academic_supervisor: user_id, work_place_supervisor: user_id }
+        Admin only.
+        """
+        student = self.get_object()
+        academic_id  = request.data.get('academic_supervisor')
+        workplace_id = request.data.get('work_place_supervisor')
+
+        if academic_id:
+            try:
+                student.academic_supervisor = User.objects.get(
+                    id=academic_id, role='academic_supervisor'
+                )
+            except User.DoesNotExist:
+                return Response(
+                    {'error': f'Academic supervisor with id {academic_id} not found.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        if workplace_id:
+            try:
+                student.work_place_supervisor = User.objects.get(
+                    id=workplace_id, role='workplace_supervisor'
+                )
+            except User.DoesNotExist:
+                return Response(
+                    {'error': f'Workplace supervisor with id {workplace_id} not found.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        student.save()
+        return Response(StudentSerializer(student).data, status=status.HTTP_200_OK)
+
+
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
     queryset = WorkPlaceSupervisor.objects.all()
     serializer_class = WorkPlaceSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
+    filter_backends  = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['company_name']
+    search_fields    = ['user__username', 'user__email', 'company_name']
 
-    filter_backends   =  [DjangoFilterBackend, SearchFilter]
-    filterset_fields  =  ['company_name']
-    search_fields     =  ['user__username', 'user_email', 'company_name']
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
     queryset = AcademicSupervisor.objects.all()
     serializer_class = AcademicSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
-
     filter_backends  = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['department']
     search_fields    = ['user__username', 'user__email', 'department']
 
 
 class WeeklyLogViewSet(viewsets.ModelViewSet):
-    queryset = WeeklyLog.objects.all()
+    queryset = WeeklyLog.objects.all().order_by('-id')
     serializer_class = WeeklyLogSerializer
-    
     filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['status', 'week_number']
-    search_fields    = ['activities','challenges', 'solutions']  
-    ordering_fields  = ['week_number', 'submitted_at']
+    search_fields    = ['activities', 'challenges', 'solutions']
+    ordering_fields  = ['week_number', 'submitted_at', 'id']
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update']:
-            permission_classes = [IsStudent]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]  
+            return [IsStudent()]
+        return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
-            return WeeklyLog.objects.filter(student__user=user)
-        elif user.is_academic_supervisor:
-            return WeeklyLog.objects.filter(student__academic_supervisor=user)
-        elif user.is_workplace_supervisor:
-            return WeeklyLog.objects.filter(student__workplace_supervisor=user)
-        return WeeklyLog.objects.all()
-    
+            return WeeklyLog.objects.filter(student__user=user).order_by('-id')
+        if user.is_academic_supervisor:
+            return WeeklyLog.objects.filter(student__academic_supervisor=user).order_by('-id')
+        if user.is_workplace_supervisor:
+            # ✅ Correct field name: work_place_supervisor
+            return WeeklyLog.objects.filter(student__work_place_supervisor=user).order_by('-id')
+        return WeeklyLog.objects.all().order_by('-id')
+
     def perform_create(self, serializer):
-        # Automaticaly link the log to the student logged in
-        student = self.request.user.student #onetoone reverse relation
+        student = self.request.user.student
         serializer.save(student=student)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsStudent]) 
+    @action(detail=True, methods=['post'], permission_classes=[IsStudent])
     def submit(self, request, pk=None):
-        """
-        POST /api/weekly-logs/{id}/submit/
-        changes log status from draft to submitted and records the timestamp.
-        """
         log = self.get_object()
-
         if log.student.user != request.user:
-            return Response(
-                {'error': 'You can only submit your own logs.'},
-                status=status.HTTP_403_FORBIDDEN
-        
-            )   
-
+            return Response({'error': 'You can only submit your own logs.'}, status=status.HTTP_403_FORBIDDEN)
         if log.status != 'draft':
-            return Response(
-                {'error': f'Log is already {log.status}. Only draft logs can be submitted.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({'error': f'Only draft logs can be submitted. Current: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
         log.status = 'submitted'
         log.submitted_at = timezone.now()
         log.save()
+        return Response({'message': f'Week {log.week_number} submitted successfully.'}, status=status.HTTP_200_OK)
 
-        return Response(
-            {'message': f'Week {log.week_number} log submitted successfully.'},
-            status=status.HTTP_200_OK
-
-        )
     @action(detail=True, methods=['post'], permission_classes=[IsAdminOrAnySupervisor])
     def review(self, request, pk=None):
-        """
-        POST /api/weekly-logs/{id}/review/
-        Supervisor marks a submitted log as reviewed. This is a simple status change for now, but could be expanded to include feedback comments in the future.
-        """
         log = self.get_object()
-
         if log.status != 'submitted':
-            return Response(
-                {'error': f'Log must be submitted before it can be reviewed. Current status: {log.status}.'},
-                status=status.HTTP_400_BAD_REQUEST    
-            )
-        
+            return Response({'error': f'Log must be submitted first. Current: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
         log.status = 'reviewed'
         log.save()
+        return Response({'message': f'Week {log.week_number} marked as reviewed.'}, status=status.HTTP_200_OK)
 
-        return Response(
-            {'message': f'Week {log.week_number} log marked as reviewed.'},
-            status=status.HTTP_200_OK
-        )
-    
     @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
     def approve(self, request, pk=None):
-        """
-        POST /api/Weekly-logs/{id}/approve/
-        Admin approves a reviewed log.
-        """
         log = self.get_object()
-
         if log.status != 'reviewed':
-            return Response(
-                {'error': f'Log must be reviewed before it can be approved. Current status: {log.status}.'},
-                status=status.HTTP_400_BAD_REQUEST    
-            )
+            return Response({'error': f'Log must be reviewed first. Current: {log.status}'}, status=status.HTTP_400_BAD_REQUEST)
         log.status = 'approved'
         log.save()
+        return Response({'message': f'Week {log.week_number} approved.'}, status=status.HTTP_200_OK)
 
-        return Response(
-            {'message': f'Week {log.week_number} log approved.'},
-            status=status.HTTP_200_OK
-        )
 
 class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
-    permission_classes = [IsAdminOrReadOnly] # Only admins can create or edit criteria, but anyone can read them.
-    
-    filter_backends  = [SearchFilter, OrderingFilter]
-    search_fields    = ['name']
-    ordering_fields  = ['name', 'max_score']
+    permission_classes = [IsAdminOrReadOnly]
+    filter_backends = [SearchFilter]
+    search_fields   = ['name']
+
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     queryset = Evaluation.objects.all()
     serializer_class = EvaluationSerializer
-
     filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filter_fields    = ['criteria', 'log__week_number']
+    filterset_fields = ['criteria', 'log__week_number']
     search_fields    = ['feedback']
-    ordering_field   = ['score','created_at']   
+    ordering_fields  = ['score', 'created_at']
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            permission_classes = [IsAdminOrAnySupervisor]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]
+            return [IsAdminOrAnySupervisor()]
+        return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
             return Evaluation.objects.filter(log__student__user=user)
-        elif user.is_academic_supervisor or user.is_workplace_supervisor:
+        if user.is_academic_supervisor or user.is_workplace_supervisor:
             return Evaluation.objects.filter(evaluator=user)
         return Evaluation.objects.all()
-    
+
     def perform_create(self, serializer):
-        # Automatically set the evaluator to  the logged-in supervisor when creating an evaluation
         serializer.save(evaluator=self.request.user)
+
 
 class AssessmentViewSet(viewsets.ModelViewSet):
     queryset = Assessment.objects.all()
     serializer_class = AssessmentSerializer
-
-    
     filter_backends  = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['log__week_number']
     search_fields    = ['feedback']
@@ -313,93 +339,87 @@ class AssessmentViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            permission_classes = [IsAdminOrAnySupervisor]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]
-    
+            return [IsAdminOrAnySupervisor()]
+        return [permissions.IsAuthenticated()]
+
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
             return Assessment.objects.filter(log__student__user=user)
         return Assessment.objects.all()
-    
+
     def perform_create(self, serializer):
-        # Automatically set the assessor to the logged-in supervisor
+        # ✅ assessor is set automatically from logged-in user
         serializer.save(assessor=self.request.user)
+
 
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    
     filter_backends  = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['is_read', 'notification_type']
     ordering_fields  = ['created_at']
 
-
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user)
-    
+
     @action(detail=True, methods=['post'])
     def mark_as_read(self, request, pk=None):
-        """
-        POST /api/notifications/{id}/mark-as-read/
-        Marks a single notification as read.
-        """
-        notification = self.get_object()
-        notification.mark_as_read()
-        return Response({'message': 'Notification marked as read.'}, status=status.HTTP_200_OK)
-    
+        n = self.get_object()
+        n.mark_as_read()
+        return Response({'message': 'Marked as read.'})
+
     @action(detail=False, methods=['post'])
     def mark_all_as_read(self, request):
-        """
-        POST /api/notifications/mark_all_as_read/
-        Marks ALL of the logged-in user's notifications as read at once.
-        """  
-        updated = Notification.objects.filter(
-            recipient=request.user,
-            is_read=False
-        ).update(is_read=True)
-    
-        return Response(
-            {'message': f'{updated} notification(s) marked as read.'},
-            status=status.HTTP_200_OK
-        )
-# Authentication Views
+        updated = Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+        return Response({'message': f'{updated} notifications marked as read.'})
+
+
+class InternshipPlacementViewSet(viewsets.ModelViewSet):
+    queryset = InternshipPlacement.objects.all()
+    serializer_class = InternshipPlacementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends  = [DjangoFilterBackend, SearchFilter]
+    search_fields    = ['company_name', 'position']
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return InternshipPlacement.objects.filter(student__user=user)
+        return InternshipPlacement.objects.all()
+
+
+# ── HTML Template Auth Views ───────────────────────────────────────────────────
+
 def register_view(request):
-    """Handle user registration"""
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
-        if form.is_valid(): #check if form data is valid according to the rules defined in the form class
+        if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            return redirect('login')    
+            return redirect('login')
         return render(request, 'register.html', {'form': form})
-    form = RegistrationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'register.html', {'form': RegistrationForm()})
+
 
 def login_view(request):
-    """Handle user login"""
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
+            user = authenticate(request,
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password'])
+            if user:
                 login(request, user)
                 return redirect('home')
-            form.add_error(None, "Invalid username or password")
+            form.add_error(None, 'Invalid credentials')
             return render(request, 'login.html', {'form': form})
-    form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': RegistrationForm()})
+
 
 @login_required
 def logout_view(request):
-    """Handle user logout"""
     logout(request)
     return redirect('login')
-
