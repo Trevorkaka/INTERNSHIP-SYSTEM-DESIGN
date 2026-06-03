@@ -49,7 +49,7 @@ def notify_on_status_change(sender, instance, created, **kwargs):
                 message=f'Your Week {instance.week_number} log has been reviewed',
                 weekly_log=instance
             )
-            
+
         elif instance.status == 'approved':
             Notification.objects.create(
                 recipient=instance.student.user,
@@ -58,4 +58,7 @@ def notify_on_status_change(sender, instance, created, **kwargs):
                 message=f'Your Week {instance.week_number} log has been approved',
                 weekly_log=instance
             )
+ 
+
+
  
