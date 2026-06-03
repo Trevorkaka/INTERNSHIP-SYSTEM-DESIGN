@@ -29,8 +29,10 @@ urlpatterns = [
     path('api/auth/refresh/',  TokenRefreshView.as_view(), name='jwt-refresh'),
     path('api/auth/logout/',   views.jwt_logout,           name='jwt-logout'),
     path('api/auth/register/', views.register_api,         name='jwt-register'), 
-     
+
 
     # All REST endpoints
     path('api/', include(router.urls)),
 ]
+
+
