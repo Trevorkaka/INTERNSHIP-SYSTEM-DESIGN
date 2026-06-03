@@ -5,6 +5,7 @@ from .models import (
     Student, WorkPlaceSupervisor, AcademicSupervisor, WeeklyLog
 )
 
+
 class UserSerializer(serializers.ModelSerializer):
     is_student             = serializers.BooleanField(read_only=True)
     is_academic_supervisor = serializers.BooleanField(read_only=True)
