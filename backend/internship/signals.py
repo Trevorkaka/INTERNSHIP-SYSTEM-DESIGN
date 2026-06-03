@@ -4,6 +4,8 @@ from .models import User, Assessment, Evaluation, WeeklyLog, Notification
 
 @receiver(post_save, sender=Assessment)
 def create_assessment_notification(sender, instance, created, **kwargs):
+
+
 # create notification when assessment is created
     if created:
         student_user = instance.log.student.user
@@ -15,6 +17,8 @@ def create_assessment_notification(sender, instance, created, **kwargs):
             assessment=instance,
             Weekly_log=instance.log
         )
+
+
 
 @receiver(post_save, sender=Evaluation)
 def create_evaluation_notification(sender, instance, created, **kwargs):
@@ -29,6 +33,7 @@ def create_evaluation_notification(sender, instance, created, **kwargs):
             evaluation=instance,
             weekly_log=instance.log
         )
+
  
 
 @receiver(post_save, sender=WeeklyLog)
@@ -44,6 +49,7 @@ def notify_on_status_change(sender, instance, created, **kwargs):
                 message=f'Your Week {instance.week_number} log has been reviewed',
                 weekly_log=instance
             )
+            
         elif instance.status == 'approved':
             Notification.objects.create(
                 recipient=instance.student.user,

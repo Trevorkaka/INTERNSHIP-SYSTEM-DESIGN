@@ -3,6 +3,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -61,14 +62,29 @@ class CustomAuthToken(ObtainAuthToken):
         
         token, created = Token.objects.get_or_create(user=user)
         
-        # Get user role
-        user_role = self._get_user_role(user)
-        Notification
+        # Get user role (if present on user model)
+        user_role = getattr(user, 'role', None)
+
         # Get unread notifications
-        notifications = notifications.objects.filter(
+        notifications_qs = Notification.objects.filter(
             recipient=user,
             is_read=False
-        )[:5]  # Last 5 unread
+        )[:5]
+
+        return Response({
+            'token': token.key,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'role': user_role,
+            },
+            'unread_notifications': NotificationSerializer(notifications_qs, many=True).data,
+            'unread_count': Notification.objects.filter(recipient=user, is_read=False).count(),
+        }, status=status.HTTP_200_OK)
+
         
 from rest_framework.permissions import AllowAny
 from rest_framework.filters import SearchFilter, OrderingFilter
