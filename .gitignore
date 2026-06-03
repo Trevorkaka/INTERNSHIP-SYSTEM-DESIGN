@@ -105,4 +105,7 @@ dist-ssr
 # Ignore Poetry's local artifacts (but keep pyproject.toml and poetry.lock!)
 .venv/
 
-
+auto_commit.ps1
+setup_task.ps1
+auto_commit.log
+.gitkeep
