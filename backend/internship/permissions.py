@@ -9,6 +9,11 @@ class IsAdmin(BasePermission):
 class IsAdminOrSelf(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_admin or obj == request.user
+    
+
+
+
+    
 
 
 class IsStudent(BasePermission):

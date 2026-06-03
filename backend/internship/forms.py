@@ -3,6 +3,12 @@ from .models import User
 
 
 class RegistrationForm(forms.ModelForm): 
+
+
+
+
+
+
     password = forms.CharField(widget=forms.PasswordInput) #to hide the password when typing
     confirm_password = forms.CharField(widget=forms.PasswordInput) #to confirm the password
 
