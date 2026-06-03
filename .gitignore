@@ -109,3 +109,4 @@ auto_commit.ps1
 setup_task.ps1
 auto_commit.log
 .gitkeep
+!activity.log
