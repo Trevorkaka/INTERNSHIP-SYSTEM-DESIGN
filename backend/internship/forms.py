@@ -33,6 +33,9 @@ class LoginForm(forms.Form): #not model form because we are not creating a new u
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
+
+
+  
          
 
          
