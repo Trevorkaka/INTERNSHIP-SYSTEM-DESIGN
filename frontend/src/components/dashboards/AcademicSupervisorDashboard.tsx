@@ -183,3 +183,55 @@ export default function AcademicSupervisorDashboard() {
         ))}
       </div>
  
+  {/* Main grid */}
+      <div className="grid grid-cols-[1fr_340px] gap-4">
+ 
+        {/* Students list */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-bold">My Students</h2>
+          </div>
+          <div className="p-4 space-y-3">
+            {students.length === 0 && (
+              <div className="text-center text-gray-400 text-sm py-8">No students assigned yet.</div>
+            )}
+            {students.map(s => {
+              const name = `${s.user.first_name} ${s.user.last_name}`
+              const studentLogs = logs.filter(l => l.student === s.id)
+              const submittedCount = studentLogs.filter(l => l.status === 'submitted').length
+              const approvedCount  = studentLogs.filter(l => l.status === 'approved').length
+              const progress = studentLogs.length
+                ? Math.round((approvedCount / studentLogs.length) * 100) : 0
+ 
+              return (
+                <div key={s.id} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="text-sm font-bold">{name}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{s.course} · Year {s.year_of_study}</div>
+                      <div className="text-xs text-gray-300 mt-0.5">{s.registration_number}</div>
+                    </div>
+                    <button onClick={() => setSelectedStudent(s)}
+                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                      Evaluate
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 mb-3 text-xs">
+                    <div><div className="text-gray-400">Total Logs</div><div className="font-semibold mt-0.5">{studentLogs.length}</div></div>
+                    <div><div className="text-gray-400">Pending</div><div className="font-semibold mt-0.5 text-amber-600">{submittedCount}</div></div>
+                    <div><div className="text-gray-400">Approved</div><div className="font-semibold mt-0.5 text-green-600">{approvedCount}</div></div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-gray-400">Approval Progress</span>
+                      <span className="font-bold">{progress}%</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-600 rounded-full" style={{ width: progress + '%' }} />
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
