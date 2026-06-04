@@ -47,7 +47,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Assessment
         fields = '__all__'
-        read_only_fields = ['assessor', 'assessed_at']  # ✅ assessor set by perform_create
+        read_only_fields = ['assessor', 'assessed_at']  #  ✅ assessor set by perform_create
 
 class EvaluationCriteriaSerializer(serializers.ModelSerializer):
     class Meta:
