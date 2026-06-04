@@ -165,7 +165,7 @@ class Notification(models.Model):
     message = models.TextField()
 
 
-# link to related objects
+#  link to related objects
     assessment = models.ForeignKey('Assessment', on_delete=models.CASCADE, null=True, blank=True)
     evaluation = models.ForeignKey('Evaluation', on_delete=models.CASCADE, null=True, blank=True)
     weekly_log = models.ForeignKey('WeeklyLog', on_delete=models.CASCADE, null=True, blank=True)
