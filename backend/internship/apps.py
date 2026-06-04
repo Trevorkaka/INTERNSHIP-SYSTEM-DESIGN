@@ -15,3 +15,4 @@ class InternshipConfig(AppConfig):
 
 
 
+
