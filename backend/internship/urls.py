@@ -31,7 +31,7 @@ urlpatterns = [
     path('api/auth/register/', views.register_api,         name='jwt-register'), 
 
 
-    # All REST endpoints
+    # #All REST endpoints
     path('api/', include(router.urls)),
 ]
 
