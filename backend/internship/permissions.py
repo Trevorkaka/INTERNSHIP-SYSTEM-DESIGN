@@ -14,7 +14,7 @@ class IsAdminOrSelf(BasePermission):
 
 
 
-    
+
 
 
 
@@ -85,3 +85,6 @@ class IsOwnerOrSupervisorOrAdmin(BasePermission):
         if user.is_workplace_supervisor:
             return obj.placement.workplace_supervisor == user
         return False
+
+
+
