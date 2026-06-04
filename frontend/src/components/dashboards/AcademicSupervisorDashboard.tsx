@@ -164,3 +164,22 @@ export default function AcademicSupervisorDashboard() {
       <Loader size={16} className="animate-spin" /> Loading…
     </div>
   )
+
+  return (
+    <div className="space-y-6">
+ 
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          ['My Students',   students.length + '',    'text-blue-600'  ],
+          ['Pending Evals', pendingLogs.length + '',  'text-amber-600' ],
+          ['Reviewed Logs', reviewedLogs + '',         'text-green-600' ],
+          ['Criteria Set',  criteria.length + '',      'text-violet-600'],
+        ].map(([label, value, color]) => (
+          <div key={label} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <div className={`text-2xl font-black tracking-tight ${color}`}>{value}</div>
+            <div className="text-sm text-gray-500 mt-1">{label}</div>
+          </div>
+        ))}
+      </div>
+ 
