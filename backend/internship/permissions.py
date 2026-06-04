@@ -11,7 +11,8 @@ class IsAdminOrSelf(BasePermission):
         return request.user.is_admin or obj == request.user
 
 
-  
+
+   
     
 
 
