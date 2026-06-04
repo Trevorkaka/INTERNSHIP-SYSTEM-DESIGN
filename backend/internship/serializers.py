@@ -71,3 +71,5 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+
