@@ -17,7 +17,7 @@ class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput) #to hide the password when typing
     confirm_password = forms.CharField(widget=forms.PasswordInput) #to confirm the password
 
-    class Meta: #specifies which model to use and which fields to include in the form
+    class Meta: # specifies which model to use and which fields to include in the form
         model = User
         fields = ['username', 'email', 'role', 'password']
 
