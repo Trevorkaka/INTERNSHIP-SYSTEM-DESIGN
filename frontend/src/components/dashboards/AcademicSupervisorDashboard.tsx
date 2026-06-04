@@ -60,3 +60,56 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
     }
   }
  
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-5 z-50"
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl w-full max-w-lg flex flex-col shadow-2xl max-h-[90vh]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="text-base font-bold">Evaluate — {name}</h2>
+          <button onClick={onClose} className="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-sm text-gray-500">✕</button>
+        </div>
+        <div className="p-6 overflow-y-auto flex-1 space-y-4">
+          {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600">{error}</div>}
+ 
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Select Log to Evaluate</label>
+            <select value={selectedLog} onChange={e => setSelectedLog(Number(e.target.value))}
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors">
+              <option value="">— choose a log —</option>
+              {studentLogs.map(l => (
+                <option key={l.id} value={l.id}>Week {l.week_number} (submitted)</option>
+              ))}
+            </select>
+            {studentLogs.length === 0 && (
+              <p className="text-xs text-amber-600 mt-1">No submitted logs available for this student.</p>
+            )}
+          </div>
+ 
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Evaluation Criteria</label>
+            <select value={selectedCriteria} onChange={e => setSelectedCriteria(Number(e.target.value))}
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors">
+              <option value="">— choose criteria —</option>
+              {criteria.map(c => (
+                <option key={c.id} value={c.id}>{c.name} (max {c.max_score})</option>
+              ))}
+            </select>
+          </div>
+ 
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Score (max {criteria.find(c => c.id === selectedCriteria)?.max_score ?? 100})
+            </label>
+            <input type="number" min="0"
+              max={criteria.find(c => c.id === selectedCriteria)?.max_score ?? 100}
+              value={score} onChange={e => setScore(Number(e.target.value))}
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors" />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Feedback</label>
+            <textarea rows={4} value={feedback} onChange={e => setFeedback(e.target.value)}
+              placeholder="Provide academic feedback and recommendations…"
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y" />
+          </div>
+        </div>
