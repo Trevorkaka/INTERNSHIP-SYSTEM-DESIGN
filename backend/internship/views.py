@@ -114,7 +114,7 @@ from .permissions import (
 from .forms import RegistrationForm, LoginForm
 
 
-# ── JWT Auth ───────────────────────────────────
+# ── JWT Auth ─────────────────────────────────
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
