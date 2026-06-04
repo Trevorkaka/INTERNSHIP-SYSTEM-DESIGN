@@ -40,7 +40,7 @@ def create_evaluation_notification(sender, instance, created, **kwargs):
 def notify_on_status_change(sender, instance, created, **kwargs):
     """Notify when log status changes to reviewed or approved"""
     if not created:
-        # Check if status just changed (you might want to track old status)
+        #Check if status just changed (you might want to track old status)
         if instance.status == 'reviewed':
             Notification.objects.create(
                 recipient=instance.student.user,
