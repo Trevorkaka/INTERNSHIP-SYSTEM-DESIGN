@@ -113,3 +113,54 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
               className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y" />
           </div>
         </div>
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-100">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-semibold border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onClick={handleSubmit} disabled={saving}
+            className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50">
+            {saving ? 'Submitting…' : 'Submit Evaluation'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+ 
+export default function AcademicSupervisorDashboard() {
+  const [students, setStudents] = useState<Student[]>([])
+  const [logs, setLogs] = useState<Log[]>([])
+  const [criteria, setCriteria] = useState<Criteria[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+ 
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [sRes, lRes, cRes] = await Promise.all([
+        client.get('/api/students/'),
+        client.get('/api/weekly-logs/'),
+        evaluationsAPI.criteriaList(),
+      ])
+      setStudents(sRes.data.results ?? sRes.data)
+      setLogs(lRes.data.results ?? lRes.data)
+      setCriteria(cRes.data.results ?? cRes.data)
+    } catch {}
+    finally { setLoading(false) }
+  }
+ 
+  useEffect(() => { fetchData() }, [])
+ 
+  const pendingLogs = logs.filter(l => l.status === 'submitted')
+  const reviewedLogs = logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length
+ 
+  const quickActions = [
+    { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600" /> },
+    { label: 'Review Activity Logs', icon: <FileText size={15} className="text-blue-600" /> },
+    { label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600" /> },
+    { label: 'Generate Report',      icon: <Download size={15} className="text-blue-600" /> },
+  ]
+ 
+  if (loading) return (
+    <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
+      <Loader size={16} className="animate-spin" /> Loading…
+    </div>
+  )
