@@ -235,3 +235,56 @@ export default function AcademicSupervisorDashboard() {
             })}
           </div>
         </div>
+
+         {/* Right column */}
+        <div className="flex flex-col gap-4">
+ 
+          {/* Pending submissions */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h2 className="text-sm font-bold">Pending Submissions ({pendingLogs.length})</h2>
+            </div>
+            <div className="p-4 space-y-2">
+              {pendingLogs.length === 0 && (
+                <div className="text-center text-gray-400 text-sm py-8">All caught up! 🎉</div>
+              )}
+              {pendingLogs.map(log => {
+                const st = students.find(s => s.id === log.student)
+                const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${log.student}`
+                return (
+                  <div key={log.id}
+                    onClick={() => { const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
+                    className="p-3 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer hover:border-amber-400 transition-all">
+                    <div className="text-sm font-bold">{name}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">Week {log.week_number}</div>
+                    {log.submitted_at && (
+                      <div className="text-xs text-gray-400 mt-1">
+                        {new Date(log.submitted_at).toLocaleDateString()}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+ 
+          {/* Criteria count card */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h2 className="text-sm font-bold">Evaluation Criteria</h2>
+            </div>
+            <div className="p-4 space-y-2">
+              {criteria.length === 0 && (
+                <div className="text-center text-gray-400 text-sm py-4">No criteria defined yet.</div>
+              )}
+              {criteria.map(c => (
+                <div key={c.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
+                  <span className="text-sm text-gray-700">{c.name}</span>
+                  <span className="text-xs font-semibold text-gray-400">max {c.max_score}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+ 
+        </div>
+      </div>
