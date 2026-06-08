@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Loader } from 'lucide-react'
+import { Loader, ClipboardCheck, FileText, BarChart2, Download } from 'lucide-react'
 import { evaluationsAPI } from '../../api/services'
 import client from '../../api/client'
 
@@ -127,26 +127,11 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
 }
 
 export default function AcademicSupervisorDashboard() {
-  const [showEvalModal, setShowEvalModal] = useState(false)
-
-  const stats = [
-    { label: 'Assigned Students',     value: '12', color: 'text-blue-600'   },
-    { label: 'Pending Evaluations',   value: '4',  color: 'text-amber-600'  },
-    { label: 'Completed Evaluations', value: '28', color: 'text-green-600'  },
-    { label: 'Avg Performance',       value: '83%',color: 'text-violet-600' },
-  ]
-
-  const students = [
-    { id: '1', name: 'Alex Johnson',    company: 'Tech Innovations Inc.',  position: 'Software Dev Intern', progress: 72, score: 87, status: 'on-track' },
-    { id: '2', name: 'Sophia Williams', company: 'Digital Solutions Ltd.', position: 'Marketing Intern',    progress: 68, score: 91, status: 'on-track' },
-    { id: '3', name: 'James Lee',       company: 'Green Energy Corp',      position: 'Research Intern',     progress: 58, score: 76, status: 'at-risk'  },
-  ]
-
-  const pending = [
-    { id: 1, student: 'Alex Johnson',    type: 'Mid-Term Evaluation', due: '15 May 2026', priority: 'high'   },
-    { id: 2, student: 'Sophia Williams', type: 'Progress Check',      due: '20 May 2026', priority: 'medium' },
-    { id: 3, student: 'James Lee',       type: 'Mid-Term Evaluation', due: '15 May 2026', priority: 'high'   },
-  ]
+  const [students, setStudents] = useState<Student[]>([])
+  const [logs, setLogs] = useState<Log[]>([])
+  const [criteria, setCriteria] = useState<Criteria[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
   const recent = [
     { action: 'Submitted evaluation for Emily Davis',     time: '2 hours ago' },
@@ -160,11 +145,6 @@ export default function AcademicSupervisorDashboard() {
     { label: 'View Analytics',        icon: <BarChart2 size={15} className="text-blue-600"/> },
     { label: 'Generate Report',       icon: <Download size={15} className="text-blue-600"/> },
   ]
-  const [students, setStudents] = useState<Student[]>([])
-  const [logs, setLogs] = useState<Log[]>([])
-  const [criteria, setCriteria] = useState<Criteria[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
@@ -196,10 +176,6 @@ export default function AcademicSupervisorDashboard() {
     <div className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
-        {stats.map(s => (
-          <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-            <div className={`text-2xl font-black tracking-tight ${s.color}`}>{s.value}</div>
-            <div className="text-sm text-gray-500 mt-1">{s.label}</div>
         {[
           ['My Students',      students.length + '',   'text-blue-600'  ],
           ['Pending Evals',    pendingLogs.length + '', 'text-amber-600' ],
@@ -214,77 +190,12 @@ export default function AcademicSupervisorDashboard() {
       </div>
 
       <div className="grid grid-cols-[1fr_340px] gap-4">
-        {/* Students */}
-        {/* Students list */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        {/* Left Column: My Students list */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100">
             <h2 className="text-sm font-bold">My Students</h2>
           </div>
-          <div className="p-4 space-y-3">
-            {students.map(s => (
-              <div key={s.id} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="text-sm font-bold">{s.name}</div>
-                    <div className="text-xs text-gray-400 mt-0.5">{s.company} · {s.position}</div>
-                  </div>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
-                    ${s.status === 'on-track' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                    {s.status}
-                  </span>
-                </div>
-                <div>
-                  <div className="flex justify-between text-xs mb-1.5">
-                    <span className="text-gray-400">Progress</span>
-                    <span className="font-bold">{s.progress}%</span>
-                  </div>
-                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-600 rounded-full" style={{ width: s.progress + '%' }}/>
-                  </div>
-                  <div className="flex justify-between text-xs mt-2">
-                    <span className="text-gray-400">Performance</span>
-                    <span className={`font-bold ${s.score >= 85 ? 'text-green-600' : s.score >= 75 ? 'text-amber-600' : 'text-red-600'}`}>{s.score}%</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          {/* Pending evals */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-5 py-4 border-b border-gray-100">
-              <h2 className="text-sm font-bold">Pending Evaluations</h2>
-            </div>
-            <div className="p-4 space-y-2">
-              {pending.map(p => (
-                <div key={p.id} onClick={() => setShowEvalModal(true)}
-                  className="p-3 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer hover:border-amber-400 transition-all">
-                  <div className="text-sm font-bold">{p.student}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{p.type}</div>
-                  <div className="text-xs text-gray-400 mt-1">Due {p.due}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recent activity */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-5 py-4 border-b border-gray-100">
-              <h2 className="text-sm font-bold">Recent Activity</h2>
-            </div>
-            <div className="p-4 space-y-3">
-              {recent.map((r, i) => (
-                <div key={i} className="flex items-start gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5"/>
-                  <div>
-                    <div className="text-sm text-gray-800">{r.action}</div>
-                    <div className="text-xs text-gray-400 mt-0.5">{r.time}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="p-4 space-y-3 overflow-y-auto">
             {students.length === 0 && (
               <div className="text-center text-gray-400 text-sm py-8">No students assigned yet.</div>
             )}
@@ -329,32 +240,53 @@ export default function AcademicSupervisorDashboard() {
           </div>
         </div>
 
-        {/* Pending submissions */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="px-5 py-4 border-b border-gray-100">
-            <h2 className="text-sm font-bold">Pending Submissions ({pendingLogs.length})</h2>
+        {/* Right Column: Pending submissions & Recent activity */}
+        <div className="flex flex-col gap-4">
+          {/* Pending submissions */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h2 className="text-sm font-bold">Pending Submissions ({pendingLogs.length})</h2>
+            </div>
+            <div className="p-4 space-y-2">
+              {pendingLogs.length === 0 && (
+                <div className="text-center text-gray-400 text-sm py-8">All caught up! 🎉</div>
+              )}
+              {pendingLogs.map(log => {
+                const st = students.find(s => s.id === log.student)
+                const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${log.student}`
+                return (
+                  <div key={log.id}
+                    onClick={() => { const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
+                    className="p-3 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer hover:border-amber-400 transition-all">
+                    <div className="text-sm font-bold">{name}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">Week {log.week_number}</div>
+                    {log.submitted_at && (
+                      <div className="text-xs text-gray-400 mt-1">
+                        {new Date(log.submitted_at).toLocaleDateString()}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-          <div className="p-4 space-y-2">
-            {pendingLogs.length === 0 && (
-              <div className="text-center text-gray-400 text-sm py-8">All caught up! 🎉</div>
-            )}
-            {pendingLogs.map(log => {
-              const st = students.find(s => s.id === log.student)
-              const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${log.student}`
-              return (
-                <div key={log.id}
-                  onClick={() => { const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
-                  className="p-3 bg-amber-50 border border-amber-200 rounded-xl cursor-pointer hover:border-amber-400 transition-all">
-                  <div className="text-sm font-bold">{name}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">Week {log.week_number}</div>
-                  {log.submitted_at && (
-                    <div className="text-xs text-gray-400 mt-1">
-                      {new Date(log.submitted_at).toLocaleDateString()}
-                    </div>
-                  )}
+
+          {/* Recent activity */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h2 className="text-sm font-bold">Recent Activity</h2>
+            </div>
+            <div className="p-4 space-y-3">
+              {recent.map((r, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5"/>
+                  <div>
+                    <div className="text-sm text-gray-800">{r.action}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{r.time}</div>
+                  </div>
                 </div>
-              )
-            })}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -374,10 +306,6 @@ export default function AcademicSupervisorDashboard() {
         </div>
       </div>
 
-      {showEvalModal && <EvalModal onClose={() => setShowEvalModal(false)} />}
-    </div>
-  )
-}
       {selectedStudent && (
         <EvalModal
           student={selectedStudent}
