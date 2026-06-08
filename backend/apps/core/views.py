@@ -3,8 +3,6 @@ from .models import Student
 from .forms import StudentForm
 from django.http import HttpResponse
 
-
-
 # Create your views here.
 
 def home(request):
