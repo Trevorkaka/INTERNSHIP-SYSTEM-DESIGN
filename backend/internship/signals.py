@@ -6,6 +6,7 @@ from .models import User, Assessment, Evaluation, WeeklyLog, Notification
 def create_assessment_notification(sender, instance, created, **kwargs):
 
 
+
 # create notification when assessment is created
     if created:
         student_user = instance.log.student.user
@@ -49,6 +50,7 @@ def notify_on_status_change(sender, instance, created, **kwargs):
                 message=f'Your Week {instance.week_number} log has been reviewed',
                 weekly_log=instance
             )
+
 
         elif instance.status == 'approved':
             Notification.objects.create(
