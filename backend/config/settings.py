@@ -10,7 +10,12 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'internship',
+    'apps.accounts',
+    'apps.common',
+    'apps.placements',
+    'apps.logs',
+    'apps.evaluations',
+    'apps.notifications',
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
@@ -22,13 +27,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    'apps.core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',       # ✅ Must be above CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',       #  Must be above CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -69,7 +74,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'internship.User'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = 'login'
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -112,7 +117,7 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
-    # ✅ No custom pagination or exception handler — those apps don't exist
+    #No custom pagination or exception handler — those apps don't exist
 }
 
 # ── SimpleJWT ──────────────────────────────────────────────────────────────────
