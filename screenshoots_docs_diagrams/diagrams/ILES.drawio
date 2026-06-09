@@ -1,0 +1,45 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="Tyco_CTlPedLZsaMgzwK">
+    <mxGraphModel dx="621" dy="233" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="QL9yxv_8349hwlQyzg5F-30" edge="1" parent="1" source="QL9yxv_8349hwlQyzg5F-17" style="edgeStyle=elbowEdgeStyle;shape=link;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430.1111111111111" y="109.96296296296293" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-17" parent="1" style="ellipse;fillColor=#4F0FFF;" value="ILES" vertex="1">
+          <mxGeometry height="50" width="80" x="390" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-18" parent="1" style="rounded=1;fillColor=#FF0048;" value="STUDENT" vertex="1">
+          <mxGeometry height="50" width="80" x="140" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-19" edge="1" parent="1" source="QL9yxv_8349hwlQyzg5F-17" style="edgeStyle=elbowEdgeStyle;elbow=vertical;" target="QL9yxv_8349hwlQyzg5F-18" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-20" parent="1" style="rounded=1;fillColor=#FF2105;" value="ACADEMIC SUPERVISOR" vertex="1">
+          <mxGeometry height="50" width="150" x="240" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-21" edge="1" parent="1" source="QL9yxv_8349hwlQyzg5F-17" style="edgeStyle=elbowEdgeStyle;elbow=vertical;" target="QL9yxv_8349hwlQyzg5F-20" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-22" parent="1" style="rounded=1;fillColor=#38FF1A;" value="WORKPLACE SUPERVISOR" vertex="1">
+          <mxGeometry height="50" width="170" x="410" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-23" edge="1" parent="1" source="QL9yxv_8349hwlQyzg5F-17" style="edgeStyle=elbowEdgeStyle;elbow=vertical;" target="QL9yxv_8349hwlQyzg5F-22" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-24" parent="1" style="rounded=1;fillColor=#FF0080;" value="ADMIN" vertex="1">
+          <mxGeometry height="50" width="80" x="630" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-25" edge="1" parent="1" source="QL9yxv_8349hwlQyzg5F-17" style="edgeStyle=elbowEdgeStyle;elbow=vertical;" target="QL9yxv_8349hwlQyzg5F-24" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QL9yxv_8349hwlQyzg5F-26" edge="1" parent="1" source="QL9yxv_8349hwlQyzg5F-20" style="edgeStyle=elbowEdgeStyle;shape=link;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="QL9yxv_8349hwlQyzg5F-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
