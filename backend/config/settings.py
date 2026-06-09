@@ -1,16 +1,28 @@
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-hjt1o9cdh1e(a^#v1tz)gzniggyxk8v9ozlwtpmjn5b*gb__7w'
+load_dotenv(BASE_DIR / ".env")
 
-DEBUG = True
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is not set")
+
+DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'internship',
+    'apps.accounts',
+    'apps.common',
+    'apps.placements',
+    'apps.logs',
+    'apps.evaluations',
+    'apps.notifications',
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
@@ -22,13 +34,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    'apps.core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',       # ✅ Must be above CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',       #  Must be above CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -61,15 +73,14 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
         # PostgreSQL — uncomment when ready:
         # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'group20_db',
-        # 'USER': 'group20_user',
-        # 'PASSWORD': 'group20password',
-        # 'HOST': 'localhost',
-        # 'PORT': '5432',
+        # "USER": os.getenv("DB_USER"),
+        # "PASSWORD": os.getenv("DB_PASSWORD"),
+        # "HOST": os.getenv("DB_HOST"),
+        # "PORT": os.getenv("DB_PORT"),
     }
 }
 
-AUTH_USER_MODEL = 'internship.User'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = 'login'
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -112,7 +123,7 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
-    # ✅ No custom pagination or exception handler — those apps don't exist
+    #No custom pagination or exception handler — those apps don't exist
 }
 
 # ── SimpleJWT ──────────────────────────────────────────────────────────────────

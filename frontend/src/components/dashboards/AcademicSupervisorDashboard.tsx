@@ -131,7 +131,20 @@ export default function AcademicSupervisorDashboard() {
   const [criteria, setCriteria] = useState<Criteria[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
- 
+
+  const recent = [
+    { action: 'Submitted evaluation for Emily Davis',     time: '2 hours ago' },
+    { action: 'Reviewed activity logs for Alex Johnson',  time: '5 hours ago' },
+    { action: 'Approved final report for Michael Brown',  time: '1 day ago'   },
+  ]
+
+  const quickActions = [
+    { label: 'Evaluate Student',      icon: <ClipboardCheck size={15} className="text-blue-600"/> },
+    { label: 'Review Activity Logs',  icon: <FileText size={15} className="text-blue-600"/> },
+    { label: 'View Analytics',        icon: <BarChart2 size={15} className="text-blue-600"/> },
+    { label: 'Generate Report',       icon: <Download size={15} className="text-blue-600"/> },
+  ]
+
   const fetchData = async () => {
     setLoading(true)
     try {
@@ -185,13 +198,12 @@ export default function AcademicSupervisorDashboard() {
  
   {/* Main grid */}
       <div className="grid grid-cols-[1fr_340px] gap-4">
- 
-        {/* Students list */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        {/* Left Column: My Students list */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100">
             <h2 className="text-sm font-bold">My Students</h2>
           </div>
-          <div className="p-4 space-y-3">
+          <div className="p-4 space-y-3 overflow-y-auto">
             {students.length === 0 && (
               <div className="text-center text-gray-400 text-sm py-8">No students assigned yet.</div>
             )}
@@ -236,9 +248,8 @@ export default function AcademicSupervisorDashboard() {
           </div>
         </div>
 
-         {/* Right column */}
+        {/* Right Column: Pending submissions & Recent activity */}
         <div className="flex flex-col gap-4">
- 
           {/* Pending submissions */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-5 py-4 border-b border-gray-100">
@@ -267,20 +278,20 @@ export default function AcademicSupervisorDashboard() {
               })}
             </div>
           </div>
- 
-          {/* Criteria count card */}
+
+          {/* Recent activity */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-5 py-4 border-b border-gray-100">
-              <h2 className="text-sm font-bold">Evaluation Criteria</h2>
+              <h2 className="text-sm font-bold">Recent Activity</h2>
             </div>
-            <div className="p-4 space-y-2">
-              {criteria.length === 0 && (
-                <div className="text-center text-gray-400 text-sm py-4">No criteria defined yet.</div>
-              )}
-              {criteria.map(c => (
-                <div key={c.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-700">{c.name}</span>
-                  <span className="text-xs font-semibold text-gray-400">max {c.max_score}</span>
+            <div className="p-4 space-y-3">
+              {recent.map((r, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5"/>
+                  <div>
+                    <div className="text-sm text-gray-800">{r.action}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{r.time}</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -303,7 +314,7 @@ export default function AcademicSupervisorDashboard() {
           ))}
         </div>
       </div>
- 
+
       {selectedStudent && (
         <EvalModal
           student={selectedStudent}
