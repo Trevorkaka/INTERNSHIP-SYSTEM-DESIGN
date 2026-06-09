@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { Search, Loader, Plus, AlertCircle } from 'lucide-react'
 import client from '../api/client'
 import { placementsAPI, studentsAPI } from '../api/services'
