@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, AlertCircle, Loader } from 'lucide-react'
-import { logsAPI } from '../../api/services'
+import { logsAPI } from '../api/services'
 
 interface Log {
   id: number
