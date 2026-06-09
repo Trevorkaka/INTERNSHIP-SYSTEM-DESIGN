@@ -10,7 +10,7 @@ interface Student {
   year_of_study: number
   user: { id: number; username: string; first_name: string; last_name: string }
 }
-
+ 
 interface Log {
   id: number
   week_number: number
@@ -18,7 +18,7 @@ interface Log {
   student: number
   submitted_at: string | null
 }
-
+ 
 interface Criteria {
   id: number
   name: string
@@ -35,10 +35,10 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
   const [feedback, setFeedback] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-
+ 
   const studentLogs = logs.filter(l => l.student === student.id && l.status === 'submitted')
   const name = `${student.user.first_name} ${student.user.last_name}`
-
+ 
   const handleSubmit = async () => {
     if (!selectedLog || !selectedCriteria) { setError('Please select a log and criteria.'); return }
     setSaving(true)
@@ -50,7 +50,6 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
         score,
         feedback,
       })
-      // Also mark log as reviewed
       await client.post(`/api/weekly-logs/${selectedLog}/review/`)
       onDone()
       onClose()
@@ -60,7 +59,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
       setSaving(false)
     }
   }
-
+ 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-5 z-50"
       onClick={e => e.target === e.currentTarget && onClose()}>
@@ -71,7 +70,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
         </div>
         <div className="p-6 overflow-y-auto flex-1 space-y-4">
           {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600">{error}</div>}
-
+ 
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">Select Log to Evaluate</label>
             <select value={selectedLog} onChange={e => setSelectedLog(Number(e.target.value))}
@@ -85,7 +84,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
               <p className="text-xs text-amber-600 mt-1">No submitted logs available for this student.</p>
             )}
           </div>
-
+ 
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">Evaluation Criteria</label>
             <select value={selectedCriteria} onChange={e => setSelectedCriteria(Number(e.target.value))}
@@ -96,7 +95,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
               ))}
             </select>
           </div>
-
+ 
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">
               Score (max {criteria.find(c => c.id === selectedCriteria)?.max_score ?? 100})
@@ -104,14 +103,14 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
             <input type="number" min="0"
               max={criteria.find(c => c.id === selectedCriteria)?.max_score ?? 100}
               value={score} onChange={e => setScore(Number(e.target.value))}
-              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors" />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5">Feedback</label>
             <textarea rows={4} value={feedback} onChange={e => setFeedback(e.target.value)}
               placeholder="Provide academic feedback and recommendations…"
-              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y"/>
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors resize-y" />
           </div>
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-100">
@@ -125,7 +124,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
     </div>
   )
 }
-
+ 
 export default function AcademicSupervisorDashboard() {
   const [students, setStudents] = useState<Student[]>([])
   const [logs, setLogs] = useState<Log[]>([])
@@ -160,27 +159,35 @@ export default function AcademicSupervisorDashboard() {
     } catch {}
     finally { setLoading(false) }
   }
-
+ 
   useEffect(() => { fetchData() }, [])
-
+ 
   const pendingLogs = logs.filter(l => l.status === 'submitted')
   const reviewedLogs = logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length
-
+ 
+  const quickActions = [
+    { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600" /> },
+    { label: 'Review Activity Logs', icon: <FileText size={15} className="text-blue-600" /> },
+    { label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600" /> },
+    { label: 'Generate Report',      icon: <Download size={15} className="text-blue-600" /> },
+  ]
+ 
   if (loading) return (
     <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
-      <Loader size={16} className="animate-spin"/> Loading…
+      <Loader size={16} className="animate-spin" /> Loading…
     </div>
   )
 
   return (
     <div className="space-y-6">
+ 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          ['My Students',      students.length + '',   'text-blue-600'  ],
-          ['Pending Evals',    pendingLogs.length + '', 'text-amber-600' ],
-          ['Reviewed Logs',    reviewedLogs + '',       'text-green-600' ],
-          ['Criteria Set',     criteria.length + '',    'text-violet-600'],
+          ['My Students',   students.length + '',    'text-blue-600'  ],
+          ['Pending Evals', pendingLogs.length + '',  'text-amber-600' ],
+          ['Reviewed Logs', reviewedLogs + '',         'text-green-600' ],
+          ['Criteria Set',  criteria.length + '',      'text-violet-600'],
         ].map(([label, value, color]) => (
           <div key={label} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
             <div className={`text-2xl font-black tracking-tight ${color}`}>{value}</div>
@@ -188,7 +195,8 @@ export default function AcademicSupervisorDashboard() {
           </div>
         ))}
       </div>
-
+ 
+  {/* Main grid */}
       <div className="grid grid-cols-[1fr_340px] gap-4">
         {/* Left Column: My Students list */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
@@ -206,7 +214,7 @@ export default function AcademicSupervisorDashboard() {
               const approvedCount  = studentLogs.filter(l => l.status === 'approved').length
               const progress = studentLogs.length
                 ? Math.round((approvedCount / studentLogs.length) * 100) : 0
-
+ 
               return (
                 <div key={s.id} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
                   <div className="flex items-start justify-between mb-3">
@@ -231,7 +239,7 @@ export default function AcademicSupervisorDashboard() {
                       <span className="font-bold">{progress}%</span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-600 rounded-full" style={{ width: progress + '%' }}/>
+                      <div className="h-full bg-blue-600 rounded-full" style={{ width: progress + '%' }} />
                     </div>
                   </div>
                 </div>
@@ -288,6 +296,7 @@ export default function AcademicSupervisorDashboard() {
               ))}
             </div>
           </div>
+ 
         </div>
       </div>
 
@@ -315,6 +324,7 @@ export default function AcademicSupervisorDashboard() {
           onDone={fetchData}
         />
       )}
+ 
     </div>
   )
 }
