@@ -1,5 +1,5 @@
-// @ts-ignore
-import Joyride, { Step } from 'react-joyride'
+import React from 'react'
+import { Joyride, Step } from 'react-joyride'
 
 interface Props {
   role: string
@@ -114,3 +114,6 @@ export default function OnboardingTour({ role }: Props) {
     />
   )
 }
+
+
+
