@@ -94,7 +94,6 @@ export default function OnboardingTour({ role }: Props) {
     <Joyride
       steps={getSteps()}
       continuous
-      showSkipButton
       showProgress
       scrollToFirstStep
       disableScrolling={false}
