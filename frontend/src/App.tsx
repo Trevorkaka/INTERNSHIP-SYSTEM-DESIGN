@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
-import Layout from './components/Layout'
+import Layout from './pages/Layout'
 import WelcomePage from './pages/WelcomePage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
