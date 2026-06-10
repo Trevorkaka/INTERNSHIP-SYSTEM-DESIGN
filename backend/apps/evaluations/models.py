@@ -1,136 +1,77 @@
 from django.db import models
 from django.conf import settings
-from django.core.exceptions import ValidationError
-from decimal import Decimal
-
-from apps import logs
-
-# Create your models here.
-User = settings.AUTH_USER_MODEL
 
 
 class EvaluationCriteria(models.Model):
-    """
-    Defines evaluation criteria and their weights.
-
-    Example:
-    - Technical Skills → 40%
-    - Communication → 30%
-    - Professionalism → 30%
-
-    This allows flexibility if weights ever change.
-    """
-
-    name = models.CharField(
-        max_length=100,
-        unique=True,
-        help_text="Name of the evaluation criteria"
-    )
-
+    name = models.CharField(max_length=100)
+    max_score = models.IntegerField(default=10)
     weight_percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
+        null=True,
+        blank=True,
         help_text="Weight (e.g., 40.00 for 40%)"
     )
-
     is_active = models.BooleanField(default=True)
 
-    class Meta:
-        verbose_name_plural = "Evaluation Criteria"
-
     def __str__(self):
-        return f"{self.name} ({self.weight_percentage}%)"
+        return self.name
 
 
 class Evaluation(models.Model):
-    """
-    Represents an academic evaluation for a weekly log.
+    log = models.ForeignKey('logs.WeeklyLog', on_delete=models.CASCADE, related_name='evaluations', null=True, blank=True)
+    evaluator = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='internship_evaluations',
+        null=True, blank=True
+    )
+    criteria = models.ForeignKey(EvaluationCriteria, on_delete=models.CASCADE, null=True, blank=True)
+    score = models.IntegerField(null=True, blank=True)
+    feedback = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    Responsibilities:
-    - Stores scores for each criterion
-    - Automatically computes total score
-    - Enforces one evaluation per log
-    - Restricts evaluation to assigned academic supervisor
-    """
-
+    # Newer fields for compatibility:
     weekly_log = models.OneToOneField(
         'logs.WeeklyLog',
         on_delete=models.CASCADE,
         related_name='evaluation',
+        null=True,
+        blank=True,
         help_text="The weekly log being evaluated"
     )
-
     academic_supervisor = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        help_text="Supervisor performing the evaluation"
+        related_name='evaluations_as_supervisor',
+        null=True, blank=True
     )
-
-    # --- Scores ---
-    technical_score = models.DecimalField(max_digits=5, decimal_places=2)
-    communication_score = models.DecimalField(max_digits=5, decimal_places=2)
-    professionalism_score = models.DecimalField(max_digits=5, decimal_places=2)
-
-    # --- Computed ---
+    technical_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    communication_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    professionalism_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     total_score = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         editable=False,
+        null=True,
+        blank=True,
         help_text="Auto-calculated total score"
     )
-
-    comments = models.TextField(blank=True)
-
-    evaluated_at = models.DateTimeField(auto_now_add=True)
+    comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Evaluation for {self.weekly_log} → {self.total_score}"
-
-    def clean(self):
-        """
-        Enforce business rules.
-        """
-
-        # --- Ensure correct supervisor ---
-        if self.academic_supervisor != self.weekly_log.placement.academic_supervisor:
-            raise ValidationError("Only assigned academic supervisor can evaluate.")
-
-        # --- Ensure log is approved ---
-        if self.weekly_log.status != 'APPROVED':
-            raise ValidationError("Only approved logs can be evaluated.")
-
-        # --- Score validation ---
-        for field in ['technical_score', 'communication_score', 'professionalism_score']:
-            value = getattr(self, field)
-            if not (0 <= value <= 100):
-                raise ValidationError(f"{field} must be between 0 and 100.")
+        if self.criteria:
+            return f"{self.evaluator.username if self.evaluator else 'Evaluator'} - {self.criteria.name}"
+        return f"Evaluation for {self.weekly_log or self.log}"
 
     def calculate_total_score(self):
-        """
-        Compute weighted score.
-
-        Uses fixed weights:
-        - Technical: 40%
-        - Communication: 30%
-        - Professionalism: 30%
-        """
-
-        return (
-            (self.technical_score * Decimal('0.4')) +
-            (self.communication_score * Decimal('0.3')) +
-            (self.professionalism_score * Decimal('0.3'))
-        )
+        from decimal import Decimal
+        tech = self.technical_score or Decimal('0')
+        comm = self.communication_score or Decimal('0')
+        prof = self.professionalism_score or Decimal('0')
+        return (tech * Decimal('0.4')) + (comm * Decimal('0.3')) + (prof * Decimal('0.3'))
 
     def save(self, *args, **kwargs):
-        """
-        Override save to:
-        - Validate data
-        - Auto-compute total score
-        """
-
-        self.full_clean()  # Run validations
-
-        # Compute score
-        self.total_score = self.calculate_total_score()
-
+        if self.technical_score is not None and self.communication_score is not None and self.professionalism_score is not None:
+            self.total_score = self.calculate_total_score()
         super().save(*args, **kwargs)
