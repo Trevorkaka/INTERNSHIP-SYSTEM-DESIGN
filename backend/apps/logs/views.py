@@ -15,7 +15,7 @@ from .serializers import WeeklyLogSerializer, AssessmentSerializer
 
 
 class WeeklyLogViewSet(viewsets.ModelViewSet):
-    queryset = WeeklyLog.objects.all()
+    queryset = WeeklyLog.objects.select_related('student__user')
     serializer_class = WeeklyLogSerializer
     
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -32,13 +32,14 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = self.queryset
         if getattr(user, "is_student", False):
-            return WeeklyLog.objects.filter(student__user=user)
+            return queryset.filter(student__user=user)
         elif getattr(user, "is_academic_supervisor", False):
-            return WeeklyLog.objects.filter(student__academic_supervisor=user)
+            return queryset.filter(student__academic_supervisor=user)
         elif getattr(user, "is_workplace_supervisor", False):
-            return WeeklyLog.objects.filter(student__work_place_supervisor=user)
-        return WeeklyLog.objects.all()
+            return queryset.filter(student__work_place_supervisor=user)
+        return queryset
     
     def perform_create(self, serializer):
         # Automatically link the log to the student logged in
@@ -118,7 +119,7 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
 
 
 class AssessmentViewSet(viewsets.ModelViewSet):
-    queryset = Assessment.objects.all()
+    queryset = Assessment.objects.select_related('log', 'assessor')
     serializer_class = AssessmentSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -135,9 +136,10 @@ class AssessmentViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
+        queryset = self.queryset
         if getattr(user, "is_student", False):
-            return Assessment.objects.filter(log__student__user=user)
-        return Assessment.objects.all()
+            return queryset.filter(log__student__user=user)
+        return queryset
     
     def perform_create(self, serializer):
         # Automatically set the assessor to the logged-in supervisor

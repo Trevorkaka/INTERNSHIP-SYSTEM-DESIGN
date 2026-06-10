@@ -23,7 +23,7 @@ class Notification(models.Model):
         related_name='notifications',
         null=True, blank=True
     )
-    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES, blank=True, null=True)
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES, blank=True, null=True, db_index=True)
     title = models.CharField(max_length=200, blank=True, null=True)
     message = models.TextField()
 
@@ -32,7 +32,7 @@ class Notification(models.Model):
     evaluation = models.ForeignKey('evaluations.Evaluation', on_delete=models.CASCADE, null=True, blank=True)
     weekly_log = models.ForeignKey('logs.WeeklyLog', on_delete=models.CASCADE, null=True, blank=True)
 
-    is_read = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
