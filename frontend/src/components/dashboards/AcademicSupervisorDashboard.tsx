@@ -165,12 +165,12 @@ export default function AcademicSupervisorDashboard() {
   const pendingLogs = logs.filter(l => l.status === 'submitted')
   const reviewedLogs = logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length
  
-  const quickActions = [
-    { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600" /> },
-    { label: 'Review Activity Logs', icon: <FileText size={15} className="text-blue-600" /> },
-    { label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600" /> },
-    { label: 'Generate Report',      icon: <Download size={15} className="text-blue-600" /> },
-  ]
+  //const quickActions = [
+   // { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600" /> },
+   // { label: 'Review Activity Logs', icon: <FileText size={15} className="text-blue-600" /> },
+    //{ label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600" /> },
+    //{ label: 'Generate Report',      icon: <Download size={15} className="text-blue-600" /> },
+  //]
  
   if (loading) return (
     <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
