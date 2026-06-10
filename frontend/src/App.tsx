@@ -1,18 +1,20 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Layout from './pages/Layout'
-import WelcomePage from './pages/WelcomePage'
-import LoginPage from './pages/LoginPage'
-import SignupPage from './pages/SignupPage'
-import StudentDashboard from './components/dashboards/StudentDashboard'
-import WorkplaceSupervisorDashboard from './components/dashboards/WorkplaceSupervisorDashboard'
-import AcademicSupervisorDashboard from './components/dashboards/AcademicSupervisorDashboard'
-import AdminDashboard from './components/dashboards/AdminDashboard'
-import StudentActivityLogs from './pages/StudentActivityLogs'
-import StudentEvaluations from './pages/StudentEvaluations'
-import StudentPerformance from './pages/StudentPerformance'
-import AdminPlacements from './pages/AdminPlacements'
-import AdminSupervisorAssignment from './pages/AdminSupervisorAssignment'
+
+// Lazy load pages and dashboard components for bundle optimization
+const WelcomePage = lazy(() => import('./pages/WelcomePage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const SignupPage = lazy(() => import('./pages/SignupPage'))
+const StudentDashboard = lazy(() => import('./components/dashboards/StudentDashboard'))
+const WorkplaceSupervisorDashboard = lazy(() => import('./components/dashboards/WorkplaceSupervisorDashboard'))
+const AcademicSupervisorDashboard = lazy(() => import('./components/dashboards/AcademicSupervisorDashboard'))
+const AdminDashboard = lazy(() => import('./components/dashboards/AdminDashboard'))
+const StudentActivityLogs = lazy(() => import('./pages/StudentActivityLogs'))
+const StudentEvaluations = lazy(() => import('./pages/StudentEvaluations'))
+const StudentPerformance = lazy(() => import('./pages/StudentPerformance'))
+const AdminPlacements = lazy(() => import('./pages/AdminPlacements'))
+const AdminSupervisorAssignment = lazy(() => import('./pages/AdminSupervisorAssignment'))
 
 type Screen = 'welcome' | 'login' | 'signup'
 
@@ -29,9 +31,17 @@ function AppRouter() {
 
   // Not logged in — show welcome → login/signup flow
   if (!isAuthenticated) {
-    if (screen === 'welcome') return <WelcomePage onEnter={() => setScreen('login')} />
-    if (screen === 'signup')  return <SignupPage onNavigateToLogin={() => setScreen('login')} />
-    return <LoginPage onNavigateToSignup={() => setScreen('signup')} />
+    return (
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+          <div className="text-white/40 text-sm animate-pulse">Loading ILES…</div>
+        </div>
+      }>
+        {screen === 'welcome' && <WelcomePage onEnter={() => setScreen('login')} />}
+        {screen === 'signup' && <SignupPage onNavigateToLogin={() => setScreen('login')} />}
+        {screen === 'login' && <LoginPage onNavigateToSignup={() => setScreen('signup')} />}
+      </Suspense>
+    )
   }
 
   // Logged in — render by role
@@ -61,7 +71,14 @@ function AppRouter() {
 
   return (
     <Layout page={page} setPage={setPage}>
-      {renderPage()}
+      <Suspense fallback={
+        <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
+          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          Loading page…
+        </div>
+      }>
+        {renderPage()}
+      </Suspense>
     </Layout>
   )
 }
