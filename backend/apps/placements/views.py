@@ -12,7 +12,7 @@ class InternshipPlacementViewSet(viewsets.ModelViewSet):
     ViewSet for managing internship placements.
     """
     queryset = InternshipPlacement.objects.select_related(
-        'student',
+        'student__user',
         'workplace_supervisor',
         'academic_supervisor'
     )
