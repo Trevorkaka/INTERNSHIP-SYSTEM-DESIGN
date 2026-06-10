@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useEffect, useMemo, FormEvent } from 'react'
 import { Search, Loader, Plus, AlertCircle } from 'lucide-react'
 import client from '../api/client'
 import { placementsAPI, studentsAPI } from '../api/services'
@@ -90,16 +90,20 @@ export default function AdminPlacements() {
     }
   }
 
-  const filteredPlacements = placements.filter(p => {
-    const studentName = typeof p.student === 'object' && p.student
-      ? `${p.student.user?.first_name} ${p.student.user?.last_name}`.toLowerCase()
-      : `student #${p.student}`.toLowerCase()
-    return (
-      p.company_name.toLowerCase().includes(search.toLowerCase()) ||
-      (p.position && p.position.toLowerCase().includes(search.toLowerCase())) ||
-      studentName.includes(search.toLowerCase())
-    )
-  })
+  // Memoize filtered placements to prevent recalculation on every re-render (e.g., modal open/close)
+  const filteredPlacements = useMemo(() => {
+    const term = search.toLowerCase()
+    return placements.filter(p => {
+      const studentName = typeof p.student === 'object' && p.student
+        ? `${p.student.user?.first_name} ${p.student.user?.last_name}`.toLowerCase()
+        : `student #${p.student}`.toLowerCase()
+      return (
+        p.company_name.toLowerCase().includes(term) ||
+        (p.position && p.position.toLowerCase().includes(term)) ||
+        studentName.includes(term)
+      )
+    })
+  }, [placements, search])
 
   if (loading) return (
     <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
