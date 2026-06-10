@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Search, Loader, UserCheck } from 'lucide-react'
 import client from '../api/client'
 
@@ -134,12 +134,19 @@ export default function AdminSupervisorAssignment() {
     return s ? `${s.user.first_name} ${s.user.last_name}` : '—'
   }
 
-  const filtered = students.filter(s => {
-    const name = `${s.user.first_name} ${s.user.last_name} ${s.registration_number} ${s.course}`
-    return name.toLowerCase().includes(search.toLowerCase())
-  })
+  // Memoize filtered student list to avoid O(N) operations on every keypress / modal open
+  const filtered = useMemo(() => {
+    const term = search.toLowerCase()
+    return students.filter(s => {
+      const name = `${s.user.first_name} ${s.user.last_name} ${s.registration_number} ${s.course}`
+      return name.toLowerCase().includes(term)
+    })
+  }, [students, search])
 
-  const unassigned = students.filter(s => !s.academic_supervisor || !s.work_place_supervisor).length
+  // Memoize unassigned count
+  const unassigned = useMemo(() => {
+    return students.filter(s => !s.academic_supervisor || !s.work_place_supervisor).length
+  }, [students])
 
   return (
     <div className="space-y-4">
