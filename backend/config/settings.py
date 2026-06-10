@@ -16,7 +16,7 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] #allow all hosts during development, change in production
 
 
 # Application definition
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     #'apps.logs',
     #'apps.evaluations',
     #'apps.notifications',
-    #'apps.common',
+    'apps.common',
     
     
 ]
@@ -181,7 +181,7 @@ REST_FRAMEWORK = {
     ],
 
 # --- Pagination ---
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'apps.common.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 10,
 }
 
@@ -194,7 +194,7 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True,             #Updates user.last_login on token issue
 }
 
-REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exceptions.custom_exception_handler'
+REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exception.custom_exception_handler'
 
 
 #Security
