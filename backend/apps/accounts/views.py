@@ -169,7 +169,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
+    queryset = Student.objects.select_related('user', 'academic_supervisor', 'work_place_supervisor')
     serializer_class = StudentSerializer
     
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -188,9 +188,10 @@ class StudentViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
+        queryset = self.queryset
         if getattr(user, "is_student", False):
-            return Student.objects.filter(user=user)
-        return Student.objects.all()
+            return queryset.filter(user=user)
+        return queryset
 
     @action(detail=True, methods=['patch', 'post'], permission_classes=[IsAdmin])
     def assign_supervisors(self, request, pk=None):
@@ -229,7 +230,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 
 
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
-    queryset = WorkPlaceSupervisor.objects.all()
+    queryset = WorkPlaceSupervisor.objects.select_related('user')
     serializer_class = WorkPlaceSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -239,7 +240,7 @@ class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
 
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
-    queryset = AcademicSupervisor.objects.all()
+    queryset = AcademicSupervisor.objects.select_related('user')
     serializer_class = AcademicSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 

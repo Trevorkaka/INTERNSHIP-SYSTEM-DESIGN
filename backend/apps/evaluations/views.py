@@ -18,7 +18,7 @@ class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
 
 
 class EvaluationViewSet(viewsets.ModelViewSet):
-    queryset = Evaluation.objects.all()
+    queryset = Evaluation.objects.select_related('log', 'criteria', 'evaluator')
     serializer_class = EvaluationSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -35,11 +35,12 @@ class EvaluationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = self.queryset
         if getattr(user, "is_student", False):
-            return Evaluation.objects.filter(log__student__user=user)
+            return queryset.filter(log__student__user=user)
         elif getattr(user, "is_academic_supervisor", False) or getattr(user, "is_workplace_supervisor", False):
-            return Evaluation.objects.filter(evaluator=user)
-        return Evaluation.objects.all()
+            return queryset.filter(evaluator=user)
+        return queryset
     
     def perform_create(self, serializer):
         # Automatically set the evaluator to the logged-in supervisor

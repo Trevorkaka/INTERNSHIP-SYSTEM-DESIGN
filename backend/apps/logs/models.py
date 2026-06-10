@@ -10,11 +10,11 @@ class WeeklyLog(models.Model):
         ('approved', 'Approved')
     )
     student = models.ForeignKey('accounts.Student', on_delete=models.CASCADE)
-    week_number = models.IntegerField()
+    week_number = models.IntegerField(db_index=True)
     activities = models.TextField()
     challenges = models.TextField()
     solutions = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft', db_index=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     def submit(self):
