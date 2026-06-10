@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from .models import InternshipPlacement
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from apps.accounts.serializers import StudentSerializer
 
 
 class InternshipPlacementSerializer(serializers.ModelSerializer):
@@ -11,11 +9,13 @@ class InternshipPlacementSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'created_at']
 
-    def validate(self, data):
-        """
-        Extra validation at serializer level
-        """
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.student:
+            representation['student'] = StudentSerializer(instance.student).data
+        return representation
 
+    def validate(self, data):
         start = data.get('start_date')
         end = data.get('end_date')
 
