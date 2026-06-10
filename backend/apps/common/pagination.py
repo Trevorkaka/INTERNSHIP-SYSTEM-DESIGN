@@ -1,7 +1,6 @@
-from rest_framework.pagination import PageNumberPagination
+import rest_framework.pagination
 
-
-class StandardResultsSetPagination(PageNumberPagination):
+class StandardResultsSetPagination(rest_framework.pagination.PageNumberPagination):
     """
     Standard pagination for all APIs.
 
