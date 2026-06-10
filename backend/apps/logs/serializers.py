@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import WeeklyLog, Assessment
 
-
 class WeeklyLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = WeeklyLog
