@@ -38,19 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
-
-    # Third-party
-    # 'rest_framework_simplejwt',  # For JWT token authentication
-    
-    # Local apps
-    #'apps.accounts',
-    #'apps.placements',
-    #'apps.logs',
-    #'apps.evaluations',
-    #'apps.notifications',
-    'apps.common',
-    
+    'apps.core',  
     
 ]
 
