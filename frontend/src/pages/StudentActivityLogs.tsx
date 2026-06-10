@@ -186,7 +186,16 @@ export default function StudentActivityLogs() {
   const [showNew, setShowNew] = useState(false)
   const [selected, setSelected] = useState<Log | null>(null)
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [filter, setFilter] = useState('all')
+
+  // Debounce search term to prevent network/API flooding on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   const fetchLogs = async () => {
     setLoading(true)
@@ -194,7 +203,7 @@ export default function StudentActivityLogs() {
     try {
       const params: Record<string, string> = {}
       if (filter !== 'all') params.status = filter
-      if (search) params.search = search
+      if (debouncedSearch) params.search = debouncedSearch
       const res = await logsAPI.list(params)
       setLogs(res.data.results ?? res.data)
     } catch {
@@ -204,7 +213,7 @@ export default function StudentActivityLogs() {
     }
   }
 
-  useEffect(() => { fetchLogs() }, [filter, search])
+  useEffect(() => { fetchLogs() }, [filter, debouncedSearch])
 
   return (
     <div className="space-y-4">
