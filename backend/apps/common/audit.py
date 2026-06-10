@@ -12,6 +12,7 @@ def log_action(user, action, instance, previous_state=None, new_state=None):
         previous_state: dict snapshot before change
         new_state: dict snapshot after change
     """
+    
 
     AuditLog.objects.create(
         user=user,
