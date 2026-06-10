@@ -9,7 +9,7 @@ from .serializers import NotificationSerializer
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
-    queryset = Notification.objects.all()
+    queryset = Notification.objects.select_related('recipient', 'user')
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -19,7 +19,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Notification.objects.filter(recipient=user)
+        return self.queryset.filter(recipient=user)
     
     @action(detail=True, methods=['post'])
     def mark_as_read(self, request, pk=None):
