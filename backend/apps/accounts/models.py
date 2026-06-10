@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
         ('admin', 'Administrator'),
     ]
 
-    role = models.CharField(max_length=30, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=30, choices=ROLE_CHOICES, db_index=True)
     department = models.CharField(max_length=100, blank=True, null=True)
     staff_number = models.CharField(max_length=50, unique=True, null=True, blank=True)
     student_number = models.CharField(max_length=50, unique=True, null=True, blank=True)
