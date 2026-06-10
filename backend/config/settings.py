@@ -3,18 +3,22 @@ from datetime import timedelta
 import os
 from dotenv import load_dotenv
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-hjt1o9cdh1e-a-v1tz-gzniggyxk8v9ozlwtpmjn5b-gb--7w"
+)
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    raise ValueError("SECRET_KEY is not set")
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', 'True') == "True"
 
-DEBUG = os.environ.get('DEBUG') == 'True'
+ALLOWED_HOSTS = ['*'] #allow all hosts during development, change in production
 
-ALLOWED_HOSTS = ['*']
+
+# Application definition
 
 INSTALLED_APPS = [
     'apps.accounts',
@@ -25,22 +29,35 @@ INSTALLED_APPS = [
     'apps.notifications',
     'rest_framework',
     'corsheaders',
-    'rest_framework_simplejwt',
+    'rest_framework_simplejwt',        
     'rest_framework_simplejwt.token_blacklist',
-    'django_filters',
+    'django_filters',  # For filtering querysets
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.core',
+    'core',
+
+    # Third-party
+    # 'rest_framework_simplejwt',  # For JWT token authentication
+    
+    # Local apps
+    #'apps.accounts',
+    #'apps.placements',
+    #'apps.logs',
+    #'apps.evaluations',
+    #'apps.notifications',
+    'apps.common',
+    
+    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',       #  Must be above CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -136,7 +153,11 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN':        True,
 }
 
-# ── Security ───────────────────────────────────────────────────────────────────
+REST_FRAMEWORK['EXCEPTION_HANDLER'] = 'apps.common.exception.custom_exception_handler'
+
+
+#Security
+# Prevent XSS
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 CSRF_COOKIE_HTTPONLY = True
