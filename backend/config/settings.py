@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'apps.logs',
     'apps.evaluations',
     'apps.notifications',
+    'apps.core',
 
 
 
