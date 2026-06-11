@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.evaluations',
     'apps.notifications',
     'apps.core',
+    'apps.internship',
 
 
 
