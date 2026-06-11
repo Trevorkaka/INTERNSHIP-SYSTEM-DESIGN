@@ -25,6 +25,12 @@ interface Criteria {
   max_score: number
 }
 
+/**
+ * EvalModal Component
+ * Allows academic supervisors to score and evaluate a specific submitted weekly log book
+ * against academic rubric criteria.
+ * Once successfully saved, it requests the backend to review the corresponding log.
+ */
 function EvalModal({ student, logs, criteria, onClose, onDone }: {
   student: Student; logs: Log[]; criteria: Criteria[];
   onClose: () => void; onDone: () => void
@@ -35,10 +41,12 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
   const [feedback, setFeedback] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
- 
+  
+  // Filter for logs belonging to this specific student that have been submitted but not yet fully evaluated.
   const studentLogs = logs.filter(l => l.student === student.id && l.status === 'submitted')
   const name = `${student.user.first_name} ${student.user.last_name}`
- 
+  
+  // Submits the evaluation record to the backend and marks the weekly log as reviewed.
   const handleSubmit = async () => {
     if (!selectedLog || !selectedCriteria) { setError('Please select a log and criteria.'); return }
     setSaving(true)
@@ -125,6 +133,13 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
   )
 }
  
+/**
+ * AcademicSupervisorDashboard Component
+ * Core command center for academic mentors. Enables:
+ * - Tracking assigned students and their progress metrics.
+ * - Reviewing and scoring students' weekly submissions with custom rubrics.
+ * - Pre-rendering computed metrics using react useMemo hooks to prevent performance lags.
+ */
 export default function AcademicSupervisorDashboard() {
   const [students, setStudents] = useState<Student[]>([])
   const [logs, setLogs] = useState<Log[]>([])
@@ -162,7 +177,7 @@ export default function AcademicSupervisorDashboard() {
  
   useEffect(() => { fetchData() }, [])
  
-  // Memoize logs calculations to prevent recalculation on modal open/close
+  // Memoize log statistics to prevent unnecessary array filtering operations on modal toggles/re-renders.
   const { pendingLogs, reviewedLogs } = useMemo(() => {
     return {
       pendingLogs: logs.filter(l => l.status === 'submitted'),
@@ -170,7 +185,8 @@ export default function AcademicSupervisorDashboard() {
     }
   }, [logs])
 
-  // Memoize student statistics pre-computation to avoid O(N*M) operations on every re-render
+  // Memoize student statistics calculation to avoid nested iteration loops on every re-render.
+  // Precomputes individual student progress percentage based on approved logs.
   const studentsWithStats = useMemo(() => {
     return students.map(s => {
       const name = `${s.user.first_name} ${s.user.last_name}`
