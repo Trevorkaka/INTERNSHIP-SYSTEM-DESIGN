@@ -23,6 +23,8 @@ ALLOWED_HOSTS = ['*'] #allow all hosts during development, change in production
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.auth',
+
   
 
     
