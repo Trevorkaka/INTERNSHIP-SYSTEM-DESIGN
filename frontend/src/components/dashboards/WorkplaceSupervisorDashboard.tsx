@@ -279,6 +279,7 @@ export default function WorkplaceSupervisorDashboard() {
           {[
             ['Review Activity Logs', <ClipboardCheck size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
             ['Submit Performance Review', <Star size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+            ['Send Feedback', <MessageSquare size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
           ].map(([label, icon]) => (
             <button key={label as string}
               className="flex items-center gap-2.5 p-3.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl text-left transition-all">
