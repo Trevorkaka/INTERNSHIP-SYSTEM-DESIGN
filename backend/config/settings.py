@@ -88,11 +88,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'iles_db'),
+        'USER': os.getenv('DB_USER', 'iles_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'iles_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
+}
 
-        #'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': 'group20_db',
-        #'USER': 'group20_user',
-        #'PASSWORD': 'group20password',
+# ---Auth--
+AUTH_USER_MODEL = 'internship.User'
+LOGIN_URL = 'login'
+
+# Password validation
         #'HOST': 'localhost',
         #'PORT': '5432',
     }
