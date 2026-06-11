@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.accounts',
     'apps.common',
+    'apps.placements',
 
 
 
