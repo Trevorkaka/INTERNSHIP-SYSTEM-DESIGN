@@ -21,6 +21,12 @@ interface Student {
   user: { id: number; username: string; first_name: string; last_name: string }
 }
 
+/**
+ * ReviewModal Component
+ * Facilitates the workplace supervisor's review of a single weekly internship log.
+ * Supervisors grade the student (out of 100), write qualitative feedback,
+ * and submit the assessment to mark the log as reviewed.
+ */
 function ReviewModal({ log, student, onClose, onDone }: {
   log: Log; student?: Student; onClose: () => void; onDone: () => void
 }) {
@@ -33,6 +39,7 @@ function ReviewModal({ log, student, onClose, onDone }: {
     ? `${student.user.first_name} ${student.user.last_name}`
     : `Student #${log.student}`
 
+  // Submits the workplace grading and comments, then triggers the status transition in the database
   const handleApprove = async () => {
     if (!feedback.trim()) { setError('Please provide feedback comments.'); return }
     setSaving(true); setError('')
@@ -101,6 +108,13 @@ function ReviewModal({ log, student, onClose, onDone }: {
   )
 }
 
+/**
+ * WorkplaceSupervisorDashboard Component
+ * Renders the dashboard for industry supervisor mentors. Includes:
+ * - Summary statistics (assigned interns, pending logbook reviews).
+ * - Intern directories with aggregated weekly metrics.
+ * - Drilldown review actions.
+ */
 export default function WorkplaceSupervisorDashboard() {
   const [logs, setLogs] = useState<Log[]>([])
   const [students, setStudents] = useState<Student[]>([])
@@ -126,7 +140,7 @@ export default function WorkplaceSupervisorDashboard() {
 
   const getStudent = (id: number) => students.find(s => s.id === id)
 
-  // Memoize basic stats and unique students to prevent recalculation on modal open/close
+  // Memoize basic statistics and unique intern listings to optimize component re-render schedules.
   const { pending, reviewed, uniqueStudentIds } = useMemo(() => {
     return {
       pending: logs.filter(l => l.status === 'submitted'),
@@ -135,7 +149,7 @@ export default function WorkplaceSupervisorDashboard() {
     }
   }, [logs])
 
-  // Precompute interns statistics to avoid recalculations on every render
+  // Precompute aggregated stats for interns in real-time to prevent slow, layout-blocking O(N) tasks.
   const internsWithStats = useMemo(() => {
     return uniqueStudentIds.map(sid => {
       const st = students.find(s => s.id === sid)
