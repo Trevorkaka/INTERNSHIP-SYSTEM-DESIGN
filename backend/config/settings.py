@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.common',
     'apps.placements',
+    'apps.logs',
+
 
 
 
