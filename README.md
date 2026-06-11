@@ -424,4 +424,4 @@ This software is licensed under the [MIT License](LICENSE). You are free to modi
 This system is developed and designed by **Group 20** as a collaborative Internship Management System project. If you have any suggestions, bug reports, or feature enhancements, please raise an issue or submit a pull request!
 
 ---
-**Need Help?** If you experience setup difficulties, configuration errors, or find a bug, run the `/reportbug` slash command or feel free to contact the project developers.
+**Need Help?** If you experience setup difficulties, configuration errors, or find a bug,feel free to contact the project developers.
