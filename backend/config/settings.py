@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'apps.common',
     'apps.placements',
     'apps.logs',
+    'apps.evaluations',
+    'apps.notifications',
+
 
 
 
