@@ -1,4 +1,5 @@
-import { useState, lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Layout from './pages/Layout'
 
@@ -19,9 +20,8 @@ const StudentEvaluations = lazy(() => import('./pages/StudentEvaluations'))
 const StudentPerformance = lazy(() => import('./pages/StudentPerformance'))
 const AdminPlacements = lazy(() => import('./pages/AdminPlacements'))
 const AdminSupervisorAssignment = lazy(() => import('./pages/AdminSupervisorAssignment'))
-
-// Defines the UI step state before authentication is complete
-type Screen = 'welcome' | 'login' | 'signup'
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'))
+const EmailSentPage = lazy(() => import('./pages/EmailSentPage'))
 
 /**
  * AppRouter Component
@@ -31,12 +31,12 @@ type Screen = 'welcome' | 'login' | 'signup'
  */
 function AppRouter() {
   const { user, isAuthenticated, isLoading } = useAuth()
-  
-  // Handles navigation within authenticated screens (e.g. dashboards vs subpages)
-  const [page,   setPage]   = useState('dashboard')
-  
-  // Handles navigation within unauthenticated landing screens
-  const [screen, setScreen] = useState<Screen>('welcome')
+  const navigate = useNavigate()
+
+  // Define setPage for compatibility with dashboard/sub-components
+  const setPage = (p: string) => {
+    navigate('/' + p)
+  }
 
   // Block rendering while restoring state from localStorage in the AuthProvider
   if (isLoading) return (
@@ -54,16 +54,21 @@ function AppRouter() {
           <div className="text-white/40 text-sm animate-pulse">Loading ILES…</div>
         </div>
       }>
-        {screen === 'welcome' && <WelcomePage onEnter={() => setScreen('login')} />}
-        {screen === 'signup' && <SignupPage onNavigateToLogin={() => setScreen('login')} />}
-        {screen === 'login' && <LoginPage onNavigateToSignup={() => setScreen('signup')} />}
+        <Routes>
+          <Route path="/" element={<WelcomePage onEnter={() => navigate('/login')} />} />
+          <Route path="/signup" element={<SignupPage onNavigateToLogin={() => navigate('/login')} />} />
+          <Route path="/login" element={<LoginPage onNavigateToSignup={() => navigate('/signup')} />} />
+          <Route path="/verify-email/:uid/:token" element={<VerifyEmailPage />} />
+          <Route path="/email-sent" element={<EmailSentPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Suspense>
     )
   }
 
   // --- LOGGED IN ROLE-BASED RENDERING & ROUTING GUARDS ---
   // Maps the user's role to their designated workflow dashboard or specific subpage.
-  const renderPage = () => {
+  const renderPage = (page: string) => {
     switch (user?.role) {
       case 'student':
         if (page === 'activities')  return <StudentActivityLogs />
@@ -89,7 +94,7 @@ function AppRouter() {
   }
 
   return (
-    <Layout page={page} setPage={setPage}>
+    <Layout>
       {/* Suspense handles lazy components loading spinners as pages are loaded over HTTP */}
       <Suspense fallback={
         <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
@@ -97,7 +102,29 @@ function AppRouter() {
           Loading page…
         </div>
       }>
-        {renderPage()}
+        <Routes>
+          {/* Default authenticated redirect */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          
+          {/* Explicit dynamic paths matching our navigation model */}
+          <Route path="/dashboard" element={renderPage('dashboard')} />
+          <Route path="/activities" element={renderPage('activities')} />
+          <Route path="/evaluations" element={renderPage('evaluations')} />
+          <Route path="/performance" element={renderPage('performance')} />
+          <Route path="/placements" element={renderPage('placements')} />
+          <Route path="/supervisors" element={renderPage('supervisors')} />
+          
+          {/* Other navigation IDs routing to role dashboard or appropriate page */}
+          <Route path="/interns" element={renderPage('interns')} />
+          <Route path="/reviews" element={renderPage('reviews')} />
+          <Route path="/students" element={renderPage('students')} />
+          <Route path="/analytics" element={renderPage('analytics')} />
+          <Route path="/oversight" element={renderPage('oversight')} />
+          <Route path="/settings" element={renderPage('settings')} />
+          
+          {/* Fallback for any other path */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
       </Suspense>
     </Layout>
   )
@@ -110,7 +137,9 @@ function AppRouter() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppRouter />
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
     </AuthProvider>
   )
 }
