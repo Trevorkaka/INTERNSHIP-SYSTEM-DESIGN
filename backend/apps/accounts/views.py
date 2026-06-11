@@ -1,3 +1,14 @@
+"""
+Views and API ViewSets for the Accounts application.
+
+This module provides custom endpoints and standard DRF ModelViewSets for managing
+users, students, and supervisors (academic and workplace). It includes support for:
+- API-based Signup, Login, Logout, and Token Refreshment.
+- Supervisor assignments to students by administrators.
+- Email verification logic.
+- Traditional HTML view actions for registration, login, and logout.
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -32,7 +43,17 @@ User = get_user_model()
 @permission_classes([AllowAny])
 def signup(request):
     """
-    Register a new user account.
+    Register a new user account via API.
+
+    Validates signup details, registers the user, and immediately generates
+    JWT access/refresh tokens to sign them in.
+
+    Args:
+        request (Request): REST Framework Request containing registration fields.
+
+    Returns:
+        Response: A JSON response detailing success message, created user info,
+        and JWT token pairs (201 Created), or validation errors (400 Bad Request).
     """
     serializer = UserSignupSerializer(data=request.data)
 
@@ -57,7 +78,17 @@ def signup(request):
 @permission_classes([AllowAny])
 def login(request):
     """
-    Login user and return JWT tokens.
+    Authenticate a user via API and return JWT tokens.
+
+    This function validates username/password, authenticates credentials,
+    and returns SimpleJWT tokens along with unread notifications for a seamless frontend integration.
+
+    Args:
+        request (Request): REST Framework Request containing 'username' and 'password'.
+
+    Returns:
+        Response: Authenticated user profile, JWT tokens, unread count and latest unread
+        notifications (200 OK), or validation/credential errors (400 Bad Request / 401 Unauthorized).
     """
     serializer = UserLoginSerializer(data=request.data)
     
@@ -105,7 +136,14 @@ def login(request):
 @permission_classes([IsAuthenticated])
 def logout(request):
     """
-    Logout user by blacklisting the refresh token.
+    Log out a user via API by blacklisting their SimpleJWT refresh token.
+
+    Args:
+        request (Request): REST Framework Request containing the 'refresh' token in request.data.
+
+    Returns:
+        Response: Success response (200 OK) or error response if the refresh token is
+        missing or invalid (400 Bad Request).
     """
     try:
         refresh_token = request.data.get('refresh')
@@ -133,7 +171,13 @@ def logout(request):
 @permission_classes([AllowAny])
 def refresh_token(request):
     """
-    Refresh the access token using the refresh token.
+    Generate a new access token using a valid refresh token.
+
+    Args:
+        request (Request): REST Framework Request containing the 'refresh' token.
+
+    Returns:
+        Response: A new JWT 'access' token (200 OK) or an unauthorized error (401 Unauthorized) if token is invalid.
     """
     try:
         refresh_token = request.data.get('refresh')
@@ -158,6 +202,12 @@ def refresh_token(request):
 # --- ViewSets for accounts models ---
 
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    ModelViewSet for managing CustomUser objects.
+
+    Access is restricted to administrators. Supports advanced filtering by role,
+    searching by core fields, and ordering.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdmin]
@@ -169,7 +219,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
+    """
+    ModelViewSet for managing Student profiles.
+
+    Ensures that students can only fetch/view their own profile data, while admins
+    and supervisors have broader access. Includes a custom action to assign supervisors.
+    """
+    queryset = Student.objects.select_related('user', 'academic_supervisor', 'work_place_supervisor')
     serializer_class = StudentSerializer
     
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -178,6 +234,16 @@ class StudentViewSet(viewsets.ModelViewSet):
     ordering_fields = ['year_of_study']
 
     def get_permissions(self):
+        """
+        Dynamically determine permission classes based on view action.
+
+        - 'list', 'retrieve': Any authenticated user.
+        - 'assign_supervisors': Only administrators.
+        - Other (create, update, destroy): Admin restricted.
+
+        Returns:
+            list: List of instantiated permission classes.
+        """
         if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.IsAuthenticated]
         elif self.action in ['assign_supervisors']:
@@ -187,13 +253,33 @@ class StudentViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
     
     def get_queryset(self):
+        """
+        Filter queryset so that a student can only retrieve their own record.
+
+        Supervisors and administrators can retrieve all students.
+
+        Returns:
+            QuerySet: Filtered Student query set.
+        """
         user = self.request.user
+        queryset = self.queryset
         if getattr(user, "is_student", False):
-            return Student.objects.filter(user=user)
-        return Student.objects.all()
+            return queryset.filter(user=user)
+        return queryset
 
     @action(detail=True, methods=['patch', 'post'], permission_classes=[IsAdmin])
     def assign_supervisors(self, request, pk=None):
+        """
+        Assign an academic and/or workplace supervisor to a specific student.
+
+        Args:
+            request (Request): Request containing 'academic_supervisor' and/or 'work_place_supervisor' IDs.
+            pk (str): Primary key of the Student record to modify.
+
+        Returns:
+            Response: Serialized student details (200 OK) or error response (400 Bad Request)
+            if a specified supervisor ID does not match the expected role.
+        """
         student = self.get_object()
         academic_id = request.data.get('academic_supervisor')
         workplace_id = request.data.get('work_place_supervisor')
@@ -229,7 +315,12 @@ class StudentViewSet(viewsets.ModelViewSet):
 
 
 class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
-    queryset = WorkPlaceSupervisor.objects.all()
+    """
+    ModelViewSet for WorkPlaceSupervisor profiles.
+
+    Permits write access only to administrators, while allowing read operations for all.
+    """
+    queryset = WorkPlaceSupervisor.objects.select_related('user')
     serializer_class = WorkPlaceSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -239,7 +330,12 @@ class WorkPlaceSupervisorViewSet(viewsets.ModelViewSet):
 
 
 class AcademicSupervisorViewSet(viewsets.ModelViewSet):
-    queryset = AcademicSupervisor.objects.all()
+    """
+    ModelViewSet for AcademicSupervisor profiles.
+
+    Permits write access only to administrators, while allowing read operations for all.
+    """
+    queryset = AcademicSupervisor.objects.select_related('user')
     serializer_class = AcademicSupervisorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -251,7 +347,17 @@ class AcademicSupervisorViewSet(viewsets.ModelViewSet):
 # --- HTML Authentication Views ---
 
 def register_view(request):
-    """Handle user registration"""
+    """
+    Handle traditional HTML signup rendering and submission.
+
+    Validates RegistrationForm, hashes the password, and redirects to login on success.
+
+    Args:
+        request (HttpRequest): Standard Django HttpRequest object.
+
+    Returns:
+        HttpResponse: Rendered registration HTML template.
+    """
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -265,7 +371,18 @@ def register_view(request):
 
 
 def login_view(request):
-    """Handle user login"""
+    """
+    Handle traditional HTML sign-in rendering and validation.
+
+    Authenticates the credentials, logs the user in to the active session,
+    and redirects to home.
+
+    Args:
+        request (HttpRequest): Standard Django HttpRequest object.
+
+    Returns:
+        HttpResponse: Rendered login HTML template.
+    """
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -283,7 +400,17 @@ def login_view(request):
 
 @login_required
 def logout_view(request):
-    """Handle user logout"""
+    """
+    Handle traditional HTML session logouts.
+
+    Clears the Django session and redirects the user to the login portal.
+
+    Args:
+        request (HttpRequest): Standard Django HttpRequest object.
+
+    Returns:
+        HttpResponseRedirect: Redirect to 'login' route.
+    """
     logout(request)
     return redirect('login')
 
@@ -291,6 +418,21 @@ def logout_view(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def verify_email(request, uidb64, token):
+    """
+    Confirm user registration and activate user profile via an email verification link.
+
+    Decodes the user's primary key from base64 encoding and verifies the token against
+    the user instance. On success, sets `is_active` to True.
+
+    Args:
+        request (Request): REST Framework Request object.
+        uidb64 (str): Base64-encoded user ID.
+        token (str): Single-use password reset / verification token.
+
+    Returns:
+        Response: Message confirming successful activation (200 OK) or error message
+        explaining invalid token details (400 Bad Request).
+    """
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)

@@ -13,6 +13,10 @@ interface Log {
   student: number
 }
 
+/**
+ * Utility function to determine CSS class mappings for weekly log statuses.
+ * Transforms DB/API state names into nicely colored visual badges.
+ */
 function statusBadge(status: string) {
   const map: Record<string, string> = {
     approved:           'bg-green-100 text-green-700',
@@ -25,6 +29,10 @@ function statusBadge(status: string) {
   return `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${map[status] ?? 'bg-gray-100 text-gray-500'}`
 }
 
+/**
+ * Modal dialog for logging a new weekly report.
+ * Allows saving as a mutable Draft or submitting directly for review.
+ */
 function NewLogModal({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const [form, setForm] = useState({ week_number: '', activities: '', challenges: '', solutions: '' })
   const [saving, setSaving] = useState(false)
@@ -118,9 +126,14 @@ function NewLogModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
   )
 }
 
+/**
+ * Modal dialog displaying granular detailed content of an individual log.
+ * Provides a quick transition path to finalize and Submit a draft log.
+ */
 function DetailModal({ log, onClose, onRefresh }: { log: Log; onClose: () => void; onRefresh: () => void }) {
   const [submitting, setSubmitting] = useState(false)
 
+  // Submits a draft log directly to supervisors for grading/evaluation.
   const handleSubmit = async () => {
     setSubmitting(true)
     try {
@@ -179,6 +192,13 @@ function DetailModal({ log, onClose, onRefresh }: { log: Log; onClose: () => voi
   )
 }
 
+/**
+ * StudentActivityLogs Component
+ * Renders the main student panel for weekly logbooks, incorporating:
+ * - Real-time client-side search with debounce filtering.
+ * - Categorized tab filters for statuses (draft, submitted, approved).
+ * - Modal hooks for drafting, publishing, and inspecting logs.
+ */
 export default function StudentActivityLogs() {
   const [logs, setLogs] = useState<Log[]>([])
   const [loading, setLoading] = useState(true)
@@ -186,15 +206,27 @@ export default function StudentActivityLogs() {
   const [showNew, setShowNew] = useState(false)
   const [selected, setSelected] = useState<Log | null>(null)
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [filter, setFilter] = useState('all')
 
+  // Debounce search input to prevent rapid, repetitive backend API requests as the user types
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
+
+  /**
+   * Fetches weekly log list from Django backend based on search terms and filter criteria.
+   */
   const fetchLogs = async () => {
     setLoading(true)
     setError('')
     try {
       const params: Record<string, string> = {}
       if (filter !== 'all') params.status = filter
-      if (search) params.search = search
+      if (debouncedSearch) params.search = debouncedSearch
       const res = await logsAPI.list(params)
       setLogs(res.data.results ?? res.data)
     } catch {
@@ -204,7 +236,7 @@ export default function StudentActivityLogs() {
     }
   }
 
-  useEffect(() => { fetchLogs() }, [filter, search])
+  useEffect(() => { fetchLogs() }, [filter, debouncedSearch])
 
   return (
     <div className="space-y-4">
