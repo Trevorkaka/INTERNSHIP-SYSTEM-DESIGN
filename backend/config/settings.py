@@ -22,30 +22,10 @@ ALLOWED_HOSTS = ['*'] #allow all hosts during development, change in production
 # Application definition
 
 INSTALLED_APPS = [
-    'internship',
-    'rest_framework',
-    'corsheaders',
-    'rest_framework_simplejwt',        
-    'rest_framework_simplejwt.token_blacklist',
-    'django_filters',  # For filtering querysets
     'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'core',
+  
 
-    # Third-party
-    # 'rest_framework_simplejwt',  # For JWT token authentication
     
-    # Local apps
-    #'apps.accounts',
-    #'apps.placements',
-    #'apps.logs',
-    #'apps.evaluations',
-    #'apps.notifications',
-    'apps.common',
     
     
 ]
@@ -96,17 +76,17 @@ DATABASES = {
 }
 
 # ---Auth--
-AUTH_USER_MODEL = 'internship.User'
-LOGIN_URL = 'login'
+#AUTH_USER_MODEL = 'internship.User'
+#LOGIN_URL = 'login'
 
 # Password validation
         #'HOST': 'localhost',
         #'PORT': '5432',
-    }
-}
+    
+
 
 # ---Auth--
-AUTH_USER_MODEL = 'internship.User'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = 'login'
 
 # Password validation
