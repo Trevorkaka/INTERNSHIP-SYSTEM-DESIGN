@@ -25,10 +25,8 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update']:
-            permission_classes = [IsStudent]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]  
+            return [IsStudent()]
+        return super().get_permissions()
 
     def get_queryset(self):
         user = self.request.user
