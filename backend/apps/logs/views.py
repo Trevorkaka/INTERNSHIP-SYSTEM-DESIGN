@@ -1,3 +1,11 @@
+"""
+Views and API ViewSets for the Logs application.
+
+This module provides custom ViewSets for:
+- WeeklyLog management (creation, update, submission, review, and approval).
+- Assessment of WeeklyLogs by supervisors (marks, feedback).
+"""
+
 from django.utils import timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
@@ -13,7 +21,17 @@ from .serializers import WeeklyLogSerializer, AssessmentSerializer
 
 
 class WeeklyLogViewSet(viewsets.ModelViewSet):
-    queryset = WeeklyLog.objects.all()
+    """
+    ModelViewSet for managing WeeklyLog records.
+
+    Allows students to create and maintain their own weekly logs as drafts,
+    submit them, and enables supervisors and administrators to review and approve them.
+
+    Attributes:
+        queryset (QuerySet): Selected weekly logs with nested student user profile.
+        serializer_class (WeeklyLogSerializer): Serializer class for WeeklyLog operations.
+    """
+    queryset = WeeklyLog.objects.select_related('student__user')
     serializer_class = WeeklyLogSerializer
     
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -22,32 +40,66 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
     ordering_fields = ['week_number', 'submitted_at']
 
     def get_permissions(self):
+        """
+        Determine permissions based on the active ViewSet action.
+
+        - 'create', 'update', 'partial_update' actions are limited to students.
+        - Other actions fall back to default ModelViewSet permissions.
+
+        Returns:
+            list: Instantiated permission objects.
+        """
         if self.action in ['create', 'update', 'partial_update']:
-            permission_classes = [IsStudent]
-        else:
-            permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in permission_classes]  
+            return [IsStudent()]
+        return super().get_permissions()
 
     def get_queryset(self):
+        """
+        Filter the logs depending on the authenticated user's role.
+
+        - Students retrieve only their own weekly logs.
+        - Academic supervisors retrieve logs for their assigned students.
+        - Workplace supervisors retrieve logs for their assigned students.
+        - Admins retrieve all weekly logs.
+
+        Returns:
+            QuerySet: Filtered query set of WeeklyLog records.
+        """
         user = self.request.user
+        queryset = self.queryset
         if getattr(user, "is_student", False):
-            return WeeklyLog.objects.filter(student__user=user)
+            return queryset.filter(student__user=user)
         elif getattr(user, "is_academic_supervisor", False):
-            return WeeklyLog.objects.filter(student__academic_supervisor=user)
+            return queryset.filter(student__academic_supervisor=user)
         elif getattr(user, "is_workplace_supervisor", False):
-            return WeeklyLog.objects.filter(student__work_place_supervisor=user)
-        return WeeklyLog.objects.all()
+            return queryset.filter(student__work_place_supervisor=user)
+        return queryset
     
     def perform_create(self, serializer):
-        # Automatically link the log to the student logged in
-        student = self.request.user.student # onetoone reverse relation
+        """
+        Override default behavior to automatically link the log to the logged-in student.
+
+        Args:
+            serializer (WeeklyLogSerializer): The validated serializer instance.
+        """
+        student = self.request.user.student  # One-to-one reverse relation
         serializer.save(student=student)
 
     @action(detail=True, methods=['post'], permission_classes=[IsStudent]) 
     def submit(self, request, pk=None):
         """
-        POST /api/weekly-logs/{id}/submit/
-        changes log status from draft to submitted and records the timestamp.
+        Submit a draft weekly log.
+
+        Transitions the status of the weekly log from 'draft' to 'submitted'
+        and records the exact submission timestamp.
+
+        Args:
+            request (Request): REST framework Request object.
+            pk (str): Primary key of the weekly log to submit.
+
+        Returns:
+            Response: Message detailing successful submission (200 OK) or error message
+            if user does not own the log or log is not in draft status (400/403).
         """
         log = self.get_object()
 
@@ -74,8 +126,17 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[IsAdminOrAnySupervisor])
     def review(self, request, pk=None):
         """
-        POST /api/weekly-logs/{id}/review/
-        Supervisor marks a submitted log as reviewed.
+        Review a submitted weekly log.
+
+        Transitions log status from 'submitted' to 'reviewed' by a supervisor or admin.
+
+        Args:
+            request (Request): REST framework Request object.
+            pk (str): Primary key of the weekly log to review.
+
+        Returns:
+            Response: Success response (200 OK) or error response if the log is not
+            in 'submitted' status (400 Bad Request).
         """
         log = self.get_object()
 
@@ -96,8 +157,17 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
     def approve(self, request, pk=None):
         """
-        POST /api/weekly-logs/{id}/approve/
-        Admin approves a reviewed log.
+        Approve a reviewed weekly log.
+
+        Allows administrator users to transition the status from 'reviewed' to 'approved'.
+
+        Args:
+            request (Request): REST framework Request object.
+            pk (str): Primary key of the weekly log to approve.
+
+        Returns:
+            Response: Success message (200 OK) or error response if log has not
+            yet been reviewed (400 Bad Request).
         """
         log = self.get_object()
 
@@ -116,7 +186,13 @@ class WeeklyLogViewSet(viewsets.ModelViewSet):
 
 
 class AssessmentViewSet(viewsets.ModelViewSet):
-    queryset = Assessment.objects.all()
+    """
+    ModelViewSet for managing log assessments.
+
+    Enables academic/workplace supervisors to grade and supply detailed feedback
+    on submitted weekly logs.
+    """
+    queryset = Assessment.objects.select_related('log', 'assessor')
     serializer_class = AssessmentSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -125,6 +201,15 @@ class AssessmentViewSet(viewsets.ModelViewSet):
     ordering_fields = ['marks', 'assessed_at']
 
     def get_permissions(self):
+        """
+        Determine permissions dynamically depending on the active action.
+
+        - 'create', 'update', 'partial_update', 'destroy': Restricted to supervisors/admins.
+        - Other actions: Allowed for any authenticated users.
+
+        Returns:
+            list: List of active permission instances.
+        """
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminOrAnySupervisor]
         else:
@@ -132,11 +217,26 @@ class AssessmentViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
     
     def get_queryset(self):
+        """
+        Filter Assessments depending on the requesting user.
+
+        Students only retrieve assessments associated with their own logs,
+        while supervisors and administrators can retrieve all assessments.
+
+        Returns:
+            QuerySet: Filtered Assessment query set.
+        """
         user = self.request.user
+        queryset = self.queryset
         if getattr(user, "is_student", False):
-            return Assessment.objects.filter(log__student__user=user)
-        return Assessment.objects.all()
+            return queryset.filter(log__student__user=user)
+        return queryset
     
     def perform_create(self, serializer):
-        # Automatically set the assessor to the logged-in supervisor
+        """
+        Override creator lookup to set the assessor as the currently logged-in supervisor.
+
+        Args:
+            serializer (AssessmentSerializer): Serializer holding the validated post data.
+        """
         serializer.save(assessor=self.request.user)

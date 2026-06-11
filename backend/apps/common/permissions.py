@@ -1,8 +1,21 @@
+"""
+Permissions module for the Common application.
+
+This module provides custom DRF BasePermission classes to enforce role-based access
+control (RBAC) across various API endpoints in the system.
+"""
+
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsAdmin(BasePermission):
+    """
+    Permission class checking if the authenticated user has the 'admin' role.
+    """
     def has_permission(self, request, view):
+        """
+        Verify if request user is authenticated and is an admin.
+        """
         return request.user.is_authenticated and getattr(request.user, "role", None) == "admin"
 
 
@@ -11,18 +24,32 @@ class IsAdminUserRole(BasePermission):
     Custom permission to allow only users with role 'admin'.
     """
     def has_permission(self, request, view):
+        """
+        Verify if request user is authenticated and is an admin.
+        """
         return request.user.is_authenticated and getattr(request.user, "role", None) == "admin"
 
 
 class IsAdminOrSelf(BasePermission):
+    """
+    Permission class allowing access to admins or the user themselves.
+    """
     def has_object_permission(self, request, view, obj):
-        # Supports CustomUser or other objects that have a 'user' property or are user themselves
+        """
+        Verify if user is admin or is the target user/profile owner.
+        """
         user_obj = getattr(obj, "user", obj)
         return request.user.is_admin or user_obj == request.user
 
 
 class IsStudent(BasePermission):
+    """
+    Permission class checking if the user has the 'student' role.
+    """
     def has_permission(self, request, view):
+        """
+        Verify if request user is authenticated and is a student.
+        """
         return request.user.is_authenticated and getattr(request.user, "role", None) == "student"
 
 
@@ -31,16 +58,31 @@ class IsAcademicSupervisor(BasePermission):
     Allows only academic supervisors to perform evaluation actions.
     """
     def has_permission(self, request, view):
+        """
+        Verify if request user is authenticated and is an academic supervisor.
+        """
         return request.user.is_authenticated and getattr(request.user, "role", None) == "academic_supervisor"
 
 
 class IsWorkplaceSupervisor(BasePermission):
+    """
+    Permission class checking if the user has the 'workplace_supervisor' role.
+    """
     def has_permission(self, request, view):
+        """
+        Verify if request user is authenticated and is a workplace supervisor.
+        """
         return request.user.is_authenticated and getattr(request.user, "role", None) == "workplace_supervisor"
 
 
 class IsAdminOrAcademicSupervisor(BasePermission):
+    """
+    Allows admins or academic supervisors.
+    """
     def has_permission(self, request, view):
+        """
+        Verify if request user is authenticated and is either admin or academic supervisor.
+        """
         return request.user.is_authenticated and (
             getattr(request.user, "role", None) == "admin" or
             getattr(request.user, "role", None) == "academic_supervisor"
@@ -48,7 +90,13 @@ class IsAdminOrAcademicSupervisor(BasePermission):
 
 
 class IsAdminOrAnySupervisor(BasePermission):
+    """
+    Allows admins or academic/workplace supervisors.
+    """
     def has_permission(self, request, view):
+        """
+        Verify if request user is authenticated and is an admin or supervisor.
+        """
         return request.user.is_authenticated and (
             getattr(request.user, "role", None) == "admin" or
             getattr(request.user, "role", None) == "academic_supervisor" or
@@ -57,7 +105,13 @@ class IsAdminOrAnySupervisor(BasePermission):
 
 
 class IsAdminOrReadOnly(BasePermission):
+    """
+    Permits read-only requests for any authenticated user, and write operations only for admins.
+    """
     def has_permission(self, request, view):
+        """
+        Allow safe HTTP methods, restrict unsafes to Admin role.
+        """
         if request.method in SAFE_METHODS:
             return request.user.is_authenticated
         return request.user.is_authenticated and getattr(request.user, "role", None) == "admin"
@@ -68,11 +122,21 @@ class IsRelatedToWeeklyLog(BasePermission):
     Object-level permission for WeeklyLog access.
 
     Ensures users only access logs related to them.
+    - Students only access their own logs.
+    - Workplace supervisors only access logs of students assigned to them.
+    - Academic supervisors only access logs of students assigned to them.
+    - Admins have full access.
     """
     def has_permission(self, request, view):
+        """
+        Verify the user is authenticated.
+        """
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
+        """
+        Check object association based on user role.
+        """
         user = request.user
         role = getattr(user, "role", None)
 

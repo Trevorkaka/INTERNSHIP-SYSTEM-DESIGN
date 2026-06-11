@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Loader, ClipboardCheck, FileText, BarChart2, Download } from 'lucide-react'
 import { evaluationsAPI } from '../../api/services'
 import client from '../../api/client'
@@ -25,6 +25,12 @@ interface Criteria {
   max_score: number
 }
 
+/**
+ * EvalModal Component
+ * Allows academic supervisors to score and evaluate a specific submitted weekly log book
+ * against academic rubric criteria.
+ * Once successfully saved, it requests the backend to review the corresponding log.
+ */
 function EvalModal({ student, logs, criteria, onClose, onDone }: {
   student: Student; logs: Log[]; criteria: Criteria[];
   onClose: () => void; onDone: () => void
@@ -35,10 +41,12 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
   const [feedback, setFeedback] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
- 
+  
+  // Filter for logs belonging to this specific student that have been submitted but not yet fully evaluated.
   const studentLogs = logs.filter(l => l.student === student.id && l.status === 'submitted')
   const name = `${student.user.first_name} ${student.user.last_name}`
- 
+  
+  // Submits the evaluation record to the backend and marks the weekly log as reviewed.
   const handleSubmit = async () => {
     if (!selectedLog || !selectedCriteria) { setError('Please select a log and criteria.'); return }
     setSaving(true)
@@ -125,6 +133,13 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
   )
 }
  
+/**
+ * AcademicSupervisorDashboard Component
+ * Core command center for academic mentors. Enables:
+ * - Tracking assigned students and their progress metrics.
+ * - Reviewing and scoring students' weekly submissions with custom rubrics.
+ * - Pre-rendering computed metrics using react useMemo hooks to prevent performance lags.
+ */
 export default function AcademicSupervisorDashboard() {
   const [students, setStudents] = useState<Student[]>([])
   const [logs, setLogs] = useState<Log[]>([])
@@ -162,15 +177,41 @@ export default function AcademicSupervisorDashboard() {
  
   useEffect(() => { fetchData() }, [])
  
-  const pendingLogs = logs.filter(l => l.status === 'submitted')
-  const reviewedLogs = logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length
+  // Memoize log statistics to prevent unnecessary array filtering operations on modal toggles/re-renders.
+  const { pendingLogs, reviewedLogs } = useMemo(() => {
+    return {
+      pendingLogs: logs.filter(l => l.status === 'submitted'),
+      reviewedLogs: logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length
+    }
+  }, [logs])
+
+  // Memoize student statistics calculation to avoid nested iteration loops on every re-render.
+  // Precomputes individual student progress percentage based on approved logs.
+  const studentsWithStats = useMemo(() => {
+    return students.map(s => {
+      const name = `${s.user.first_name} ${s.user.last_name}`
+      const studentLogs = logs.filter(l => l.student === s.id)
+      const submittedCount = studentLogs.filter(l => l.status === 'submitted').length
+      const approvedCount  = studentLogs.filter(l => l.status === 'approved').length
+      const progress = studentLogs.length
+        ? Math.round((approvedCount / studentLogs.length) * 100) : 0
+      return {
+        ...s,
+        name,
+        studentLogs,
+        submittedCount,
+        approvedCount,
+        progress
+      }
+    })
+  }, [students, logs])
  
-  const quickActions = [
-    { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600" /> },
-    { label: 'Review Activity Logs', icon: <FileText size={15} className="text-blue-600" /> },
-    { label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600" /> },
-    { label: 'Generate Report',      icon: <Download size={15} className="text-blue-600" /> },
-  ]
+  //const quickActions = [
+   // { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600" /> },
+   // { label: 'Review Activity Logs', icon: <FileText size={15} className="text-blue-600" /> },
+    //{ label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600" /> },
+    //{ label: 'Generate Report',      icon: <Download size={15} className="text-blue-600" /> },
+  //]
  
   if (loading) return (
     <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
@@ -207,19 +248,12 @@ export default function AcademicSupervisorDashboard() {
             {students.length === 0 && (
               <div className="text-center text-gray-400 text-sm py-8">No students assigned yet.</div>
             )}
-            {students.map(s => {
-              const name = `${s.user.first_name} ${s.user.last_name}`
-              const studentLogs = logs.filter(l => l.student === s.id)
-              const submittedCount = studentLogs.filter(l => l.status === 'submitted').length
-              const approvedCount  = studentLogs.filter(l => l.status === 'approved').length
-              const progress = studentLogs.length
-                ? Math.round((approvedCount / studentLogs.length) * 100) : 0
- 
+            {studentsWithStats.map(s => {
               return (
                 <div key={s.id} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <div className="text-sm font-bold">{name}</div>
+                      <div className="text-sm font-bold">{s.name}</div>
                       <div className="text-xs text-gray-400 mt-0.5">{s.course} · Year {s.year_of_study}</div>
                       <div className="text-xs text-gray-300 mt-0.5">{s.registration_number}</div>
                     </div>
@@ -229,17 +263,17 @@ export default function AcademicSupervisorDashboard() {
                     </button>
                   </div>
                   <div className="grid grid-cols-3 gap-3 mb-3 text-xs">
-                    <div><div className="text-gray-400">Total Logs</div><div className="font-semibold mt-0.5">{studentLogs.length}</div></div>
-                    <div><div className="text-gray-400">Pending</div><div className="font-semibold mt-0.5 text-amber-600">{submittedCount}</div></div>
-                    <div><div className="text-gray-400">Approved</div><div className="font-semibold mt-0.5 text-green-600">{approvedCount}</div></div>
+                    <div><div className="text-gray-400">Total Logs</div><div className="font-semibold mt-0.5">{s.studentLogs.length}</div></div>
+                    <div><div className="text-gray-400">Pending</div><div className="font-semibold mt-0.5 text-amber-600">{s.submittedCount}</div></div>
+                    <div><div className="text-gray-400">Approved</div><div className="font-semibold mt-0.5 text-green-600">{s.approvedCount}</div></div>
                   </div>
                   <div>
                     <div className="flex justify-between text-xs mb-1">
                       <span className="text-gray-400">Approval Progress</span>
-                      <span className="font-bold">{progress}%</span>
+                      <span className="font-bold">{s.progress}%</span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-600 rounded-full" style={{ width: progress + '%' }} />
+                      <div className="h-full bg-blue-600 rounded-full" style={{ width: s.progress + '%' }} />
                     </div>
                   </div>
                 </div>
