@@ -140,7 +140,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
  * - Reviewing and scoring students' weekly submissions with custom rubrics.
  * - Pre-rendering computed metrics using react useMemo hooks to prevent performance lags.
  */
-export default function AcademicSupervisorDashboard() {
+export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter?: string }) {
   const [students, setStudents] = useState<Student[]>([])
   const [logs, setLogs] = useState<Log[]>([])
   const [criteria, setCriteria] = useState<Criteria[]>([])
