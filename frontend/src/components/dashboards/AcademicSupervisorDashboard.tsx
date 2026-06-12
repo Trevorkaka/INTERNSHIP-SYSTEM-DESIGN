@@ -353,7 +353,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                 
               </div>
               <div className="flex gap-2">
-                
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Active</span>
+
               </div>
 
    {/* Evaluations view */}
