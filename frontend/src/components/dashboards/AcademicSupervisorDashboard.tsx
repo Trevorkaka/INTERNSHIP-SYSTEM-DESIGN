@@ -237,8 +237,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
         ))}
       </div>
  
-  {/* Main grid - students view */}
-  {(filter === 'all' || filter === 'students') && (
+  {/* Main grid - dashboard view only */}
+  {filter === 'all' && (
     <div className="grid grid-cols-[1fr_340px] gap-4">
         {/* Left Column: My Students list */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
