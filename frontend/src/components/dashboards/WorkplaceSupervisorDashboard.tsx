@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Loader, ClipboardCheck, Star, MessageSquare, RefreshCw } from 'lucide-react'
 import { logsAPI, assessmentsAPI } from '../../api/services'
 import client from '../../api/client'
@@ -277,11 +277,11 @@ export default function WorkplaceSupervisorDashboard() {
         </div>
         <div className="p-4 grid grid-cols-3 gap-3">
           {[
-            ['Review Activity Logs', <ClipboardCheck size={15} className="text-blue-600"/>],
-            ['Submit Performance Review', <Star size={15} className="text-blue-600"/>],
-            ['Send Feedback', <MessageSquare size={15} className="text-blue-600"/>],
-          ].map(([label, icon]) => (
-            <button key={label as string}
+            ['Review Activity Logs', <ClipboardCheck size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+            ['Submit Performance Review', <Star size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+            ['Send Feedback', <MessageSquare size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+          ].map(([label, icon, action]: [string, React.ReactNode, () => void]) => (
+            <button key={label as string} onClick={action as () => void}
               className="flex items-center gap-2.5 p-3.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl text-left transition-all">
               {icon}
               <span className="text-sm font-semibold text-gray-800">{label}</span>
