@@ -365,6 +365,12 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                 <div className="text-gray-400">Total Logs</div>
                 <div className="font-semibold mt-0.5">{s.studentLogs.length}</div>
               </div>
+              <div className="bg-amber-50 rounded-lg p-3">
+                <div className="text-amber-600">Pending</div>
+                <div className="font-semibold mt-0.5 text-amber-600">{s.submittedCount}</div>
+              </div>
+              <div className="bg-green-50 rounded-lg p-3">
+              </div>
 
 
 
