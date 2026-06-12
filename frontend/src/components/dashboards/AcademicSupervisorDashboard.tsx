@@ -346,6 +346,9 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
         {students.length === 0 && (
           <div key={s.id} className="p-5 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
             <div className="flex items-start justify-between mb-4">
+              <div>
+                <div className="text-base font-bold">{s.name}</div>
+
       </div>
 
    {/* Evaluations view */}
