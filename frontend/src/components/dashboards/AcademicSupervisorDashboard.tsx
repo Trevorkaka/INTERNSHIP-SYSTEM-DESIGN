@@ -335,6 +335,9 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
         </div>
       </div>
   )}
+  
+  {/* My Students view */}
+  {filter === 'students' && (
 
    {/* Evaluations view */}
 {filter === 'evaluations' && (
