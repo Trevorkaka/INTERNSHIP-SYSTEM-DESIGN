@@ -338,6 +338,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
 
   {/* Evaluations view */}
   {filter === 'evaluations' && (
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="px-5 py-4 border-b border-gray-100"></div>
 
   {/* Analytics placeholder */}
   {filter === 'analytics' && (
