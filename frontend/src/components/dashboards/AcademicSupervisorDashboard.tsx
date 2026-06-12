@@ -344,6 +344,10 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
     </div>
     <div className="p-4 space-y-3">
       {pendingLogs.length === 0 && (
+        <div className="text-center text-gray-400 text-sm py-8">No pending evaluations. All caught up! 🎉</div>
+      )}
+      {pendingLogs.map(log => {
+        const st = students.find(s => s.id === log.student)
 
   {/* Analytics placeholder */}
   {filter === 'analytics' && (
