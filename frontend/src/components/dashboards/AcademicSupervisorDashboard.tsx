@@ -156,8 +156,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all', setPage }:
   const quickActions = [
     { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600"/>, action: () => setPage?.('evaluations') },
     { label: 'My Students',          icon: <FileText size={15} className="text-blue-600"/>,        action: () => setPage?.('students') },
-    { label: 'View Analytics',        icon: <BarChart2 size={15} className="text-blue-600"/>,       action: () => {} },
-    { label: 'Generate Report',       icon: <Download size={15} className="text-blue-600"/>,        action: () => {} },
+    { label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600"/>,       action: () => setPage?.('analytics') },
+    { label: 'Generate Report',      icon: <Download size={15} className="text-blue-600"/>,        action: () => setPage?.('analytics') },
   ]
 
   const fetchData = async () => {
