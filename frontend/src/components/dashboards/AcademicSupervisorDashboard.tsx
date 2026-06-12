@@ -348,6 +348,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
             <div className="flex items-start justify-between mb-4">
               <div>
                 <div className="text-base font-bold">{s.name}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{s.registration_number}</div>
 
       </div>
 
