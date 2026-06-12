@@ -80,7 +80,7 @@ function AppRouter() {
         if (page === 'students')    return <AcademicSupervisorDashboard filter="students" />
         if (page === 'evaluations') return <AcademicSupervisorDashboard filter="evaluations" />
         if (page === 'analytics')   return <AcademicSupervisorDashboard filter="analytics" />
-        return <AcademicSupervisorDashboard />
+        return <AcademicSupervisorDashboard filter="all" />
 
       case 'admin':
         if (page === 'placements')   return <AdminPlacements />
