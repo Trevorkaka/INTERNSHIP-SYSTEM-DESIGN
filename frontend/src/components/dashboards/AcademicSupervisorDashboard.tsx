@@ -361,6 +361,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
               </div>
             </div> 
             <div className="grid grid-cols-4 gap-3 mb-4 text-xs">
+              <div className="bg-gray-50 rounded-lg p-3"></div>
 
 
 
