@@ -359,6 +359,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                 <div className="text-xs text-gray-500 mt-0.5">Week {log.week_number}</div>
                 {log.submitted_at && (
                    <div className="text-xs text-gray-400 mt-1">
+                      Submitted {new Date(log.submitted_at).toLocaleDateString()}
 
               </div>
 
