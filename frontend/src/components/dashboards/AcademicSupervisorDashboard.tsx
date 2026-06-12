@@ -364,6 +364,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                   )}
 
               </div>
+              <button
+                onClick={e => { e.stopPropagation(); const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
 
 
 
