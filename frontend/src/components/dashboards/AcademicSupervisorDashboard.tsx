@@ -340,6 +340,10 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
   {filter === 'evaluations' && (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
       <div className="px-5 py-4 border-b border-gray-100"></div>
+        <h2 className="text-sm font-bold">Pending Evaluations ({pendingLogs.length})</h2>
+    </div>
+    <div className="p-4 space-y-3">
+      {pendingLogs.length === 0 && (
 
   {/* Analytics placeholder */}
   {filter === 'analytics' && (
