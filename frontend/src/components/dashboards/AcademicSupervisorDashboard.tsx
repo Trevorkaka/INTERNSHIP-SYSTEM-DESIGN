@@ -336,11 +336,11 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
       </div>
   )}
 
-  {/* Evaluations view */}
-  {filter === 'evaluations' && (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-      <div className="px-5 py-4 border-b border-gray-100"></div>
-        <h2 className="text-sm font-bold">Pending Evaluations ({pendingLogs.length})</h2>
+   {/* Evaluations view */}
+{filter === 'evaluations' && (
+  <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div className="px-5 py-4 border-b border-gray-100">
+      <h2 className="text-sm font-bold">Pending Evaluations ({pendingLogs.length})</h2>
     </div>
     <div className="p-4 space-y-3">
       {pendingLogs.length === 0 && (
@@ -349,7 +349,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
       {pendingLogs.map(log => {
         const st = students.find(s => s.id === log.student)
         const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${log.student}`
-         return (
+        return (
           <div key={log.id}
             onClick={() => { const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
             className="p-4 border-2 border-amber-100 hover:border-amber-300 rounded-xl cursor-pointer transition-all">
@@ -358,18 +358,23 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                 <div className="text-sm font-bold">{name}</div>
                 <div className="text-xs text-gray-500 mt-0.5">Week {log.week_number}</div>
                 {log.submitted_at && (
-                   <div className="text-xs text-gray-400 mt-1">
-                      Submitted {new Date(log.submitted_at).toLocaleDateString()}
-                   </div>
-                  )}
-
+                  <div className="text-xs text-gray-400 mt-1">
+                    Submitted {new Date(log.submitted_at).toLocaleDateString()}
+                  </div>
+                )}
               </div>
               <button
                 onClick={e => { e.stopPropagation(); const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
                 className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
-                Evaluate  
-                </button>
-
+                Evaluate
+              </button>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </div>
+)}
 
 
   {/* Analytics placeholder */}
