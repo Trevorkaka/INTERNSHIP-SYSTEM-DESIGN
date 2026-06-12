@@ -351,6 +351,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
         const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${log.student}`
          return (
           <div key={log.id}
+            onClick={() => { const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
+            className="p-4 border-2 border-amber-100 hover:border-amber-300 rounded-xl cursor-pointer transition-all">
 
   {/* Analytics placeholder */}
   {filter === 'analytics' && (
