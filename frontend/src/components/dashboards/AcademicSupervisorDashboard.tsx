@@ -340,6 +340,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
   {filter === 'analytics' && (
     <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-400">
       <BarChart2 size={40} className="mx-auto mb-3 text-gray-300"/>
+      <p className="text-sm font-semibold">Analytics coming soon</p>
   
 
 
