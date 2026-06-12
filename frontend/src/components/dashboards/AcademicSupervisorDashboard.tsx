@@ -342,6 +342,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
       <div className="px-5 py-4 border-b border-gray-100">
         <h2 className="text-sm font-bold">My Assigned Students ({students.length})</h2>
       </div>
+      <div className="p-4 space-y-3"></div>
 
    {/* Evaluations view */}
 {filter === 'evaluations' && (
