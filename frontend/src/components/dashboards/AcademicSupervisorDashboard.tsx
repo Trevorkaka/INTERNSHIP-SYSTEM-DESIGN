@@ -356,6 +356,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm font-bold">{name}</div>
+                <div className="text-xs text-gray-500 mt-0.5">Week {log.week_number}</div>
 
               </div>
 
