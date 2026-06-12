@@ -349,6 +349,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
       {pendingLogs.map(log => {
         const st = students.find(s => s.id === log.student)
         const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${log.student}`
+         return (
+          <div key={log.id}
 
   {/* Analytics placeholder */}
   {filter === 'analytics' && (
