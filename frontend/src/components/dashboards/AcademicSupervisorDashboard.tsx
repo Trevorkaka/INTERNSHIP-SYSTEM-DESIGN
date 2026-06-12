@@ -342,7 +342,10 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
       <div className="px-5 py-4 border-b border-gray-100">
         <h2 className="text-sm font-bold">My Assigned Students ({students.length})</h2>
       </div>
-      <div className="p-4 space-y-3"></div>
+      <div className="p-4 space-y-3">
+        {students.length === 0 && (
+          <div key={s.id} className="p-5 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
+      </div>
 
    {/* Evaluations view */}
 {filter === 'evaluations' && (
