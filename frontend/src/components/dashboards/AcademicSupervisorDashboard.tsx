@@ -336,6 +336,12 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
       </div>
   )}
 
+  {/* Analytics placeholder */}
+  {filter === 'analytics' && (
+    <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-400">
+  
+
+
       {/* Quick actions */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="px-5 py-4 border-b border-gray-100">
