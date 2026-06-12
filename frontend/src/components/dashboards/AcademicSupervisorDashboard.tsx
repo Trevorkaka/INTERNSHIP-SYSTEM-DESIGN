@@ -370,6 +370,7 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                 <div className="font-semibold mt-0.5 text-amber-600">{s.submittedCount}</div>
               </div>
               <div className="bg-green-50 rounded-lg p-3">
+                <div className="text-amber-600">Pending</div>
               </div>
 
 
