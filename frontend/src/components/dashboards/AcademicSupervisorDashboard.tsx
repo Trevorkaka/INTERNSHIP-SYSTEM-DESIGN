@@ -366,7 +366,9 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
               </div>
               <button
                 onClick={e => { e.stopPropagation(); const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors"></button>
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                Evaluate  
+                </button>
 
 
 
