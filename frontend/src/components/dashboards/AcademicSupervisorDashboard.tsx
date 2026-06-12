@@ -237,8 +237,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
         ))}
       </div>
  
-  {/* Main grid */}
-  {(filter === 'all' || filter === 'students' || filter === 'evaluations') && (
+  {/* Main grid - students view */}
+  {(filter === 'all' || filter === 'students') && (
     <div className="grid grid-cols-[1fr_340px] gap-4">
         {/* Left Column: My Students list */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
@@ -335,6 +335,47 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
         </div>
       </div>
   )}
+
+   {/* Evaluations view */}
+{filter === 'evaluations' && (
+  <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div className="px-5 py-4 border-b border-gray-100">
+      <h2 className="text-sm font-bold">Pending Evaluations ({pendingLogs.length})</h2>
+    </div>
+    <div className="p-4 space-y-3">
+      {pendingLogs.length === 0 && (
+        <div className="text-center text-gray-400 text-sm py-8">No pending evaluations. All caught up! 🎉</div>
+      )}
+      {pendingLogs.map(log => {
+        const st = students.find(s => s.id === log.student)
+        const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${log.student}`
+        return (
+          <div key={log.id}
+            onClick={() => { const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
+            className="p-4 border-2 border-amber-100 hover:border-amber-300 rounded-xl cursor-pointer transition-all">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-bold">{name}</div>
+                <div className="text-xs text-gray-500 mt-0.5">Week {log.week_number}</div>
+                {log.submitted_at && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    Submitted {new Date(log.submitted_at).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={e => { e.stopPropagation(); const s = students.find(x => x.id === log.student); if (s) setSelectedStudent(s) }}
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                Evaluate
+              </button>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </div>
+)}
+
 
   {/* Analytics placeholder */}
   {filter === 'analytics' && (
