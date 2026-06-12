@@ -115,7 +115,7 @@ function ReviewModal({ log, student, onClose, onDone }: {
  * - Intern directories with aggregated weekly metrics.
  * - Drilldown review actions.
  */
-export default function WorkplaceSupervisorDashboard() {
+export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filter?: string }) {
   const [logs, setLogs] = useState<Log[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
