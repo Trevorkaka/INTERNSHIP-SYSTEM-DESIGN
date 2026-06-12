@@ -79,8 +79,8 @@ function AppRouter() {
       case 'academic_supervisor':
         if (page === 'students')    return <AcademicSupervisorDashboard filter="students" setPage={setPage} />
         if (page === 'evaluations') return <AcademicSupervisorDashboard filter="evaluations" setPage={setPage} />
-        if (page === 'analytics')   return <AcademicSupervisorDashboard filter="analytics" />
-        return <AcademicSupervisorDashboard filter="all" />
+        if (page === 'analytics')   return <AcademicSupervisorDashboard filter="analytics" setPage={setPage} />
+        return <AcademicSupervisorDashboard filter="all" setPage={setPage} />
 
       case 'admin':
         if (page === 'placements')   return <AdminPlacements />
