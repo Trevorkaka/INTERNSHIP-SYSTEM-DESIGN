@@ -358,6 +358,11 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                   className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
                   Evaluate
                 </button>
+              </div>
+            </div> 
+            <div className="grid grid-cols-4 gap-3 mb-4 text-xs">
+
+
 
               </div>
 
