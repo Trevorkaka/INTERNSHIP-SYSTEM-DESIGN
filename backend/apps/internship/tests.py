@@ -164,12 +164,12 @@ class InternshipBackendTests(APITestCase):
         self.client.force_authenticate(user=self.academic_user)
         url = reverse('weekly-log-list')
         response = self.client.get(url)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
         # Workplace supervisor should also see it (using the fixed query filter)
         self.client.force_authenticate(user=self.workplace_user)
         response = self.client.get(url)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
         # Another unrelated user should not see it
         unrelated_user = User.objects.create_user(
@@ -181,7 +181,7 @@ class InternshipBackendTests(APITestCase):
         AcademicSupervisor.objects.create(user=unrelated_user, department='Chemistry')
         self.client.force_authenticate(user=unrelated_user)
         response = self.client.get(url)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
 
     def test_workplace_supervisor_search(self):
         self.client.force_authenticate(user=self.admin_user)
@@ -190,8 +190,8 @@ class InternshipBackendTests(APITestCase):
         # Test searching with double underscore path (user__email and user__username)
         response = self.client.get(url + '?search=workplace')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['company_name'], 'Tech Corp')
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['company_name'], 'Tech Corp')
 
     def test_evaluations_and_criteria(self):
         log = WeeklyLog.objects.create(
