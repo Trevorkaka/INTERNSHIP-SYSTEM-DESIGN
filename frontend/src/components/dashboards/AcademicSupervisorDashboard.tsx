@@ -140,7 +140,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
  * - Reviewing and scoring students' weekly submissions with custom rubrics.
  * - Pre-rendering computed metrics using react useMemo hooks to prevent performance lags.
  */
-export default function AcademicSupervisorDashboard() {
+export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter?: string }) {
   const [students, setStudents] = useState<Student[]>([])
   const [logs, setLogs] = useState<Log[]>([])
   const [criteria, setCriteria] = useState<Criteria[]>([])
@@ -238,7 +238,8 @@ export default function AcademicSupervisorDashboard() {
       </div>
  
   {/* Main grid */}
-      <div className="grid grid-cols-[1fr_340px] gap-4">
+  {(filter === 'all' || filter === 'students' || filter === 'evaluations') && (
+    <div className="grid grid-cols-[1fr_340px] gap-4">
         {/* Left Column: My Students list */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
           <div className="px-5 py-4 border-b border-gray-100">
@@ -333,6 +334,17 @@ export default function AcademicSupervisorDashboard() {
  
         </div>
       </div>
+  )}
+
+  {/* Analytics placeholder */}
+  {filter === 'analytics' && (
+    <div className="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-400">
+      <BarChart2 size={40} className="mx-auto mb-3 text-gray-300"/>
+      <p className="text-sm font-semibold">Analytics coming soon</p>
+    </div>
+  )}
+  
+
 
       {/* Quick actions */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -340,8 +352,8 @@ export default function AcademicSupervisorDashboard() {
           <h2 className="text-sm font-bold">Quick Actions</h2>
         </div>
         <div className="p-4 grid grid-cols-4 gap-3">
-          {quickActions.map(({ label, icon }) => (
-            <button key={label} className="flex items-center gap-2.5 p-3.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl text-left transition-all">
+          {quickActions.map(({ label, icon, action }) => (
+            <button key={label} onClick={action} className="flex items-center gap-2.5 p-3.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl text-left transition-all">
               {icon}
               <span className="text-sm font-semibold text-gray-800">{label}</span>
             </button>

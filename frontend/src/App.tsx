@@ -77,10 +77,15 @@ function AppRouter() {
         return <StudentDashboard setPage={setPage} />
 
       case 'workplace_supervisor':
-        return <WorkplaceSupervisorDashboard />
+        if (page === 'interns')  return <WorkplaceSupervisorDashboard filter="interns" />
+        if (page === 'reviews')  return <WorkplaceSupervisorDashboard filter="reviews" />
+        return <WorkplaceSupervisorDashboard filter="all" />
 
       case 'academic_supervisor':
-        return <AcademicSupervisorDashboard />
+        if (page === 'students')    return <AcademicSupervisorDashboard filter="students" />
+        if (page === 'evaluations') return <AcademicSupervisorDashboard filter="evaluations" />
+        if (page === 'analytics')   return <AcademicSupervisorDashboard filter="analytics" />
+        return <AcademicSupervisorDashboard filter="all" />
 
       case 'admin':
         if (page === 'placements')   return <AdminPlacements />

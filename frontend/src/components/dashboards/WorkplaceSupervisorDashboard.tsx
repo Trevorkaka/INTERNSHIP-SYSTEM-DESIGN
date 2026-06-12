@@ -115,7 +115,7 @@ function ReviewModal({ log, student, onClose, onDone }: {
  * - Intern directories with aggregated weekly metrics.
  * - Drilldown review actions.
  */
-export default function WorkplaceSupervisorDashboard() {
+export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filter?: string }) {
   const [logs, setLogs] = useState<Log[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
@@ -200,7 +200,7 @@ export default function WorkplaceSupervisorDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-[1fr_360px] gap-4">
+      <div className="grid grid-cols-[1fr_360px] gap-4" style={{ display: filter === 'reviews' ? 'none' : 'grid' }}>
         {/* Interns */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
@@ -234,7 +234,8 @@ export default function WorkplaceSupervisorDashboard() {
         </div>
 
         {/* Pending reviews */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        {(filter === 'all' || filter === 'reviews') && (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
             <h2 className="text-sm font-bold">
               Pending Reviews
@@ -268,6 +269,7 @@ export default function WorkplaceSupervisorDashboard() {
             })}
           </div>
         </div>
+        )}
       </div>
 
       {/* Quick actions */}
