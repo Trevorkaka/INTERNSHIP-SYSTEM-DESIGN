@@ -350,8 +350,11 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                 <div className="text-base font-bold">{s.name}</div>
                 <div className="text-xs text-gray-400 mt-0.5">{s.registration_number}</div>
                 <div className="text-xs text-gray-400 mt-0.5">{s.course} · Year {s.year_of_study}</div>
-
-      </div>
+                
+              </div>
+              <div className="flex gap-2">
+                
+              </div>
 
    {/* Evaluations view */}
 {filter === 'evaluations' && (
