@@ -354,6 +354,10 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
               </div>
               <div className="flex gap-2">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Active</span>
+                <button onClick={() => setSelectedStudent(s)}
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                  Evaluate
+                </button>
 
               </div>
 
