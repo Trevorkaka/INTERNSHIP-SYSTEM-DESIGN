@@ -234,7 +234,8 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
         </div>
 
         {/* Pending reviews */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        {(filter === 'all' || filter === 'reviews') && (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
             <h2 className="text-sm font-bold">
               Pending Reviews
@@ -268,6 +269,7 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
             })}
           </div>
         </div>
+        )}
       </div>
 
       {/* Quick actions */}
