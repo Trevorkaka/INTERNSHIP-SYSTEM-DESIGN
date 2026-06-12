@@ -360,6 +360,8 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
                 {log.submitted_at && (
                    <div className="text-xs text-gray-400 mt-1">
                       Submitted {new Date(log.submitted_at).toLocaleDateString()}
+                   </div>
+                  )}
 
               </div>
 
