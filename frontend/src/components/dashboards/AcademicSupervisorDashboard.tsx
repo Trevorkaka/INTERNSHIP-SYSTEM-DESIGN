@@ -340,7 +340,7 @@ export default function AcademicSupervisorDashboard() {
           <h2 className="text-sm font-bold">Quick Actions</h2>
         </div>
         <div className="p-4 grid grid-cols-4 gap-3">
-          {quickActions.map(({ label, icon }) => (
+          {quickActions.map(({ label, icon, action }) => (
             <button key={label} className="flex items-center gap-2.5 p-3.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl text-left transition-all">
               {icon}
               <span className="text-sm font-semibold text-gray-800">{label}</span>
