@@ -74,7 +74,7 @@ function AppRouter() {
       case 'workplace_supervisor':
         if (page === 'interns')  return <WorkplaceSupervisorDashboard filter="interns" />
         if (page === 'reviews')  return <WorkplaceSupervisorDashboard filter="reviews" />
-        return <WorkplaceSupervisorDashboard />
+        return <WorkplaceSupervisorDashboard filter="all" />
 
       case 'academic_supervisor':
         return <AcademicSupervisorDashboard />
