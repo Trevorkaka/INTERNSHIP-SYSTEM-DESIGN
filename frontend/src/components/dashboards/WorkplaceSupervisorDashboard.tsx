@@ -200,7 +200,7 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
         ))}
       </div>
 
-      <div className="grid grid-cols-[1fr_360px] gap-4">
+      <div className="grid grid-cols-[1fr_360px] gap-4" style={{ display: filter === 'reviews' ? 'none' : 'grid' }}>
         {/* Interns */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
