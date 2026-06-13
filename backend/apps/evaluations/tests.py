@@ -105,7 +105,7 @@ class EvaluationAPITests(APITestCase):
         self.client.force_authenticate(user=self.student_user)
         response = self.client.get(self.list_create_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_create_evaluation_by_supervisor(self):
         self.client.force_authenticate(user=self.academic_user)

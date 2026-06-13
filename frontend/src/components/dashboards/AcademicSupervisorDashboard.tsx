@@ -140,7 +140,7 @@ function EvalModal({ student, logs, criteria, onClose, onDone }: {
  * - Reviewing and scoring students' weekly submissions with custom rubrics.
  * - Pre-rendering computed metrics using react useMemo hooks to prevent performance lags.
  */
-export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter?: string }) {
+export default function AcademicSupervisorDashboard({ filter = 'all', setPage }: { filter?: string, setPage?: (p: string) => void }) {
   const [students, setStudents] = useState<Student[]>([])
   const [logs, setLogs] = useState<Log[]>([])
   const [criteria, setCriteria] = useState<Criteria[]>([])
@@ -154,10 +154,10 @@ export default function AcademicSupervisorDashboard({ filter = 'all' }: { filter
   ]
 
   const quickActions = [
-    { label: 'Evaluate Student',      icon: <ClipboardCheck size={15} className="text-blue-600"/>, action: () => students[0] && setSelectedStudent(students[0]) },
-    { label: 'Review Activity Logs',  icon: <FileText size={15} className="text-blue-600"/>,       action: () => students[0] && setSelectedStudent(students[0]) },
-    { label: 'View Analytics',        icon: <BarChart2 size={15} className="text-blue-600"/>,       action: () => {} },
-    { label: 'Generate Report',       icon: <Download size={15} className="text-blue-600"/>,        action: () => {} },
+    { label: 'Evaluate Student',     icon: <ClipboardCheck size={15} className="text-blue-600"/>, action: () => setPage?.('evaluations') },
+    { label: 'My Students',          icon: <FileText size={15} className="text-blue-600"/>,        action: () => setPage?.('students') },
+    { label: 'View Analytics',       icon: <BarChart2 size={15} className="text-blue-600"/>,       action: () => setPage?.('analytics') },
+    { label: 'Generate Report',      icon: <Download size={15} className="text-blue-600"/>,        action: () => setPage?.('analytics') },
   ]
 
   const fetchData = async () => {
