@@ -78,6 +78,14 @@ class UserSignupSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'year_of_study': 'Year of study is required for student role.'
                 })
+
+            # Check uniqueness of student_number (registration_number)
+            student_num = data.get('student_number')
+            if User.objects.filter(student_number__iexact=student_num).exists():
+                raise serializers.ValidationError({
+                    'registration_number': 'This student registration number is already registered.'
+                })
+
         elif role == 'workplace_supervisor':
             if not data.get('staff_number'):
                 # Fallback to a generated/username-based staff_number
@@ -92,6 +100,14 @@ class UserSignupSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'company_name': 'Company name is required for workplace supervisors.'
                 })
+
+            # Check uniqueness of staff_number
+            staff_num = data.get('staff_number')
+            if User.objects.filter(staff_number__iexact=staff_num).exists():
+                raise serializers.ValidationError({
+                    'staff_number': 'This staff number is already registered.'
+                })
+
         elif role == 'academic_supervisor':
             if not data.get('staff_number'):
                 # Fallback to a generated/username-based staff_number
@@ -105,6 +121,13 @@ class UserSignupSerializer(serializers.ModelSerializer):
             if not data.get('department'):
                 raise serializers.ValidationError({
                     'department': 'Department is required for academic supervisors.'
+                })
+
+            # Check uniqueness of staff_number
+            staff_num = data.get('staff_number')
+            if User.objects.filter(staff_number__iexact=staff_num).exists():
+                raise serializers.ValidationError({
+                    'staff_number': 'This staff number is already registered.'
                 })
             
         return data
