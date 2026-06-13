@@ -325,7 +325,7 @@ The frontend interface compiles in milliseconds and starts running under: **`htt
 
 ## Environment Variables (`.env`)
 
-To manage secure credentials safely, create a `.env` file within the `backend/` directory containing:
+To manage secure credentials safely, create a `.env` file within the `backend/` directory containing as an example and call the variables using python-dotenv package:
 
 ```env
 # Django Core Configurations
