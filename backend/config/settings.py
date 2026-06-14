@@ -179,16 +179,13 @@ STATICFILES_DIRS = [
 # When you deploy, replace these with your actual frontend domain.
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',   # Vite (React default)
-    'http://localhost:5174',   # Vite fallback
-    'http://localhost:5175',   # Vite fallback
-    'http://localhost:3000',   # Create React App default
+    'http://localhost:5173',  # Vite (React default)
+    'http://localhost:3000',
     'http://127.0.0.1:5173',
-    'http://127.0.0.1:5174',
-    'http://127.0.0.1:5175',
+    'https://internship-system-design-production-8ab5.up.railway.app',  # Create React App default
 ]
 
-CORS_ALLOW_CREDENTIALS = True   # Needed so React can send the Authorization header
+CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'  # Needed so React can send the Authorization header
 
 
 
