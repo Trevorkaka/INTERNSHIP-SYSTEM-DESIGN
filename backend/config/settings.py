@@ -8,13 +8,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    "SECRET_KEY",
-    "django-insecure-hjt1o9cdh1e-a-v1tz-gzniggyxk8v9ozlwtpmjn5b-gb--7w"
-)
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == "True"
+
 
 ALLOWED_HOSTS = ['*'] #allow all hosts during development, change in production
 
@@ -89,16 +87,39 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'iles_db'),
-        'USER': os.getenv('DB_USER', 'iles_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'iles_password'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+# Use sqlite3 as default/fallback if DB_ENGINE is sqlite3, or DB_NAME is missing,
+# or if we are unable to load psycopg modules for PostgreSQL.
+DB_ENGINE = os.getenv('DB_ENGINE', '')
+use_sqlite = (DB_ENGINE == 'django.db.backends.sqlite3') or not os.getenv('DB_NAME')
+
+if not use_sqlite:
+    try:
+        import psycopg  # noqa: F401
+    except ImportError:
+        try:
+            import psycopg2  # noqa: F401
+        except ImportError:
+            # Fallback to SQLite if psycopg driver is not installed
+            use_sqlite = True
+
+if use_sqlite:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
+        }
+    }
 
 # ---Auth--
 #AUTH_USER_MODEL = 'internship.User'

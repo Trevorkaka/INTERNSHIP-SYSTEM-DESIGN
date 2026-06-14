@@ -182,8 +182,8 @@ class StudentViewSetTests(APITestCase):
         response = self.client.get(self.students_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Students should only see their own profile
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['id'], self.student_profile.id)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['id'], self.student_profile.id)
 
     def test_assign_supervisors_by_admin(self):
         self.client.force_authenticate(user=self.admin_user)

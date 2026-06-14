@@ -9,7 +9,7 @@ User = get_user_model()
 
 class UserSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
-    password_confirm = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True, min_length=8, required=False)
     email = serializers.EmailField(validators=[EmailValidator()])
 
     registration_number = serializers.CharField(write_only=True, required=False, allow_blank=True)
@@ -44,7 +44,12 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return value
     
     def validate(self, data):
-        if data['password'] != data.pop('password_confirm'):
+        # Support missing or empty password_confirm by falling back to password
+        password_confirm = data.pop('password_confirm', None)
+        if password_confirm is None:
+            password_confirm = data.get('password')
+
+        if data.get('password') != password_confirm:
             raise serializers.ValidationError({
                 'password_confirm': 'Passwords do not match.'
             })
@@ -53,9 +58,14 @@ class UserSignupSerializer(serializers.ModelSerializer):
 
         if role == 'student':
             if not data.get('student_number'):
-                raise serializers.ValidationError({
-                    'student_number': 'Student number is required for student role.'
-                })
+                # Fallback to registration_number if student_number is missing
+                reg_num = data.get('registration_number')
+                if reg_num:
+                    data['student_number'] = reg_num
+                else:
+                    raise serializers.ValidationError({
+                        'student_number': 'Student number is required for student role.'
+                    })
             if not data.get('registration_number'):
                 raise serializers.ValidationError({
                     'registration_number': 'Registration number is required for student role.'
@@ -68,23 +78,56 @@ class UserSignupSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'year_of_study': 'Year of study is required for student role.'
                 })
+
+            # Check uniqueness of student_number (registration_number)
+            student_num = data.get('student_number')
+            if User.objects.filter(student_number__iexact=student_num).exists():
+                raise serializers.ValidationError({
+                    'registration_number': 'This student registration number is already registered.'
+                })
+
         elif role == 'workplace_supervisor':
             if not data.get('staff_number'):
-                raise serializers.ValidationError({
-                    'staff_number': 'Staff number is required for workplace supervisors.'
-                })
+                # Fallback to a generated/username-based staff_number
+                username = data.get('username')
+                if username:
+                    data['staff_number'] = f"W-{username}"
+                else:
+                    raise serializers.ValidationError({
+                        'staff_number': 'Staff number is required for workplace supervisors.'
+                    })
             if not data.get('company_name'):
                 raise serializers.ValidationError({
                     'company_name': 'Company name is required for workplace supervisors.'
                 })
+
+            # Check uniqueness of staff_number
+            staff_num = data.get('staff_number')
+            if User.objects.filter(staff_number__iexact=staff_num).exists():
+                raise serializers.ValidationError({
+                    'staff_number': 'This staff number is already registered.'
+                })
+
         elif role == 'academic_supervisor':
             if not data.get('staff_number'):
-                raise serializers.ValidationError({
-                    'staff_number': 'Staff number is required for academic supervisors.'
-                })
+                # Fallback to a generated/username-based staff_number
+                username = data.get('username')
+                if username:
+                    data['staff_number'] = f"A-{username}"
+                else:
+                    raise serializers.ValidationError({
+                        'staff_number': 'Staff number is required for academic supervisors.'
+                    })
             if not data.get('department'):
                 raise serializers.ValidationError({
                     'department': 'Department is required for academic supervisors.'
+                })
+
+            # Check uniqueness of staff_number
+            staff_num = data.get('staff_number')
+            if User.objects.filter(staff_number__iexact=staff_num).exists():
+                raise serializers.ValidationError({
+                    'staff_number': 'This staff number is already registered.'
                 })
             
         return data
