@@ -168,14 +168,14 @@ export default function SignupPage({ onNavigateToLogin }: Props) {
             <>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1.5">Registration Number</label>
-                <input type="text" placeholder="e.g. CS/2022/001" value={form.registration_number}
+                <input type="text" placeholder="e.g. CS/2022/001" required value={form.registration_number}
                   onChange={e => set('registration_number', e.target.value)}
                   className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 mb-1.5">Course</label>
-                  <input type="text" placeholder="e.g. Computer Science" value={form.course}
+                  <input type="text" placeholder="e.g. Computer Science" required value={form.course}
                     onChange={e => set('course', e.target.value)}
                     className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
                 </div>
@@ -194,7 +194,7 @@ export default function SignupPage({ onNavigateToLogin }: Props) {
           {form.role === 'academic_supervisor' && (
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">Department</label>
-              <input type="text" placeholder="e.g. Computer Science" value={form.department}
+              <input type="text" placeholder="e.g. Computer Science" required value={form.department}
                 onChange={e => set('department', e.target.value)}
                 className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
             </div>
@@ -204,7 +204,7 @@ export default function SignupPage({ onNavigateToLogin }: Props) {
           {form.role === 'workplace_supervisor' && (
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1.5">Company Name</label>
-              <input type="text" placeholder="e.g. Tech Innovations Inc." value={form.company_name}
+              <input type="text" placeholder="e.g. Tech Innovations Inc." required value={form.company_name}
                 onChange={e => set('company_name', e.target.value)}
                 className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors"/>
             </div>
