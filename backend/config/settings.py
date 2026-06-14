@@ -185,7 +185,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://internship-system-design-production-8ab5.up.railway.app',  # Create React App default
 ]
 
-CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'  # Needed so React can send the Authorization header
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 
 
