@@ -1,4 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react'
+import { useLocation, useNavigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { notificationsAPI } from '../api/services'
 import {
@@ -11,7 +12,7 @@ interface Notification {
   id: number; title: string; message: string;
   is_read: boolean; created_at: string; notification_type: string
 }
-interface LayoutProps { children: ReactNode; page: string; setPage: (p: string) => void }
+interface LayoutProps { children?: ReactNode; page?: string; setPage?: (p: string) => void }
 
 const NAV_BY_ROLE: Record<string, NavItem[]> = {
   student: [
@@ -52,10 +53,16 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 }
 
-export default function Layout({ children, page, setPage }: LayoutProps) {
+export default function Layout({ children, page: propPage, setPage: propSetPage }: LayoutProps) {
   const { user, logout } = useAuth()
   const [showNotifs, setShowNotifs] = useState(false)
   const [notifs, setNotifs]         = useState<Notification[]>([])
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const page = propPage ?? (location.pathname.substring(1) || 'dashboard')
+  const setPage = propSetPage ?? ((p: string) => navigate('/' + p))
 
   const navItems  = NAV_BY_ROLE[user?.role ?? ''] ?? []
   const pageTitle = navItems.find(n => n.id === page)?.label ?? 'ILES'
@@ -179,7 +186,7 @@ export default function Layout({ children, page, setPage }: LayoutProps) {
 
         <main className="flex-1 overflow-y-auto p-7"
           onClick={() => showNotifs && setShowNotifs(false)}>
-          {children}
+          {children || <Outlet />}
         </main>
       </div>
     </div>
