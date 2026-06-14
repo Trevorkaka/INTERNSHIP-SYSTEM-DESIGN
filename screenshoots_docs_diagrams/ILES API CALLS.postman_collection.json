@@ -1,0 +1,574 @@
+{
+  "info": {
+    "_postman_id": "888dbe5f-a537-4a4a-a10f-2fc1c681e461",
+    "name": "ILES API CALLS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "6333993"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Signup Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"student1\",\n  \"email\": \"student@example.com\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"password\": \"Password123\",\n  \"password_confirm\": \"Password123\",\n  \"role\": \"student\",\n  \"student_number\": \"S001\",\n  \"registration_number\": \"REG001\",\n  \"course\": \"Computer Science\",\n  \"year_of_study\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/signup/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signup",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"student1\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/refresh/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Academic Supervisor",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Signup Academic Supervisor",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Signup Workplace Supervisor",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Login Workplace Supervisor",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Create Student Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/students/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "students",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/students/{{student_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "students",
+                "{{student_id}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Supervisors",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_supervisor\": 4,\n  \"work_place_supervisor\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/students/{{student_id}}/assign_supervisors/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "students",
+                "{{student_id}}",
+                "assign_supervisors",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Supervisors",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/workplace-supervisors/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "workplace-supervisors",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Weekly Logs",
+      "item": [
+        {
+          "name": "Create Weekly log",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/weekly-logs/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "weekly-logs",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Weekly logs",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Weekly Log",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Assessments",
+      "item": [
+        {
+          "name": "Create Assessment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/assessments/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "assessments",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Evaluations",
+      "item": [
+        {
+          "name": "Create Evaluation",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/evaluations/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "evaluations",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Evaluation Criteria",
+      "item": [
+        {
+          "name": "Create Evaluation Criteria",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/evaluation-criteria/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "evaluation-criteria",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/notifications/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Placements",
+      "item": [
+        {
+          "name": "Create Placement",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/placements/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "placements",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "student_id",
+      "value": "1"
+    }
+  ]
+}
