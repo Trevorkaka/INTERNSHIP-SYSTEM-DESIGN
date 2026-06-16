@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 
 from apps.common.audit import log_action
 
-
 class WeeklyLogWorkflow:
     """
     Encapsulates all state transitions for WeeklyLog.
