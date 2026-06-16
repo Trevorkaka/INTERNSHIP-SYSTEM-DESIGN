@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Clock, FileText, TrendingUp, CheckSquare, AlertCircle, Loader } from 'lucide-react'
 import { logsAPI } from '../../api/services'
 import client from '../../api/client'
@@ -133,26 +133,35 @@ export default function StudentDashboard({ setPage }: Props) {
 
   useEffect(() => { fetchData() }, [])
 
-  const submitted = logs.filter(l => l.status !== 'draft').length
-  const approved  = logs.filter(l => l.status === 'approved').length
-  const draft     = logs.filter(l => l.status === 'draft').length
+  // Memoize all stat and progress calculations to avoid recalculating on every re-render
+  const { submitted, approved, draft, recentLogs, progress, stats } = useMemo(() => {
+    const submittedCount = logs.filter(l => l.status !== 'draft').length
+    const approvedCount  = logs.filter(l => l.status === 'approved').length
+    const draftCount     = logs.filter(l => l.status === 'draft').length
+    const recent         = logs.slice(0, 3)
+    const prog           = placement
+      ? Math.min(100, Math.max(0, Math.round(
+          ((Date.now() - new Date(placement.start_date).getTime()) /
+           (new Date(placement.end_date).getTime() - new Date(placement.start_date).getTime())) * 100
+        )))
+      : 0
 
-  const recentLogs = logs.slice(0, 3)
+    const statsList = [
+      { label: 'Logs Submitted',  value: submittedCount + '',  sub: draftCount + ' draft',        color: 'text-blue-600',   bg: 'bg-blue-50',   icon: <FileText size={18} className="text-blue-600"/> },
+      { label: 'Logs Approved',   value: approvedCount + '',   sub: 'out of ' + logs.length, color: 'text-green-600',  bg: 'bg-green-50',  icon: <CheckSquare size={18} className="text-green-600"/> },
+      { label: 'Progress',        value: prog + '%',           sub: 'internship completion',  color: 'text-violet-600', bg: 'bg-violet-50', icon: <TrendingUp size={18} className="text-violet-600"/> },
+      { label: 'Total Logs',      value: logs.length + '',    sub: 'all time',              color: 'text-amber-600',  bg: 'bg-amber-50',  icon: <Clock size={18} className="text-amber-600"/> },
+    ]
 
-  // Placement progress
-  const progress = placement
-    ? Math.min(100, Math.max(0, Math.round(
-        ((Date.now() - new Date(placement.start_date).getTime()) /
-         (new Date(placement.end_date).getTime() - new Date(placement.start_date).getTime())) * 100
-      )))
-    : 0
-
-  const stats = [
-    { label: 'Logs Submitted',  value: submitted + '',      sub: draft + ' draft',        color: 'text-blue-600',   bg: 'bg-blue-50',   icon: <FileText size={18} className="text-blue-600"/> },
-    { label: 'Logs Approved',   value: approved + '',       sub: 'out of ' + logs.length, color: 'text-green-600',  bg: 'bg-green-50',  icon: <CheckSquare size={18} className="text-green-600"/> },
-    { label: 'Progress',        value: progress + '%',      sub: 'internship completion',  color: 'text-violet-600', bg: 'bg-violet-50', icon: <TrendingUp size={18} className="text-violet-600"/> },
-    { label: 'Total Logs',      value: logs.length + '',    sub: 'all time',              color: 'text-amber-600',  bg: 'bg-amber-50',  icon: <Clock size={18} className="text-amber-600"/> },
-  ]
+    return {
+      submitted: submittedCount,
+      approved: approvedCount,
+      draft: draftCount,
+      recentLogs: recent,
+      progress: prog,
+      stats: statsList
+    }
+  }, [logs, placement])
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {

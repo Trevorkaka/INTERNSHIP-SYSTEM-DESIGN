@@ -1,3 +1,10 @@
+"""
+Models for the Placements application.
+
+Defines the core models detailing student company/organization assignments,
+and linkings between students, workplace supervisors, and academic supervisors.
+"""
+
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -7,7 +14,21 @@ User = settings.AUTH_USER_MODEL
 
 class InternshipPlacement(models.Model):
     """
-    Represents a student's internship placement.
+    Represents a student's active or historic internship placement details.
+
+    Maps a student profile to a specific company, role, timeframe,
+    and academic/workplace supervisors.
+
+    Attributes:
+        student (OneToOneField): Link to the Student profile.
+        workplace_supervisor (ForeignKey): User holding the workplace_supervisor role.
+        academic_supervisor (ForeignKey): User holding the academic_supervisor role.
+        company_name (CharField): Hosting company/organization name.
+        position (CharField): Role or task designation.
+        start_date (DateField): Start of internship placement period.
+        end_date (DateField): End of internship placement period.
+        is_active (BooleanField): Active flag.
+        created_at (DateTimeField): Log creation timestamp.
     """
     student = models.OneToOneField(
         'accounts.Student',
@@ -66,12 +87,27 @@ class InternshipPlacement(models.Model):
         ordering = ['-start_date']
 
     def __str__(self):
+        """
+        String representation of the placement details.
+
+        Returns:
+            str: Student, company name, and date duration.
+        """
         return f"{self.student} - {self.company_name} ({self.start_date} to {self.end_date})"
 
     def clean(self):
+        """
+        Validate dates constraints.
+
+        Raises:
+            ValidationError: If the start_date lies on or after the end_date.
+        """
         if self.start_date and self.end_date and self.start_date >= self.end_date:
             raise ValidationError("End date must be after start date.")
 
     def save(self, *args, **kwargs):
+        """
+        Perform a full model validation check prior to database storage.
+        """
         self.full_clean()
         super().save(*args, **kwargs)

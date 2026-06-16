@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Loader, ClipboardCheck, Star, MessageSquare, RefreshCw } from 'lucide-react'
 import { logsAPI, assessmentsAPI } from '../../api/services'
 import client from '../../api/client'
@@ -21,6 +21,12 @@ interface Student {
   user: { id: number; username: string; first_name: string; last_name: string }
 }
 
+/**
+ * ReviewModal Component
+ * Facilitates the workplace supervisor's review of a single weekly internship log.
+ * Supervisors grade the student (out of 100), write qualitative feedback,
+ * and submit the assessment to mark the log as reviewed.
+ */
 function ReviewModal({ log, student, onClose, onDone }: {
   log: Log; student?: Student; onClose: () => void; onDone: () => void
 }) {
@@ -33,6 +39,7 @@ function ReviewModal({ log, student, onClose, onDone }: {
     ? `${student.user.first_name} ${student.user.last_name}`
     : `Student #${log.student}`
 
+  // Submits the workplace grading and comments, then triggers the status transition in the database
   const handleApprove = async () => {
     if (!feedback.trim()) { setError('Please provide feedback comments.'); return }
     setSaving(true); setError('')
@@ -101,7 +108,14 @@ function ReviewModal({ log, student, onClose, onDone }: {
   )
 }
 
-export default function WorkplaceSupervisorDashboard() {
+/**
+ * WorkplaceSupervisorDashboard Component
+ * Renders the dashboard for industry supervisor mentors. Includes:
+ * - Summary statistics (assigned interns, pending logbook reviews).
+ * - Intern directories with aggregated weekly metrics.
+ * - Drilldown review actions.
+ */
+export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filter?: string }) {
   const [logs, setLogs] = useState<Log[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
@@ -125,9 +139,34 @@ export default function WorkplaceSupervisorDashboard() {
   useEffect(() => { fetchData() }, [])
 
   const getStudent = (id: number) => students.find(s => s.id === id)
-  const pending    = logs.filter(l => l.status === 'submitted')
-  const reviewed   = logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length
-  const uniqueStudentIds = [...new Set(logs.map(l => l.student))]
+
+  // Memoize basic statistics and unique intern listings to optimize component re-render schedules.
+  const { pending, reviewed, uniqueStudentIds } = useMemo(() => {
+    return {
+      pending: logs.filter(l => l.status === 'submitted'),
+      reviewed: logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length,
+      uniqueStudentIds: [...new Set(logs.map(l => l.student))]
+    }
+  }, [logs])
+
+  // Precompute aggregated stats for interns in real-time to prevent slow, layout-blocking O(N) tasks.
+  const internsWithStats = useMemo(() => {
+    return uniqueStudentIds.map(sid => {
+      const st = students.find(s => s.id === sid)
+      const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${sid}`
+      const studentLogs = logs.filter(l => l.student === sid)
+      const pendingCount = studentLogs.filter(l => l.status === 'submitted').length
+      const approvedCount = studentLogs.filter(l => l.status === 'approved').length
+      return {
+        sid,
+        st,
+        name,
+        studentLogs,
+        pendingCount,
+        approvedCount
+      }
+    })
+  }, [uniqueStudentIds, students, logs])
 
   if (loading) return (
     <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
@@ -161,7 +200,7 @@ export default function WorkplaceSupervisorDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-[1fr_360px] gap-4">
+      <div className="grid grid-cols-[1fr_360px] gap-4" style={{ display: filter === 'reviews' ? 'none' : 'grid' }}>
         {/* Interns */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
@@ -173,26 +212,20 @@ export default function WorkplaceSupervisorDashboard() {
                 No interns assigned yet. Make sure the admin has linked students to you.
               </div>
             )}
-            {uniqueStudentIds.map(sid => {
-              const st = getStudent(sid)
-              const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${sid}`
-              const studentLogs = logs.filter(l => l.student === sid)
-              const pendingCount = studentLogs.filter(l => l.status === 'submitted').length
-              const approvedCount = studentLogs.filter(l => l.status === 'approved').length
-
+            {internsWithStats.map(intern => {
               return (
-                <div key={sid} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
+                <div key={intern.sid} className="p-4 border-2 border-gray-100 hover:border-blue-200 rounded-xl transition-all">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <div className="text-sm font-bold">{name}</div>
-                      <div className="text-xs text-gray-400 mt-0.5">{st?.course ?? '—'} · {st?.registration_number ?? '—'}</div>
+                      <div className="text-sm font-bold">{intern.name}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{intern.st?.course ?? '—'} · {intern.st?.registration_number ?? '—'}</div>
                     </div>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">active</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3 text-xs">
-                    <div><div className="text-gray-400">Total Logs</div><div className="font-semibold mt-0.5">{studentLogs.length}</div></div>
-                    <div><div className="text-gray-400">Pending</div><div className="font-semibold mt-0.5 text-amber-600">{pendingCount}</div></div>
-                    <div><div className="text-gray-400">Approved</div><div className="font-semibold mt-0.5 text-green-600">{approvedCount}</div></div>
+                    <div><div className="text-gray-400">Total Logs</div><div className="font-semibold mt-0.5">{intern.studentLogs.length}</div></div>
+                    <div><div className="text-gray-400">Pending</div><div className="font-semibold mt-0.5 text-amber-600">{intern.pendingCount}</div></div>
+                    <div><div className="text-gray-400">Approved</div><div className="font-semibold mt-0.5 text-green-600">{intern.approvedCount}</div></div>
                   </div>
                 </div>
               )
@@ -201,7 +234,8 @@ export default function WorkplaceSupervisorDashboard() {
         </div>
 
         {/* Pending reviews */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        {(filter === 'all' || filter === 'reviews') && (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="px-5 py-4 border-b border-gray-100">
             <h2 className="text-sm font-bold">
               Pending Reviews
@@ -235,6 +269,7 @@ export default function WorkplaceSupervisorDashboard() {
             })}
           </div>
         </div>
+        )}
       </div>
 
       {/* Quick actions */}
@@ -244,11 +279,11 @@ export default function WorkplaceSupervisorDashboard() {
         </div>
         <div className="p-4 grid grid-cols-3 gap-3">
           {[
-            ['Review Activity Logs', <ClipboardCheck size={15} className="text-blue-600"/>],
-            ['Submit Performance Review', <Star size={15} className="text-blue-600"/>],
-            ['Send Feedback', <MessageSquare size={15} className="text-blue-600"/>],
-          ].map(([label, icon]) => (
-            <button key={label as string}
+            ['Review Activity Logs', <ClipboardCheck size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+            ['Submit Performance Review', <Star size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+            ['Send Feedback', <MessageSquare size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+          ].map(([label, icon, action]: [string, React.ReactNode, () => void]) => (
+            <button key={label as string} onClick={action as () => void}
               className="flex items-center gap-2.5 p-3.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl text-left transition-all">
               {icon}
               <span className="text-sm font-semibold text-gray-800">{label}</span>
