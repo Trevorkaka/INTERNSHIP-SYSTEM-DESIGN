@@ -189,13 +189,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'role', 
-            'is_student', 'is_academic_supervisor', 
+            'id', 'username', 'email', 'first_name', 'last_name', 'role',
+            'is_student', 'is_academic_supervisor',
             'is_workplace_supervisor', 'is_admin'
         ]
         read_only_fields = [
-            id', 'username', 'email', 'first_name', 'last_name', 'role', 
-            'is_student', 'is_academic_supervisor', 
+            'id', 'username', 'email', 'first_name', 'last_name', 'role',
+            'is_student', 'is_academic_supervisor',
             'is_workplace_supervisor', 'is_admin'
         ]
 
