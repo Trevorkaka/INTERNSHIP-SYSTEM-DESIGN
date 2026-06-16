@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-hjt1o9cdh1e-a-v1tz-gzniggy
 DEBUG = os.getenv('DEBUG', 'True') == "True"
 
 
-ALLOWED_HOSTS = ['*'] #allow all hosts during development, change in production
+ALLOWED_HOSTS = ["internship-system-design-production.up.railway.app", "localhost", "127.0.0.1"] #allow all hosts during development, change in production
 
 
 # Application definition
