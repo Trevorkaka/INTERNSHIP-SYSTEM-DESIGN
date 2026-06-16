@@ -1,7 +1,0 @@
-SECRET_KEY=django-insecure-hjt1o9cdh1e(a^#v1tz)gzniggyxk8v9ozlwtpmjn5b*gb__7w
-DEBUG=True
-DB_NAME=internship_db
-DB_USER=internship_user
-DB_PASSWORD=group20password
-DB_HOST=localhost
-DB_PORT=5432
