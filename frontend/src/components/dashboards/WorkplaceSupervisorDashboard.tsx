@@ -115,7 +115,7 @@ function ReviewModal({ log, student, onClose, onDone }: {
  * - Intern directories with aggregated weekly metrics.
  * - Drilldown review actions.
  */
-export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filter?: string }) {
+export default function WorkplaceSupervisorDashboard({ filter = 'all', setPage }: { filter?: string, setPage?: (p: string) => void }) {
   const [logs, setLogs] = useState<Log[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
@@ -278,9 +278,9 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
         </div>
         <div className="p-4 grid grid-cols-3 gap-3">
           {[
-            ['Review Activity Logs', <ClipboardCheck size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
-            ['Submit Performance Review', <Star size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
-            ['Send Feedback', <MessageSquare size={15} className="text-blue-600"/>, () => pending[0] && setSelectedLog(pending[0])],
+            ['Review Activity Logs',     <ClipboardCheck size={15} className="text-blue-600"/>, () => setPage?.('reviews')],
+            ['My Interns',               <Star size={15} className="text-blue-600"/>,           () => setPage?.('interns')],
+            ['Open Pending Review',      <MessageSquare size={15} className="text-blue-600"/>,  () => pending[0] ? setSelectedLog(pending[0]) : setPage?.('reviews')],
           ].map(([label, icon, action]: [string, React.ReactNode, () => void]) => (
             <button key={label as string} onClick={action as () => void}
               className="flex items-center gap-2.5 p-3.5 border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl text-left transition-all">
