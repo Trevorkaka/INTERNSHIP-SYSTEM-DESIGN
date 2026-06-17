@@ -11,15 +11,8 @@ class InternshipPlacementSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        if instance.student:
-            try:
-                student_profile = instance.student.student
-                representation['student'] = StudentSerializer(student_profile).data
-            except Exception:
-                representation['student'] = {
-                    'id': instance.student.id,
-                    'username': instance.student.username,
-                }
+        if instance.student_id:
+            representation['student'] = StudentSerializer(instance.student).data
         return representation
 
     def validate(self, data):
