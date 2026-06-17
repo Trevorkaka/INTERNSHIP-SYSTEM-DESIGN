@@ -212,7 +212,7 @@ export default function AdminPlacements() {
                 >
                   <option value="">— choose student —</option>
                   {students.map(s => (
-                    <option key={s.id} value={s.user.id}>
+                    <option key={s.id} value={s.id}>
                       {s.user.first_name} {s.user.last_name} ({s.registration_number})
                     </option>
                   ))}

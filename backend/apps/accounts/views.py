@@ -254,9 +254,12 @@ class StudentViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """
-        Filter queryset so that a student can only retrieve their own record.
+        Filter queryset based on the requesting user's role.
 
-        Supervisors and administrators can retrieve all students.
+        - Students see only their own profile.
+        - Academic supervisors see only the students assigned to them.
+        - Workplace supervisors see only the students assigned to them.
+        - Admins see every student.
 
         Returns:
             QuerySet: Filtered Student query set.
@@ -265,6 +268,10 @@ class StudentViewSet(viewsets.ModelViewSet):
         queryset = self.queryset
         if getattr(user, "is_student", False):
             return queryset.filter(user=user)
+        if getattr(user, "is_academic_supervisor", False):
+            return queryset.filter(academic_supervisor=user)
+        if getattr(user, "is_workplace_supervisor", False):
+            return queryset.filter(work_place_supervisor=user)
         return queryset
 
     @action(detail=True, methods=['patch', 'post'], permission_classes=[IsAdmin])

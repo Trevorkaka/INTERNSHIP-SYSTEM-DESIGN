@@ -140,25 +140,24 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
 
   const getStudent = (id: number) => students.find(s => s.id === id)
 
-  // Memoize basic statistics and unique intern listings to optimize component re-render schedules.
-  const { pending, reviewed, uniqueStudentIds } = useMemo(() => {
+  // Memoize basic statistics. "My Interns" comes from the students list (assigned to this
+  // supervisor by the admin) rather than from logs, so newly assigned interns appear before
+  // they have submitted any weekly logs.
+  const { pending, reviewed } = useMemo(() => {
     return {
       pending: logs.filter(l => l.status === 'submitted'),
       reviewed: logs.filter(l => ['reviewed', 'approved'].includes(l.status)).length,
-      uniqueStudentIds: [...new Set(logs.map(l => l.student))]
     }
   }, [logs])
 
-  // Precompute aggregated stats for interns in real-time to prevent slow, layout-blocking O(N) tasks.
   const internsWithStats = useMemo(() => {
-    return uniqueStudentIds.map(sid => {
-      const st = students.find(s => s.id === sid)
-      const name = st ? `${st.user.first_name} ${st.user.last_name}` : `Student #${sid}`
-      const studentLogs = logs.filter(l => l.student === sid)
+    return students.map(st => {
+      const name = `${st.user.first_name} ${st.user.last_name}`
+      const studentLogs = logs.filter(l => l.student === st.id)
       const pendingCount = studentLogs.filter(l => l.status === 'submitted').length
       const approvedCount = studentLogs.filter(l => l.status === 'approved').length
       return {
-        sid,
+        sid: st.id,
         st,
         name,
         studentLogs,
@@ -166,7 +165,7 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
         approvedCount
       }
     })
-  }, [uniqueStudentIds, students, logs])
+  }, [students, logs])
 
   if (loading) return (
     <div className="flex items-center justify-center py-20 gap-2 text-gray-400">
@@ -188,7 +187,7 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          ['My Interns',      uniqueStudentIds.length + '', 'text-blue-600'  ],
+          ['My Interns',      students.length + '',         'text-blue-600'  ],
           ['Pending Reviews', pending.length + '',          'text-amber-600' ],
           ['Reviewed Logs',   reviewed + '',                'text-green-600' ],
           ['Total Logs',      logs.length + '',             'text-violet-600'],
@@ -207,7 +206,7 @@ export default function WorkplaceSupervisorDashboard({ filter = 'all' }: { filte
             <h2 className="text-sm font-bold">My Interns</h2>
           </div>
           <div className="p-4 space-y-3">
-            {uniqueStudentIds.length === 0 && (
+            {students.length === 0 && (
               <div className="text-center text-gray-400 text-sm py-8">
                 No interns assigned yet. Make sure the admin has linked students to you.
               </div>
