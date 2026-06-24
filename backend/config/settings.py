@@ -176,14 +176,22 @@ STATICFILES_DIRS = [
 
 #-----CORS---
 # Allows your React dev server to talk to Django during development.
-# When you deploy, replace these with your actual frontend domain.
+# In production, set the CORS_ALLOWED_ORIGINS environment variable to a
+# comma-separated list of allowed origins, e.g.:
+#   CORS_ALLOWED_ORIGINS=https://your-frontend.up.railway.app,https://your-other-domain.app
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',  # Vite (React default)
-    'http://localhost:3000',
-    'http://127.0.0.1:5173',
-    'https://internship-system-design-production-8ab5.up.railway.app',  # Create React App default
-]
+_cors_env = os.getenv('CORS_ALLOWED_ORIGINS', '')
+if _cors_env:
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _cors_env.split(',') if origin.strip()]
+else:
+    # Default: localhost origins for development
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:5173',  # Vite (React default)
+        'http://localhost:3000',
+        'http://127.0.0.1:5173',
+        'https://internship-system-design-production-8ab5.up.railway.app',
+        'https://internship-system-design-production.up.railway.app',
+    ]
 
 #CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
