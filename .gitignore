@@ -110,3 +110,6 @@ setup_task.ps1
 auto_commit.log
 .gitkeep
 !activity.log
+
+mailmap.txt
+replacements.txt
