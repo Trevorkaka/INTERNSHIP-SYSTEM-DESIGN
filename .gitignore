@@ -109,4 +109,11 @@ auto_commit.ps1
 setup_task.ps1
 auto_commit.log
 .gitkeep
+<<<<<<< HEAD
 !activity.log
+=======
+!activity.log
+
+mailmap.txt
+replacements.txt
+>>>>>>> 1050402078d93d332c52ec0a2fd82364da210c4e
