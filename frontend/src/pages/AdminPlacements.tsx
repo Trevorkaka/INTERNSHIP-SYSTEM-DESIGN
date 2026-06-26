@@ -84,7 +84,23 @@ export default function AdminPlacements() {
       setShowModal(false)
       fetchData()
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to create placement.')
+      // Improved handling for custom DRF exceptions (e.g. {error: true, message: ...})
+      const errorData = err.response?.data;
+      let errorMsg = 'Failed to create placement.';
+      if (errorData) {
+        if (typeof errorData === 'string') {
+          errorMsg = errorData;
+        } else if (errorData.message) {
+          errorMsg = errorData.message;
+        } else if (errorData.detail) {
+          errorMsg = errorData.detail;
+        } else if (errorData.error) {
+          errorMsg = errorData.error;
+        } else if (Object.keys(errorData).length > 0) {
+          errorMsg = Object.values(errorData).flat().join(', ');
+        }
+      }
+      setError(errorMsg);
     } finally {
       setSaving(false)
     }

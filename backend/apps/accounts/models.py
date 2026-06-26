@@ -68,10 +68,13 @@ class CustomUser(AbstractUser):
         """
         Check if the user is an admin.
 
+        Supports both custom role field and Django superuser for flexibility
+        (e.g., when using createsuperuser or admin panel).
+
         Returns:
-            bool: True if the user's role is 'admin', otherwise False.
+            bool: True if role is 'admin' or user.is_superuser is True.
         """
-        return self.role == 'admin'
+        return self.role == 'admin' or getattr(self, 'is_superuser', False)
 
     def __str__(self):
         """
