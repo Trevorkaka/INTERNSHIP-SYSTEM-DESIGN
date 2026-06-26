@@ -41,6 +41,7 @@ class InternshipPlacement(models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name='workplace_placements',
         help_text="Supervisor at the workplace"
     )
@@ -49,6 +50,7 @@ class InternshipPlacement(models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name='academic_placements',
         help_text="Supervisor from the academic institution"
     )
