@@ -14,9 +14,13 @@ class IsAdmin(BasePermission):
     """
     def has_permission(self, request, view):
         """
-        Verify if request user is authenticated and is an admin.
+        Verify if request user is authenticated and is an admin (role or superuser).
         """
-        return request.user.is_authenticated and getattr(request.user, "role", None) == "admin"
+        user = request.user
+        return (
+            user.is_authenticated
+            and (getattr(user, "role", None) == "admin" or getattr(user, "is_superuser", False))
+        )
 
 
 class IsAdminUserRole(BasePermission):
@@ -25,9 +29,13 @@ class IsAdminUserRole(BasePermission):
     """
     def has_permission(self, request, view):
         """
-        Verify if request user is authenticated and is an admin.
+        Verify if request user is authenticated and is an admin (role or superuser).
         """
-        return request.user.is_authenticated and getattr(request.user, "role", None) == "admin"
+        user = request.user
+        return (
+            user.is_authenticated
+            and (getattr(user, "role", None) == "admin" or getattr(user, "is_superuser", False))
+        )
 
 
 class IsAdminOrSelf(BasePermission):
@@ -84,7 +92,7 @@ class IsAdminOrAcademicSupervisor(BasePermission):
         Verify if request user is authenticated and is either admin or academic supervisor.
         """
         return request.user.is_authenticated and (
-            getattr(request.user, "role", None) == "admin" or
+            (getattr(request.user, "role", None) == "admin" or getattr(request.user, "is_superuser", False)) or
             getattr(request.user, "role", None) == "academic_supervisor"
         )
 
@@ -98,7 +106,7 @@ class IsAdminOrAnySupervisor(BasePermission):
         Verify if request user is authenticated and is an admin or supervisor.
         """
         return request.user.is_authenticated and (
-            getattr(request.user, "role", None) == "admin" or
+            (getattr(request.user, "role", None) == "admin" or getattr(request.user, "is_superuser", False)) or
             getattr(request.user, "role", None) == "academic_supervisor" or
             getattr(request.user, "role", None) == "workplace_supervisor"
         )
@@ -114,7 +122,9 @@ class IsAdminOrReadOnly(BasePermission):
         """
         if request.method in SAFE_METHODS:
             return request.user.is_authenticated
-        return request.user.is_authenticated and getattr(request.user, "role", None) == "admin"
+        return request.user.is_authenticated and (
+            getattr(request.user, "role", None) == "admin" or getattr(request.user, "is_superuser", False)
+        )
 
 
 class IsRelatedToWeeklyLog(BasePermission):
@@ -164,7 +174,7 @@ class IsRelatedToWeeklyLog(BasePermission):
         if role == 'academic_supervisor':
             return academic_supervisor_user == user
 
-        if role == 'admin':
+        if role == 'admin' or getattr(user, 'is_superuser', False):
             return True
 
         return False
